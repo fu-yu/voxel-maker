@@ -21,12 +21,15 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 - `docs/public/index.html` — 説明ページの本文 (Artifact 用。`<!doctype>` や `<head>` を持たない形)
 - `docs/public/images/` — 挿絵 (AI が作った絵)
 - `tools/build_guide.py` — `docs/public/index.html` から `guide.html` を作る
-- `tools/publish_pages.sh` — `index.html`, `guide.html`, `LICENSE`, `docs/public/images/` だけを `gh-pages` ブランチに強制 push する。**手で実行したときだけ動く** (`gh-pages` は毎回 1 コミットに作り直される)
+- `.github/workflows/deploy.yml` — `main` への push で `index.html`, `guide.html`, `LICENSE`, `docs/public/images/` だけを `gh-pages` ブランチに強制 push する (`gh-pages` は毎回 1 コミットに作り直される。手で触らない)
 
 ## 注意
 - 説明を直すときは `docs/public/index.md` と `docs/public/index.html` の両方を直し、`python3 tools/build_guide.py` で `guide.html` を作り直す。
 - `docs/public/index.html` は Artifact として公開するための形なので、`<!doctype>`・`<html>`・`<head>`・`<body>` を書かない。
-- 公開の自動化 (GitHub Actions など、勝手にブランチを作る・更新する仕組み) は入れない。ユーザーが 2026-11-11 に望まないと言った。`gh-pages` の更新は、頼まれたときに `bash tools/publish_pages.sh` で行う。
+- **ブランチの決まり** (ユーザーが 2026-11-11 に決めた): `main` は常に公開してよい状態。`main` に直接コミットしない。
+  作業は `work/<短い名前>` ブランチで行い、push して差分をユーザーに見せ、**ユーザーが良いと言ってから** `main` に取り込む (`git merge --no-ff`)。取り込んだら作業ブランチを消す。
+  `main` に取り込む = 公開、という意味になる。常設の `dev` ブランチは作らない。
+- 自動化は「`main` → `gh-pages`」の 1 つだけ。これ以外の自動化を入れるときは先にユーザーに確認する。
 - このリポジトリは公開。秘密情報、個人名、メールアドレス、ローカルのファイルパスを書かない。
 - コミットのメールアドレスは GitHub の noreply アドレスを使う (リポジトリごとの設定に入れてある)。
 

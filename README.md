@@ -23,7 +23,14 @@ python3 -m http.server 8766
 | `guide.html` | 使い方の説明ページ。`tools/build_guide.py` が `docs/public/index.html` から作る |
 | `docs/public/` | 説明ページの元原稿と挿絵 |
 | `tools/build_guide.py` | 説明ページを単体で開ける形に組み立てる |
-| `tools/publish_pages.sh` | 公開に必要なファイルだけを `gh-pages` ブランチに置く。自動では動かず、公開したいときに手で実行する |
+| `.github/workflows/deploy.yml` | `main` が変わるたびに、公開に必要なファイルだけを `gh-pages` ブランチに置く |
+
+## 開発の進め方
+
+- `main` は、いつでも公開してよい状態に保ちます。`main` に直接コミットしません。
+- 変更は、作業ごとに `work/<短い名前>` というブランチを切って行います。
+- 確かめ終わったら `main` に取り込み、作業ブランチは消します。
+- `main` が変わると、公開用の `gh-pages` ブランチが自動で更新されます。`gh-pages` は手で触りません。
 
 ## 挿絵について
 
