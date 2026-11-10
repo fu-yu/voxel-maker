@@ -5,20 +5,21 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Dela+Gothic+One&family=M+PLUS+Rounded+1c:wght@800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap">
 <style>
+/* Color: 説明ページ (guide.html) と同じ、生成りとオレンジのあたたかい色合い */
 /* Layout: workbench — control column on the left, 3D stage fills the rest; stage stacks on top on phones */
 :root{
-  --bg:#eceef3; --panel:#f8f9fb; --fg:#1b2130; --muted:#5d6678; --line:#d3d8e2;
-  --accent:#2a5bd7; --accent-fg:#ffffff; --accent-soft:#dfe7fb; --stage:#d7dce6; --chip:#ffffff; --checker:#e3e6ec;
+  --bg:#f1e7cd; --panel:#fbf4e0; --fg:#3d2f24; --muted:#6b5948; --line:#dfd0ae;
+  --accent:#ad4c0b; --accent-fg:#fffaf0; --accent-soft:#fbe2c6; --stage:#eadfc2; --chip:#fffaf0; --checker:#eadfc4;
   --f-display:"DotGothic16","Hiragino Sans",system-ui,sans-serif;
   --f-body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
   --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#12151c; --panel:#181c25; --fg:#e6e9f0; --muted:#98a1b3; --line:#2a3040;
-  --accent:#6f95f5; --accent-fg:#0d1220; --accent-soft:#222c46; --stage:#0e1118; --chip:#1f2430; --checker:#2a303d; color-scheme:dark}}
+  --bg:#221a15; --panel:#2a211b; --fg:#f5ead6; --muted:#c2b09a; --line:#4c3c2e;
+  --accent:#ffa862; --accent-fg:#2a1808; --accent-soft:#4a3020; --stage:#1c1511; --chip:#35291f; --checker:#44362a; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#12151c; --panel:#181c25; --fg:#e6e9f0; --muted:#98a1b3; --line:#2a3040;
-  --accent:#6f95f5; --accent-fg:#0d1220; --accent-soft:#222c46; --stage:#0e1118; --chip:#1f2430; --checker:#2a303d; color-scheme:dark}
+  --bg:#221a15; --panel:#2a211b; --fg:#f5ead6; --muted:#c2b09a; --line:#4c3c2e;
+  --accent:#ffa862; --accent-fg:#2a1808; --accent-soft:#4a3020; --stage:#1c1511; --chip:#35291f; --checker:#44362a; color-scheme:dark}
 
 [hidden]{display:none!important}
 html,body{height:100%;margin:0}
@@ -29,6 +30,7 @@ aside{background:var(--panel);border-right:1px solid var(--line);overflow-y:auto
   display:flex;flex-direction:column;gap:20px;min-width:0}
 h1{font-family:var(--f-display);font-weight:400;font-size:28px;line-height:1.1;margin:0;letter-spacing:.04em}
 .lede{color:var(--muted);margin:6px 0 0;font-size:13px}
+.lede a{color:var(--accent);font-weight:700}
 .group{display:flex;flex-direction:column;gap:10px}
 .label{font-size:11px;letter-spacing:.12em;color:var(--muted);font-weight:700}
 .tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px}
@@ -245,7 +247,7 @@ const material = new THREE.MeshLambertMaterial({ color: 0xffffff });
 let mesh = null;
 
 function applyTheme() {
-  const c = getComputedStyle(document.documentElement).getPropertyValue('--stage').trim() || '#d7dce6';
+  const c = getComputedStyle(document.documentElement).getPropertyValue('--stage').trim() || '#eadfc2';
   scene.background = new THREE.Color(c);
 }
 applyTheme();

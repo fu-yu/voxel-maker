@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## 2026-11-11
+- 本体の色合いを説明ページに合わせた (生成りとオレンジ。明るい画面・暗い画面の両方)。`index.html` の色の変数だけを変更
 - GitHub Pages で公開を開始。公開先の URL を `README.md` と説明ページに記載
 - GitHub 公開の準備: `guide.html` (説明ページ) と `tools/build_guide.py`、`README.md` を追加。本体に説明へのリンクを追加 (詳細: sessions/2026-11-11-github-publish.md)
 - `LICENSE` (MIT) を追加
