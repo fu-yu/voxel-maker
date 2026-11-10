@@ -266,7 +266,11 @@ new ResizeObserver(resize).observe(stage);
 
 function fitCamera(size) {
   const r = 0.5 * Math.hypot(size.w, size.h, size.d);
-  const dist = r / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) * 1.08;
+  // 縦長の画面では横の視野のほうが狭いので、狭いほうの角度に合わせて引く
+  const aspect = (stage.clientWidth / stage.clientHeight) || camera.aspect;
+  const vHalf = THREE.MathUtils.degToRad(camera.fov / 2);
+  const half = Math.min(vHalf, Math.atan(Math.tan(vHalf) * aspect));
+  const dist = r / Math.sin(half) * 1.08;
   const dir = new THREE.Vector3(0.45, 0.3, 1).normalize();
   camera.position.copy(dir.multiplyScalar(dist));
   camera.near = dist / 100; camera.far = dist * 10; camera.updateProjectionMatrix();
