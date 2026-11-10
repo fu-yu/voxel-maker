@@ -1,0 +1,895 @@
+<meta charset="utf-8">
+<title>ボクセル工房</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Dela+Gothic+One&family=M+PLUS+Rounded+1c:wght@800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: workbench — control column on the left, 3D stage fills the rest; stage stacks on top on phones */
+:root{
+  --bg:#eceef3; --panel:#f8f9fb; --fg:#1b2130; --muted:#5d6678; --line:#d3d8e2;
+  --accent:#2a5bd7; --accent-fg:#ffffff; --accent-soft:#dfe7fb; --stage:#d7dce6; --chip:#ffffff; --checker:#e3e6ec;
+  --f-display:"DotGothic16","Hiragino Sans",system-ui,sans-serif;
+  --f-body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12151c; --panel:#181c25; --fg:#e6e9f0; --muted:#98a1b3; --line:#2a3040;
+  --accent:#6f95f5; --accent-fg:#0d1220; --accent-soft:#222c46; --stage:#0e1118; --chip:#1f2430; --checker:#2a303d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12151c; --panel:#181c25; --fg:#e6e9f0; --muted:#98a1b3; --line:#2a3040;
+  --accent:#6f95f5; --accent-fg:#0d1220; --accent-soft:#222c46; --stage:#0e1118; --chip:#1f2430; --checker:#2a303d; color-scheme:dark}
+
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.55}
+.app{display:grid;grid-template-columns:minmax(300px,360px) 1fr;height:100%}
+aside{background:var(--panel);border-right:1px solid var(--line);overflow-y:auto;
+  padding-block:22px 28px;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:20px;
+  display:flex;flex-direction:column;gap:20px;min-width:0}
+h1{font-family:var(--f-display);font-weight:400;font-size:28px;line-height:1.1;margin:0;letter-spacing:.04em}
+.lede{color:var(--muted);margin:6px 0 0;font-size:13px}
+.group{display:flex;flex-direction:column;gap:10px}
+.label{font-size:11px;letter-spacing:.12em;color:var(--muted);font-weight:700}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px}
+.tabs button{font:inherit;font-weight:700;border:0;border-radius:7px;padding:9px 0;background:transparent;color:var(--muted);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--chip);color:var(--fg);box-shadow:0 1px 2px rgb(0 0 0/.12)}
+textarea,select,input[type=text]{font:inherit;color:var(--fg);background:var(--chip);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{resize:vertical;min-height:64px;font-size:16px;font-weight:500}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row > label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.field{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center}
+.field input[type=range]{grid-column:1 / -1;width:100%;accent-color:var(--accent)}
+.val{font-family:var(--f-mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+input[type=checkbox]{accent-color:var(--accent);width:16px;height:16px}
+input[type=color]{width:38px;height:30px;padding:0;border:1px solid var(--line);border-radius:6px;background:var(--chip);cursor:pointer}
+.drop{border:1.5px dashed var(--line);border-radius:10px;padding:16px;text-align:center;color:var(--muted);cursor:pointer;display:flex;flex-direction:column;gap:6px;align-items:center}
+.drop.over{border-color:var(--accent);background:var(--accent-soft);color:var(--fg)}
+.drop strong{color:var(--fg)}
+.thumb{image-rendering:pixelated;max-height:72px;border-radius:4px}
+.btn{font:inherit;font-weight:700;border:1px solid var(--line);background:var(--chip);color:var(--fg);border-radius:8px;padding:8px 12px;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.btn:hover{border-color:var(--accent)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.drop:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.shape{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.shape button{font:inherit;font-size:12px;border:1px solid var(--line);background:var(--chip);color:var(--fg);border-radius:8px;padding:8px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+.shape button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+.shape svg{width:34px;height:18px}
+.shape svg *{fill:var(--accent)}
+.note{font-size:12px;color:var(--muted);margin:0}
+.sub{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:10px}
+.strong{font-weight:700}
+.cropWrap{width:100%;min-width:0}
+.crop{display:block;max-width:100%;border-radius:8px;touch-action:none;cursor:crosshair;background:var(--chip)}
+.preview{display:block;max-width:100%;height:auto;image-rendering:pixelated;border:1px solid var(--line);border-radius:8px;cursor:crosshair;
+  background:repeating-conic-gradient(var(--checker) 0 25%,transparent 0 50%) 0 0/14px 14px,var(--chip)}
+.stage{position:relative;min-width:0;min-height:0;background:var(--stage);overflow:hidden}
+.stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.stage canvas:active{cursor:grabbing}
+.hud{position:absolute;display:flex;gap:8px;flex-wrap:wrap;pointer-events:none}
+.hud > *{pointer-events:auto}
+.hud.top{top:12px;right:calc(12px + env(safe-area-inset-right,0px))}
+.hud.bottom{bottom:calc(12px + env(safe-area-inset-bottom,0px));left:12px;right:calc(12px + env(safe-area-inset-right,0px));justify-content:space-between;align-items:flex-end}
+.pill{background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-family:var(--f-mono);font-size:12px;font-variant-numeric:tabular-nums;backdrop-filter:blur(6px)}
+.hint{color:var(--muted);font-size:12px}
+.toast{position:absolute;left:50%;top:14px;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:6px 14px;border-radius:999px;font-size:13px;font-weight:700}
+.empty{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:14px;pointer-events:none}
+@media (max-width:760px){
+  .app{grid-template-columns:1fr;height:auto}
+  .stage{order:-1;height:58vh;min-height:320px}
+  aside{border-right:0;border-top:1px solid var(--line);padding-right:max(18px,env(safe-area-inset-right,0px));overflow:visible}
+  .hint{display:none}
+}
+</style>
+
+<div class="app">
+  <aside>
+    <header>
+      <h1>ボクセル工房</h1>
+      <p class="lede">文字や画像を、積み木のような立方体（ボクセル）の立体にします。 <a href="guide.html">使い方の説明</a></p>
+    </header>
+
+    <div class="tabs" role="tablist" aria-label="入力の種類">
+      <button id="tabText" role="tab" aria-selected="true">文字から</button>
+      <button id="tabImage" role="tab" aria-selected="false">画像から</button>
+    </div>
+
+    <section id="panelText" class="group">
+      <span class="label">文字</span>
+      <textarea id="txt" rows="2" aria-label="ボクセルにする文字">ボクセル</textarea>
+      <select id="font" aria-label="書体">
+        <option value='"Dela Gothic One"|400'>デラゴシック（太い）</option>
+        <option value='"M PLUS Rounded 1c"|800'>丸ゴシック</option>
+        <option value='"DotGothic16"|400'>ドット文字</option>
+        <option value='"Zen Kaku Gothic New"|700'>角ゴシック</option>
+        <option value='sans-serif|700'>端末の標準書体</option>
+      </select>
+      <div class="row">
+        <label><input type="color" id="c1" value="#ff7a45"> 色</label>
+        <label><input type="checkbox" id="grad" checked> グラデーション</label>
+        <input type="color" id="c2" value="#3d6bff" aria-label="グラデーションの終わりの色">
+      </div>
+    </section>
+
+    <section id="panelImage" class="group" hidden>
+      <span class="label">画像</span>
+      <div id="drop" class="drop" tabindex="0" role="button" aria-label="画像を選ぶ">
+        <img id="thumb" class="thumb" alt="" hidden>
+        <strong id="dropTitle">画像を選ぶ・ドロップ・貼り付け</strong>
+        <span id="dropSub" style="font-size:12px">PNG・JPG・GIF。背景が透明な画像がきれいに出ます</span>
+      </div>
+      <input type="file" id="file" accept="image/*" hidden>
+      <div class="row">
+        <button class="btn" id="sampleBtn">見本のドット絵</button>
+      </div>
+
+      <div class="sub">
+        <span class="strong">使う範囲</span>
+        <div class="cropWrap"><canvas id="crop" class="crop" aria-label="元の画像。ドラッグで使う範囲を選ぶ"></canvas></div>
+        <p class="note" id="cropInfo"></p>
+        <div class="row">
+          <button class="btn" id="zoomSel">選んだ範囲を拡大</button>
+          <button class="btn" id="zoomAll">全体を表示</button>
+          <button class="btn" id="cropClear">範囲を解除</button>
+        </div>
+      </div>
+      <div class="sub">
+        <label class="row strong"><input type="checkbox" id="illus"> 写真をイラストにする</label>
+        <div id="illusOpts" class="group">
+          <div class="field">
+            <label for="k">色の数</label><span class="val" id="kOut"></span>
+            <input type="range" id="k" min="3" max="16" step="1" value="8">
+          </div>
+          <div class="field">
+            <label for="smooth">ぬりのなめらかさ</label><span class="val" id="smoothOut"></span>
+            <input type="range" id="smooth" min="0" max="5" step="1" value="2">
+          </div>
+          <div class="field">
+            <label for="sat">あざやかさ</label><span class="val" id="satOut"></span>
+            <input type="range" id="sat" min="80" max="200" step="5" value="135">
+          </div>
+          <div class="field">
+            <label for="lineMode">輪郭線</label>
+            <select id="lineMode" style="width:auto">
+              <option value="0">なし</option>
+              <option value="1" selected>細い</option>
+              <option value="2">太い</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub">
+        <label class="row strong"><input type="checkbox" id="autoBg"> 背景を自動で消す</label>
+        <div class="field">
+          <label for="tol">色の近さの判定</label><span class="val" id="tolOut"></span>
+          <input type="range" id="tol" min="0" max="80" step="2" value="20">
+        </div>
+        <label class="row"><input type="checkbox" id="biggest"> いちばん大きいかたまりだけ残す</label>
+      </div>
+
+      <canvas id="preview" class="preview" width="1" height="1" aria-label="イラストの下絵。クリックでその部分を消す・戻す"></canvas>
+      <p class="note">下絵をクリックすると、その色のかたまりを消したり戻したりできます。格子模様の部分はボクセルになりません。</p>
+      <div class="row">
+        <button class="btn" id="undoOp">1つ戻す</button>
+        <button class="btn" id="clearOps">手直しを全部消す</button>
+        <button class="btn" id="copyPng">下絵をコピー</button>
+      </div>
+    </section>
+
+    <section class="group">
+      <span class="label">形</span>
+      <div class="shape" role="group" aria-label="立体の形">
+        <button data-shape="flat" aria-pressed="false">
+          <svg viewBox="0 0 34 18"><rect x="2" y="6" width="30" height="7"/></svg>板</button>
+        <button data-shape="inflate" aria-pressed="true">
+          <svg viewBox="0 0 34 18"><rect x="2" y="7" width="4" height="4"/><rect x="6" y="4" width="4" height="10"/><rect x="10" y="2" width="14" height="14"/><rect x="24" y="4" width="4" height="10"/><rect x="28" y="7" width="4" height="4"/></svg>ふくらみ</button>
+        <button data-shape="relief" aria-pressed="false">
+          <svg viewBox="0 0 34 18"><rect x="2" y="12" width="6" height="4"/><rect x="8" y="5" width="6" height="11"/><rect x="14" y="9" width="6" height="7"/><rect x="20" y="2" width="6" height="14"/><rect x="26" y="10" width="6" height="6"/></svg>明るさで高さ</button>
+      </div>
+      <div class="field">
+        <label for="res">横のマス数</label><span class="val" id="resOut"></span>
+        <input type="range" id="res" min="8" max="128" step="1">
+      </div>
+      <div class="field">
+        <label for="thick">厚み</label><span class="val" id="thickOut"></span>
+        <input type="range" id="thick" min="1" max="32" step="1" value="9">
+      </div>
+      <label class="row"><input type="checkbox" id="gap" checked> ブロックのすき間を見せる</label>
+    </section>
+
+    <section class="group">
+      <span class="label">書き出し</span>
+      <div class="row">
+        <button class="btn primary" id="copyJson">座標データをコピー</button>
+      </div>
+      <p class="note">各ブロックの位置と色を JSON でコピーします。マイクラの構造データや 3D ツールへの変換に使えます。</p>
+    </section>
+  </aside>
+
+  <main class="stage" id="stage">
+    <div class="empty" id="empty" hidden>形になる部分がありません。文字か画像を確かめてください。</div>
+    <div class="hud top">
+      <button class="btn" id="spin" aria-pressed="true">自動回転</button>
+      <button class="btn" id="resetView">視点を戻す</button>
+    </div>
+    <div class="hud bottom">
+      <span class="pill" id="stat">—</span>
+      <span class="hint">ドラッグで回転・ホイールで拡大・右ドラッグで移動</span>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const state = { mode: 'text', shape: 'inflate', img: null, crop: null, view: null, res: { text: 64, image: 16 }, lastSize: null, grid: null, ops: [], opsVer: 0 };
+
+/* ---------- three.js stage ---------- */
+const stage = $('stage');
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: false });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+stage.prepend(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 5000);
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.autoRotate = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+controls.autoRotateSpeed = 1.2;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8890a0, 0.55));
+const key = new THREE.DirectionalLight(0xffffff, 0.62); key.position.set(2, 3, 4); scene.add(key);
+const rim = new THREE.DirectionalLight(0xffffff, 0.22); rim.position.set(-3, -1, -2); scene.add(rim);
+const material = new THREE.MeshLambertMaterial({ color: 0xffffff });
+let mesh = null;
+
+function applyTheme() {
+  const c = getComputedStyle(document.documentElement).getPropertyValue('--stage').trim() || '#d7dce6';
+  scene.background = new THREE.Color(c);
+}
+applyTheme();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+new MutationObserver(applyTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  if (!w || !h) return;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage);
+(function loop() { controls.update(); renderer.render(scene, camera); requestAnimationFrame(loop); })();
+
+function fitCamera(size) {
+  const r = 0.5 * Math.hypot(size.w, size.h, size.d);
+  const dist = r / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) * 1.08;
+  const dir = new THREE.Vector3(0.45, 0.3, 1).normalize();
+  camera.position.copy(dir.multiplyScalar(dist));
+  camera.near = dist / 100; camera.far = dist * 10; camera.updateProjectionMatrix();
+  controls.target.set(0, 0, 0); controls.update();
+}
+
+/* ---------- 2D grids ---------- */
+function alphaBBox(ctx, w, h) {
+  const d = ctx.getImageData(0, 0, w, h).data;
+  let x0 = w, y0 = h, x1 = -1, y1 = -1;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (d[(y * w + x) * 4 + 3] > 20) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  }
+  return x1 < 0 ? null : { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 };
+}
+function fitDims(N, srcW, srcH) {
+  let w = N, h = Math.max(1, Math.round(N * srcH / srcW));
+  if (h > 160) { h = 160; w = Math.max(1, Math.round(160 * srcW / srcH)); }
+  return { w, h };
+}
+const hexRGB = hex => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
+
+function textGrid(N) {
+  const text = $('txt').value.replace(/\s+$/,'') || '';
+  if (!text.trim()) return null;
+  const [fam, weight] = $('font').value.split('|');
+  const lines = text.split('\n');
+  const fs = 140, c = document.createElement('canvas'), ctx = c.getContext('2d', { willReadFrequently: true });
+  ctx.font = `${weight} ${fs}px ${fam}`;
+  const lw = Math.max(...lines.map(l => ctx.measureText(l).width));
+  c.width = Math.ceil(lw + fs); c.height = Math.ceil(lines.length * fs * 1.3 + fs);
+  ctx.font = `${weight} ${fs}px ${fam}`; ctx.textBaseline = 'top'; ctx.fillStyle = '#000';
+  lines.forEach((l, i) => ctx.fillText(l, fs / 2, fs / 2 + i * fs * 1.3));
+  const bb = alphaBBox(ctx, c.width, c.height);
+  if (!bb) return null;
+  const { w, h } = fitDims(N, bb.w, bb.h);
+  const s = document.createElement('canvas'); s.width = w; s.height = h;
+  const sx = s.getContext('2d', { willReadFrequently: true });
+  sx.imageSmoothingEnabled = true; sx.imageSmoothingQuality = 'high';
+  sx.drawImage(c, bb.x, bb.y, bb.w, bb.h, 0, 0, w, h);
+  const d = sx.getImageData(0, 0, w, h).data;
+  const a = hexRGB($('c1').value), b = $('grad').checked ? hexRGB($('c2').value) : a;
+  const mask = new Uint8Array(w * h), col = new Uint8Array(w * h * 3), lum = new Float32Array(w * h);
+  for (let y = 0; y < h; y++) {
+    const t = h > 1 ? y / (h - 1) : 0;
+    const rgb = a.map((v, k) => Math.round(v + (b[k] - v) * t));
+    for (let x = 0; x < w; x++) {
+      const i = y * w + x;
+      mask[i] = d[i * 4 + 3] >= 110 ? 1 : 0;
+      col.set(rgb, i * 3);
+      lum[i] = 1 - t * 0.6;
+    }
+  }
+  return { w, h, mask, col, lum };
+}
+
+/* ---------- image: photo → illustration → cutout ---------- */
+const WORK = 320;               // longest side of the working picture
+const LINE_RGB = [35, 29, 38];
+const luma = (r, g, b) => 0.299 * r + 0.587 * g + 0.114 * b;
+const cache = {};
+
+/* the selected area is cut from the original-size image, so a small area keeps its full detail */
+function workImage() {
+  const im = state.img, cr = state.crop || { x: 0, y: 0, w: im.naturalWidth, h: im.naturalHeight };
+  const ckey = [cr.x, cr.y, cr.w, cr.h].join(',');
+  if (cache.workFor === im && cache.workCrop === ckey) return cache.work;
+  const s = Math.min(1, WORK / Math.max(cr.w, cr.h));
+  const w = Math.max(1, Math.round(cr.w * s)), h = Math.max(1, Math.round(cr.h * s));
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const x = c.getContext('2d', { willReadFrequently: true });
+  x.imageSmoothingEnabled = s < 1; x.imageSmoothingQuality = 'high';
+  x.drawImage(im, cr.x, cr.y, cr.w, cr.h, 0, 0, w, h);
+  cache.workCrop = ckey;
+  const d = x.getImageData(0, 0, w, h).data, rgb = new Float32Array(w * h * 3), alpha = new Uint8Array(w * h);
+  let hasAlpha = false;
+  for (let i = 0; i < w * h; i++) {
+    rgb[i * 3] = d[i * 4]; rgb[i * 3 + 1] = d[i * 4 + 1]; rgb[i * 3 + 2] = d[i * 4 + 2];
+    alpha[i] = d[i * 4 + 3] >= 128 ? 1 : 0; if (!alpha[i]) hasAlpha = true;
+  }
+  cache.workFor = im; cache.work = { w, h, rgb, alpha, hasAlpha };
+  return cache.work;
+}
+
+/* Kuwahara filter: flattens texture into paint-like areas while keeping edges sharp */
+function kuwahara(src, w, h, r) {
+  if (!r) return src;
+  const W = w + 1, S = [0, 1, 2, 3, 4].map(() => new Float64Array(W * (h + 1)));
+  for (let y = 0; y < h; y++) {
+    let a0 = 0, a1 = 0, a2 = 0, a3 = 0, a4 = 0;
+    for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 3, R = src[i], G = src[i + 1], B = src[i + 2], L = luma(R, G, B);
+      a0 += R; a1 += G; a2 += B; a3 += L; a4 += L * L;
+      const o = (y + 1) * W + x + 1, p = o - W;
+      S[0][o] = S[0][p] + a0; S[1][o] = S[1][p] + a1; S[2][o] = S[2][p] + a2; S[3][o] = S[3][p] + a3; S[4][o] = S[4][p] + a4;
+    }
+  }
+  const box = (c, x0, y0, x1, y1) => S[c][(y1 + 1) * W + x1 + 1] - S[c][y0 * W + x1 + 1] - S[c][(y1 + 1) * W + x0] + S[c][y0 * W + x0];
+  const out = new Float32Array(src.length);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    let best = Infinity, bx0 = 0, by0 = 0, bx1 = 0, by1 = 0;
+    for (let q = 0; q < 4; q++) {
+      const x0 = Math.max(0, q & 1 ? x : x - r), x1 = Math.min(w - 1, q & 1 ? x + r : x);
+      const y0 = Math.max(0, q & 2 ? y : y - r), y1 = Math.min(h - 1, q & 2 ? y + r : y);
+      const n = (x1 - x0 + 1) * (y1 - y0 + 1), m = box(3, x0, y0, x1, y1) / n, v = box(4, x0, y0, x1, y1) / n - m * m;
+      if (v < best) { best = v; bx0 = x0; by0 = y0; bx1 = x1; by1 = y1; }
+    }
+    const n = (bx1 - bx0 + 1) * (by1 - by0 + 1), i = (y * w + x) * 3;
+    out[i] = box(0, bx0, by0, bx1, by1) / n; out[i + 1] = box(1, bx0, by0, bx1, by1) / n; out[i + 2] = box(2, bx0, by0, bx1, by1) / n;
+  }
+  return out;
+}
+
+/* k-means color reduction (k-means++ start, fixed seed so results stay stable) */
+function kmeans(rgb, alpha, k) {
+  const n = alpha.length, lab = new Int16Array(n);
+  const idx = []; for (let i = 0; i < n; i++) if (alpha[i]) idx.push(i);
+  if (!idx.length) return { pal: [[0, 0, 0]], lab };
+  let seed = 7; const rnd = () => (seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+  const step = Math.max(1, Math.floor(idx.length / 8000)), sample = idx.filter((_, j) => j % step === 0);
+  const d2 = (i, c) => { const a = rgb[i * 3] - c[0], b = rgb[i * 3 + 1] - c[1], e = rgb[i * 3 + 2] - c[2]; return a * a + b * b + e * e; };
+  const at = i => [rgb[i * 3], rgb[i * 3 + 1], rgb[i * 3 + 2]];
+  const C = [at(sample[Math.floor(rnd() * sample.length)])], D = new Float32Array(sample.length).fill(Infinity);
+  while (C.length < k) {
+    const last = C[C.length - 1]; let tot = 0;
+    for (let j = 0; j < sample.length; j++) { const d = d2(sample[j], last); if (d < D[j]) D[j] = d; tot += D[j]; }
+    if (tot === 0) break;
+    let t = rnd() * tot, j = 0; while (j < sample.length - 1 && (t -= D[j]) > 0) j++;
+    C.push(at(sample[j]));
+  }
+  const nearest = i => { let b = 0, bd = Infinity; for (let c = 0; c < C.length; c++) { const d = d2(i, C[c]); if (d < bd) { bd = d; b = c; } } return b; };
+  for (let it = 0; it < 10; it++) {
+    const acc = C.map(() => [0, 0, 0, 0]);
+    for (const i of sample) { const a = acc[nearest(i)]; a[0] += rgb[i * 3]; a[1] += rgb[i * 3 + 1]; a[2] += rgb[i * 3 + 2]; a[3]++; }
+    acc.forEach((a, c) => { if (a[3]) C[c] = [a[0] / a[3], a[1] / a[3], a[2] / a[3]]; });
+  }
+  for (const i of idx) lab[i] = nearest(i);
+  return { pal: C.map(c => c.map(Math.round)), lab };
+}
+
+/* 3×3 majority filter removes single-pixel speckles */
+function cleanLabels(lab, alpha, w, h, k) {
+  const out = Int16Array.from(lab), cnt = new Int16Array(k);
+  for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
+    const i = y * w + x; if (!alpha[i]) continue;
+    cnt.fill(0); let best = lab[i], bc = 0;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const j = i + dy * w + dx; if (!alpha[j]) continue;
+      const c = ++cnt[lab[j]]; if (c > bc) { bc = c; best = lab[j]; }
+    }
+    if (bc >= 5) out[i] = best;
+  }
+  return out;
+}
+
+function procImage() {
+  const W = workImage(), on = $('illus').checked;
+  const key = on ? ['i', $('k').value, $('smooth').value, $('sat').value, $('lineMode').value].join('|') : 'raw';
+  if (cache.procFor === W && cache.procKey === key) return cache.proc;
+  const { w, h, alpha } = W, n = w * h, rgb = new Uint8ClampedArray(n * 3);
+  let lab = null, pal = null, lineIdx = -1;
+  if (on) {
+    const f = kuwahara(W.rgb, w, h, +$('smooth').value), s = +$('sat').value / 100;
+    for (let i = 0; i < n; i++) {
+      const g = luma(f[i * 3], f[i * 3 + 1], f[i * 3 + 2]);
+      for (let c = 0; c < 3; c++) f[i * 3 + c] = Math.max(0, Math.min(255, g + (f[i * 3 + c] - g) * s));
+    }
+    const km = kmeans(f, alpha, +$('k').value);
+    pal = km.pal; lab = cleanLabels(km.lab, alpha, w, h, pal.length);
+    const lm = +$('lineMode').value;
+    if (lm) {
+      const L = pal.map(p => luma(...p)), line = new Uint8Array(n);
+      lineIdx = pal.length; pal = [...pal, LINE_RGB];
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+        const i = y * w + x; if (!alpha[i]) continue;
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+          const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+          const j = ny * w + nx;
+          if (!alpha[j]) { line[i] = 1; break; }
+          if (lab[j] !== lab[i] && Math.abs(L[lab[i]] - L[lab[j]]) > 22 && (lm === 2 || L[lab[i]] <= L[lab[j]])) { line[i] = 1; break; }
+        }
+      }
+      for (let i = 0; i < n; i++) if (line[i]) lab[i] = lineIdx;
+    }
+    for (let i = 0; i < n; i++) rgb.set(pal[lab[i]], i * 3);
+  } else rgb.set(W.rgb);
+  cache.proc = { w, h, rgb, alpha, lab, pal, lineIdx };
+  cache.procFor = W; cache.procKey = key;
+  return cache.proc;
+}
+
+/* background: flood from the picture's edges through similar neighbouring colours, then apply clicks */
+function bgMask(P) {
+  const key = [cache.procKey, $('autoBg').checked, $('tol').value, $('biggest').checked, state.opsVer].join('|');
+  if (cache.bgFor === P && cache.bgKey === key) return cache.bg;
+  const { w, h, rgb, alpha } = P, n = w * h, bg = new Uint8Array(n), tol2 = (+$('tol').value) ** 2;
+  for (let i = 0; i < n; i++) if (!alpha[i]) bg[i] = 1;
+  const near = (a, b) => { const r = rgb[a * 3] - rgb[b * 3], g = rgb[a * 3 + 1] - rgb[b * 3 + 1], c = rgb[a * 3 + 2] - rgb[b * 3 + 2]; return r * r + g * g + c * c <= tol2; };
+  const region = seeds => {
+    const seen = new Uint8Array(n), st = [];
+    for (const s of seeds) if (alpha[s] && !seen[s]) { seen[s] = 1; st.push(s); }
+    while (st.length) {
+      const i = st.pop(), x = i % w, y = (i / w) | 0;
+      if (x > 0 && !seen[i - 1] && alpha[i - 1] && near(i, i - 1)) { seen[i - 1] = 1; st.push(i - 1); }
+      if (x < w - 1 && !seen[i + 1] && alpha[i + 1] && near(i, i + 1)) { seen[i + 1] = 1; st.push(i + 1); }
+      if (y > 0 && !seen[i - w] && alpha[i - w] && near(i, i - w)) { seen[i - w] = 1; st.push(i - w); }
+      if (y < h - 1 && !seen[i + w] && alpha[i + w] && near(i, i + w)) { seen[i + w] = 1; st.push(i + w); }
+    }
+    return seen;
+  };
+  if ($('autoBg').checked) {
+    const seeds = [];
+    for (let x = 0; x < w; x++) seeds.push(x, (h - 1) * w + x);
+    for (let y = 0; y < h; y++) seeds.push(y * w, y * w + w - 1);
+    const s = region(seeds); for (let i = 0; i < n; i++) if (s[i]) bg[i] = 1;
+  }
+  for (const op of state.ops) { const s = region([op.i]); for (let i = 0; i < n; i++) if (s[i]) bg[i] = op.keep ? 0 : 1; }
+  if (P.lineIdx >= 0) {            // drop outline pixels left floating in removed background
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const i = y * w + x; if (bg[i] || P.lab[i] !== P.lineIdx) continue;
+      let ok = false;
+      for (let dy = -1; dy <= 1 && !ok; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+        const j = ny * w + nx; if (!bg[j] && P.lab[j] !== P.lineIdx) { ok = true; break; }
+      }
+      if (!ok) bg[i] = 1;
+    }
+  }
+  if ($('biggest').checked) {
+    const comp = new Int32Array(n).fill(-1), sizes = [];
+    for (let s = 0; s < n; s++) {
+      if (bg[s] || comp[s] >= 0) continue;
+      const id = sizes.length, st = [s]; comp[s] = id; let size = 0;
+      while (st.length) {
+        const i = st.pop(), x = i % w; size++;
+        for (const j of [x > 0 ? i - 1 : -1, x < w - 1 ? i + 1 : -1, i - w, i + w]) {
+          if (j >= 0 && j < n && !bg[j] && comp[j] < 0) { comp[j] = id; st.push(j); }
+        }
+      }
+      sizes.push(size);
+    }
+    if (sizes.length > 1) { const keep = sizes.indexOf(Math.max(...sizes)); for (let i = 0; i < n; i++) if (!bg[i] && comp[i] !== keep) bg[i] = 1; }
+  }
+  cache.bg = bg; cache.bgFor = P; cache.bgKey = key;
+  return bg;
+}
+
+function drawPreview(P, bg) {
+  const cv = $('preview');
+  if (cv.width !== P.w || cv.height !== P.h) { cv.width = P.w; cv.height = P.h; }
+  cv.style.width = `min(100%, ${Math.round(300 * P.w / P.h)}px)`;
+  const id = new ImageData(P.w, P.h), w = P.w, h = P.h;
+  for (let i = 0; i < w * h; i++) {
+    const x = i % w, y = (i / w) | 0;
+    const edge = P.lineIdx >= 0 && !bg[i] && (x === 0 || y === 0 || x === w - 1 || y === h - 1 || bg[i - 1] || bg[i + 1] || bg[i - w] || bg[i + w]);
+    const c = edge ? LINE_RGB : [P.rgb[i * 3], P.rgb[i * 3 + 1], P.rgb[i * 3 + 2]];
+    id.data[i * 4] = c[0]; id.data[i * 4 + 1] = c[1]; id.data[i * 4 + 2] = c[2];
+    id.data[i * 4 + 3] = bg[i] ? 0 : 255;
+  }
+  cv.getContext('2d').putImageData(id, 0, 0);
+}
+
+function imageGrid(N) {
+  if (!state.img) return null;
+  const P = procImage(), bg = bgMask(P);
+  drawPreview(P, bg);
+  const { w, h } = fitDims(N, P.w, P.h);
+  const mask = new Uint8Array(w * h), col = new Uint8Array(w * h * 3), lum = new Float32Array(w * h);
+  const cnt = P.lab ? new Int32Array(P.pal.length) : null;
+  for (let cy = 0; cy < h; cy++) {
+    const y0 = Math.floor(cy * P.h / h), y1 = Math.max(y0 + 1, Math.floor((cy + 1) * P.h / h));
+    for (let cx = 0; cx < w; cx++) {
+      const x0 = Math.floor(cx * P.w / w), x1 = Math.max(x0 + 1, Math.floor((cx + 1) * P.w / w));
+      let tot = 0, fg = 0, r = 0, g = 0, b = 0;
+      if (cnt) cnt.fill(0);
+      for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+        const i = y * P.w + x; tot++;
+        if (bg[i]) continue;
+        fg++;
+        if (cnt) cnt[P.lab[i]]++; else { r += P.rgb[i * 3]; g += P.rgb[i * 3 + 1]; b += P.rgb[i * 3 + 2]; }
+      }
+      if (!fg || fg * 2 < tot) continue;
+      let c;
+      if (cnt) {
+        let best = -1, bc = 0;
+        for (let l = 0; l < cnt.length; l++) if (l !== P.lineIdx && cnt[l] > bc) { bc = cnt[l]; best = l; }
+        if (P.lineIdx >= 0 && (best < 0 || cnt[P.lineIdx] >= fg * 0.25)) best = P.lineIdx;
+        c = P.pal[best];
+      } else c = [r / fg, g / fg, b / fg].map(Math.round);
+      const ci = cy * w + cx;
+      mask[ci] = 1; col.set(c, ci * 3); lum[ci] = luma(...c) / 255;
+    }
+  }
+  if (P.lineIdx >= 0) {            // outline the cut-out silhouette one block wide
+    const edge = [];
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const i = y * w + x;
+      if (mask[i] && (x === 0 || y === 0 || x === w - 1 || y === h - 1 || !mask[i - 1] || !mask[i + 1] || !mask[i - w] || !mask[i + w])) edge.push(i);
+    }
+    for (const i of edge) { col.set(LINE_RGB, i * 3); lum[i] = luma(...LINE_RGB) / 255; }
+  }
+  return { w, h, mask, col, lum };
+}
+
+/* ---------- 2D → 3D ---------- */
+function distField(mask, w, h) {
+  const d = new Float32Array(w * h);
+  for (let i = 0; i < d.length; i++) d[i] = mask[i] ? 1e9 : 0;
+  const at = (x, y) => (x < 0 || y < 0 || x >= w || y >= h) ? 0 : d[y * w + x];
+  const D = Math.SQRT2;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const i = y * w + x; if (!mask[i]) continue;
+    d[i] = Math.min(d[i], at(x - 1, y) + 1, at(x, y - 1) + 1, at(x - 1, y - 1) + D, at(x + 1, y - 1) + D);
+  }
+  for (let y = h - 1; y >= 0; y--) for (let x = w - 1; x >= 0; x--) {
+    const i = y * w + x; if (!mask[i]) continue;
+    d[i] = Math.min(d[i], at(x + 1, y) + 1, at(x, y + 1) + 1, at(x + 1, y + 1) + D, at(x - 1, y + 1) + D);
+  }
+  return d;
+}
+
+function columns(g, shape, T) {
+  const n = g.w * g.h, zmin = new Int16Array(n), zmax = new Int16Array(n);
+  if (shape === 'inflate') {
+    const d = distField(g.mask, g.w, g.h);
+    let maxD = 1; for (let i = 0; i < n; i++) if (g.mask[i] && d[i] > maxD) maxD = d[i];
+    const half = (T - 1) / 2;
+    for (let i = 0; i < n; i++) if (g.mask[i]) {
+      const t = Math.min(1, d[i] / maxD), a = Math.round(half * Math.sqrt(1 - (1 - t) ** 2));
+      zmin[i] = -a; zmax[i] = a;
+    }
+  } else if (shape === 'relief') {
+    for (let i = 0; i < n; i++) if (g.mask[i]) { zmin[i] = 0; zmax[i] = Math.round(g.lum[i] * (T - 1)); }
+  } else {
+    for (let i = 0; i < n; i++) if (g.mask[i]) { zmin[i] = 0; zmax[i] = T - 1; }
+  }
+  return { zmin, zmax };
+}
+
+function voxelize(g, shape, T) {
+  const { zmin, zmax } = columns(g, shape, T);
+  const { w, h, mask } = g;
+  const filled = (x, y, z) => { if (x < 0 || y < 0 || x >= w || y >= h) return false; const i = y * w + x; return mask[i] && z >= zmin[i] && z <= zmax[i]; };
+  let lo = Infinity, hi = -Infinity, total = 0;
+  const vis = [];
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const i = y * w + x; if (!mask[i]) continue;
+    lo = Math.min(lo, zmin[i]); hi = Math.max(hi, zmax[i]);
+    for (let z = zmin[i]; z <= zmax[i]; z++) {
+      total++;
+      const inner = z > zmin[i] && z < zmax[i] && filled(x - 1, y, z) && filled(x + 1, y, z) && filled(x, y - 1, z) && filled(x, y + 1, z);
+      if (!inner) vis.push(x, y, z, i);
+    }
+  }
+  return { vis, total, zmin, zmax, lo, hi };
+}
+
+function buildMesh(g, v) {
+  if (mesh) { scene.remove(mesh); mesh.geometry.dispose(); mesh.dispose?.(); mesh = null; }
+  const count = v.vis.length / 4;
+  $('empty').hidden = count > 0;
+  if (!count) { $('stat').textContent = '0 ブロック'; return; }
+  const s = $('gap').checked ? 0.9 : 1;
+  mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(s, s, s), material, count);
+  const m = new THREE.Matrix4(), c = new THREE.Color();
+  const cx = (g.w - 1) / 2, cy = (g.h - 1) / 2, cz = (v.lo + v.hi) / 2;
+  for (let k = 0; k < count; k++) {
+    const x = v.vis[k * 4], y = v.vis[k * 4 + 1], z = v.vis[k * 4 + 2], i = v.vis[k * 4 + 3];
+    m.makeTranslation(x - cx, cy - y, z - cz);
+    mesh.setMatrixAt(k, m);
+    c.setRGB(g.col[i * 3] / 255, g.col[i * 3 + 1] / 255, g.col[i * 3 + 2] / 255);
+    mesh.setColorAt(k, c);
+  }
+  mesh.instanceMatrix.needsUpdate = true;
+  scene.add(mesh);
+  const depth = v.hi - v.lo + 1;
+  $('stat').textContent = `${g.w}×${g.h}×${depth} ・ ${v.total.toLocaleString()} ブロック`;
+  const size = { w: g.w, h: g.h, d: depth };
+  const prev = state.lastSize;
+  if (!prev || Math.abs(Math.hypot(size.w, size.h, size.d) / Math.hypot(prev.w, prev.h, prev.d) - 1) > 0.2) fitCamera(size);
+  state.lastSize = size;
+}
+
+/* ---------- rebuild ---------- */
+let timer, token = 0;
+function schedule() { clearTimeout(timer); timer = setTimeout(rebuild, 40); }
+async function rebuild() {
+  const my = ++token;
+  const N = +$('res').value, T = +$('thick').value;
+  if (state.mode === 'text') {
+    const [fam, weight] = $('font').value.split('|');
+    try { await document.fonts.load(`${weight} 140px ${fam}`, $('txt').value || 'A'); } catch (e) {}
+    if (my !== token) return;
+  }
+  const g = state.mode === 'text' ? textGrid(N) : imageGrid(N);
+  if (!g) { state.grid = null; buildMesh({ w: 1, h: 1, col: [] }, { vis: [], total: 0 }); return; }
+  const v = voxelize(g, state.shape, T);
+  state.grid = { g, v };
+  buildMesh(g, v);
+}
+
+/* ---------- UI wiring ---------- */
+function syncOutputs() {
+  $('resOut').textContent = $('res').value + ' マス'; $('thickOut').textContent = $('thick').value + ' マス';
+  $('kOut').textContent = $('k').value + ' 色'; $('smoothOut').textContent = ['なし', '弱', 'やや弱', '中', 'やや強', '強'][$('smooth').value];
+  $('satOut').textContent = $('sat').value + '%'; $('tolOut').textContent = $('tol').value;
+  $('illusOpts').hidden = !$('illus').checked;
+}
+function setMode(mode) {
+  state.res[state.mode] = +$('res').value;
+  state.mode = mode;
+  $('tabText').setAttribute('aria-selected', mode === 'text');
+  $('tabImage').setAttribute('aria-selected', mode === 'image');
+  $('panelText').hidden = mode !== 'text';
+  $('panelImage').hidden = mode !== 'image';
+  $('res').value = state.res[mode]; syncOutputs();
+  state.lastSize = null; schedule(); drawCrop();
+}
+$('tabText').onclick = () => setMode('text');
+$('tabImage').onclick = () => setMode('image');
+document.querySelectorAll('.shape button').forEach(b => b.onclick = () => {
+  state.shape = b.dataset.shape;
+  document.querySelectorAll('.shape button').forEach(o => o.setAttribute('aria-pressed', o === b));
+  state.lastSize = null; schedule();
+});
+['txt', 'font', 'c1', 'c2', 'grad', 'gap', 'lineMode', 'autoBg', 'biggest'].forEach(id => $(id).addEventListener('input', schedule));
+['res', 'thick', 'k', 'smooth', 'sat', 'tol', 'illus'].forEach(id => $(id).addEventListener('input', () => { syncOutputs(); schedule(); }));
+$('preview').addEventListener('click', e => {
+  const P = cache.proc, bg = cache.bg; if (!P || !bg) return;
+  const r = e.currentTarget.getBoundingClientRect();
+  const x = Math.floor((e.clientX - r.left) / r.width * P.w), y = Math.floor((e.clientY - r.top) / r.height * P.h);
+  const i = Math.min(P.h - 1, Math.max(0, y)) * P.w + Math.min(P.w - 1, Math.max(0, x));
+  if (!P.alpha[i]) return;
+  state.ops.push({ i, keep: !!bg[i] }); state.opsVer++; schedule();
+});
+$('undoOp').onclick = () => { if (state.ops.length) { state.ops.pop(); state.opsVer++; schedule(); } };
+$('clearOps').onclick = () => { state.ops = []; state.opsVer++; schedule(); };
+$('copyPng').onclick = () => {
+  if (typeof ClipboardItem === 'undefined') return toast('このブラウザでは画像をコピーできません');
+  const src = $('preview'), s = 3, c = document.createElement('canvas');
+  c.width = src.width * s; c.height = src.height * s;
+  const x = c.getContext('2d'); x.imageSmoothingEnabled = false; x.drawImage(src, 0, 0, c.width, c.height);
+  const blob = new Promise(res => c.toBlob(res, 'image/png'));
+  navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
+    .then(() => toast('下絵を画像としてコピーしました')).catch(() => toast('コピーできませんでした。ブラウザの許可を確かめてください'));
+};
+$('spin').onclick = () => { controls.autoRotate = !controls.autoRotate; $('spin').setAttribute('aria-pressed', controls.autoRotate); };
+$('spin').setAttribute('aria-pressed', controls.autoRotate);
+$('resetView').onclick = () => { if (state.lastSize) fitCamera(state.lastSize); };
+
+/* ---------- area selection on the original image ---------- */
+const cropCv = $('crop');
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+function drawCrop() {
+  const im = state.img, v = state.view;
+  if (!im || !v || $('panelImage').hidden) return;
+  const box = cropCv.parentElement.clientWidth; if (!box) return;
+  let cw = box, ch = cw * v.h / v.w;
+  if (ch > 320) { ch = 320; cw = ch * v.w / v.h; }
+  const dpr = Math.min(devicePixelRatio || 1, 2), W = Math.round(cw * dpr), H = Math.round(ch * dpr);
+  cropCv.style.width = cw + 'px'; cropCv.style.height = ch + 'px';
+  if (cropCv.width !== W || cropCv.height !== H) { cropCv.width = W; cropCv.height = H; }
+  const x = cropCv.getContext('2d'), s = W / v.w;
+  x.clearRect(0, 0, W, H);
+  x.imageSmoothingEnabled = s < 2;
+  x.drawImage(im, v.x, v.y, v.w, v.h, 0, 0, W, H);
+  const c = state.crop;
+  if (c) {
+    const rx = (c.x - v.x) * s, ry = (c.y - v.y) * s, rw = c.w * s, rh = c.h * s;
+    x.fillStyle = 'rgba(8,10,16,.55)';
+    x.beginPath(); x.rect(0, 0, W, H); x.rect(rx, ry, rw, rh); x.fill('evenodd');
+    x.lineWidth = 2 * dpr; x.strokeStyle = '#ffffff'; x.strokeRect(rx, ry, rw, rh);
+    const hs = 9 * dpr; x.fillStyle = '#ffffff';
+    for (const [hx, hy] of [[rx, ry], [rx + rw, ry], [rx, ry + rh], [rx + rw, ry + rh]]) x.fillRect(hx - hs / 2, hy - hs / 2, hs, hs);
+  }
+  const nw = im.naturalWidth, nh = im.naturalHeight, zoom = Math.round(nw / v.w * 100);
+  $('cropInfo').textContent = c
+    ? `選んだ範囲：${c.w}×${c.h} px（元の画像 ${nw}×${nh} px）・表示 ${zoom}%`
+    : `ドラッグで範囲を選ぶと、その部分だけを細かくボクセルにします。ホイールで拡大できます。`;
+}
+function toImg(e) {
+  const r = cropCv.getBoundingClientRect(), v = state.view;
+  return { x: v.x + (e.clientX - r.left) / r.width * v.w, y: v.y + (e.clientY - r.top) / r.height * v.h, unit: v.w / r.width };
+}
+function cropChanged() { state.ops = []; state.opsVer++; state.lastSize = null; schedule(); }
+let drag = null;
+cropCv.addEventListener('pointerdown', e => {
+  if (!state.img) return;
+  try { cropCv.setPointerCapture(e.pointerId); } catch (err) {}
+  const p = toImg(e), c = state.crop, tol = 14 * p.unit;
+  drag = null;
+  if (c) {
+    const corners = [[c.x, c.y], [c.x + c.w, c.y], [c.x, c.y + c.h], [c.x + c.w, c.y + c.h]];
+    const k = corners.findIndex(([cx, cy]) => Math.abs(p.x - cx) < tol && Math.abs(p.y - cy) < tol);
+    if (k >= 0) drag = { mode: 'resize', ax: corners[3 - k][0], ay: corners[3 - k][1] };
+    else if (p.x > c.x && p.x < c.x + c.w && p.y > c.y && p.y < c.y + c.h) drag = { mode: 'move', ox: p.x - c.x, oy: p.y - c.y };
+  }
+  if (!drag) drag = { mode: 'new', ax: p.x, ay: p.y };
+  drag.moved = false;
+});
+cropCv.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const im = state.img, nw = im.naturalWidth, nh = im.naturalHeight, p = toImg(e);
+  const px = clamp(p.x, 0, nw), py = clamp(p.y, 0, nh);
+  if (drag.mode === 'move') {
+    const c = state.crop;
+    c.x = Math.round(clamp(px - drag.ox, 0, nw - c.w)); c.y = Math.round(clamp(py - drag.oy, 0, nh - c.h));
+  } else {
+    const x0 = Math.round(Math.min(drag.ax, px)), y0 = Math.round(Math.min(drag.ay, py));
+    const x1 = Math.round(Math.max(drag.ax, px)), y1 = Math.round(Math.max(drag.ay, py));
+    state.crop = { x: x0, y: y0, w: Math.max(1, x1 - x0), h: Math.max(1, y1 - y0) };
+  }
+  drag.moved = true;
+  drawCrop();
+});
+const endDrag = () => {
+  if (!drag) return;
+  const c = state.crop;
+  if (drag.mode === 'new' && (!drag.moved || !c || c.w < 4 || c.h < 4)) state.crop = null;   // a plain click clears the selection
+  if (drag.moved || drag.mode === 'new') cropChanged();
+  drag = null; drawCrop();
+};
+cropCv.addEventListener('pointerup', endDrag);
+cropCv.addEventListener('pointercancel', endDrag);
+cropCv.addEventListener('wheel', e => {
+  if (!state.img) return;
+  e.preventDefault();
+  const im = state.img, nw = im.naturalWidth, nh = im.naturalHeight, v = state.view, p = toImg(e);
+  const f = Math.exp(e.deltaY * 0.0015);
+  const w = clamp(v.w * f, Math.min(nw, 12), nw), h = clamp(v.h * f, Math.min(nh, 12), nh);
+  state.view = { w, h, x: clamp(p.x - (p.x - v.x) * w / v.w, 0, nw - w), y: clamp(p.y - (p.y - v.y) * h / v.h, 0, nh - h) };
+  drawCrop();
+}, { passive: false });
+$('zoomSel').onclick = () => {
+  const c = state.crop, im = state.img; if (!c || !im) return toast('先に写真の上をドラッグして範囲を選んでください');
+  const nw = im.naturalWidth, nh = im.naturalHeight, m = 0.15;
+  const w = Math.min(nw, c.w * (1 + 2 * m)), h = Math.min(nh, c.h * (1 + 2 * m));
+  state.view = { w, h, x: clamp(c.x + c.w / 2 - w / 2, 0, nw - w), y: clamp(c.y + c.h / 2 - h / 2, 0, nh - h) };
+  drawCrop();
+};
+$('zoomAll').onclick = () => { const im = state.img; if (!im) return; state.view = { x: 0, y: 0, w: im.naturalWidth, h: im.naturalHeight }; drawCrop(); };
+$('cropClear').onclick = () => { if (!state.crop) return; state.crop = null; cropChanged(); drawCrop(); };
+new ResizeObserver(drawCrop).observe(cropCv.parentElement);
+
+function loadImage(src, name, pixelArt) {
+  const im = new Image();
+  im.onload = () => {
+    state.img = im; state.ops = []; state.opsVer++;
+    state.crop = null; state.view = { x: 0, y: 0, w: im.naturalWidth, h: im.naturalHeight };
+    $('dropTitle').textContent = name;
+    $('dropSub').textContent = `${im.naturalWidth}×${im.naturalHeight} px ・ クリックで別の画像`;
+    const small = pixelArt || Math.max(im.naturalWidth, im.naturalHeight) <= 128;
+    const W = workImage();
+    $('illus').checked = !small;
+    $('autoBg').checked = !small && !W.hasAlpha;
+    $('biggest').checked = !small;
+    const n = small ? Math.max(8, Math.min(128, im.naturalWidth)) : 64;
+    state.res.image = n; syncOutputs();
+    if (state.mode !== 'image') setMode('image'); else { $('res').value = n; syncOutputs(); state.lastSize = null; schedule(); }
+  };
+  im.onerror = () => { $('dropTitle').textContent = 'この画像は読み込めませんでした'; $('dropSub').textContent = 'PNG・JPG・GIF・WebP を試してください'; };
+  im.src = src;
+}
+function loadFile(f) { if (f && f.type.startsWith('image/')) loadImage(URL.createObjectURL(f), f.name); }
+$('drop').onclick = () => $('file').click();
+$('drop').onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('file').click(); } };
+$('file').onchange = e => loadFile(e.target.files[0]);
+['dragenter', 'dragover'].forEach(t => document.addEventListener(t, e => { e.preventDefault(); $('drop').classList.add('over'); }));
+['dragleave', 'drop'].forEach(t => document.addEventListener(t, e => { e.preventDefault(); if (t === 'drop' || !e.relatedTarget) $('drop').classList.remove('over'); }));
+document.addEventListener('drop', e => loadFile(e.dataTransfer.files[0]));
+document.addEventListener('paste', e => {
+  const item = [...(e.clipboardData?.items || [])].find(i => i.type.startsWith('image/'));
+  if (item) { e.preventDefault(); loadFile(item.getAsFile()); }
+});
+
+/* sample pixel art: a mushroom, 16×16 */
+function sampleImage() {
+  const art = [
+    '................',
+    '.....KKKKKK.....',
+    '...KKRRRRWWKK...',
+    '..KRRRRRWWWWRK..',
+    '.KWWRRRRWWWWRRK.',
+    '.KWWWRRRRWWRRRK.',
+    'KRWWWRRRRRRRRRRK',
+    'KRRRRRRWWWRRRRRK',
+    'KRRRRRWWWWWRWWRK',
+    '.KRRRRWWWWWRWWK.',
+    '..KKKSSSSSSKKK..',
+    '...KSSKSSKSSK...',
+    '...KSSKSSKSSK...',
+    '...KSSSSSSSSK...',
+    '....KKKKKKKK....',
+    '................'];
+  const pal = { K: '#2b1d24', R: '#e2393f', W: '#fff4e2', S: '#f3cf9f' };
+  const c = document.createElement('canvas'); c.width = c.height = 16;
+  const x = c.getContext('2d');
+  art.forEach((row, y) => row.padEnd(16, '.').slice(0, 16).split('').forEach((ch, i) => { if (pal[ch]) { x.fillStyle = pal[ch]; x.fillRect(i, y, 1, 1); } }));
+  return c.toDataURL();
+}
+$('sampleBtn').onclick = () => loadImage(sampleImage(), '見本：キノコ（16×16）', true);
+
+/* export */
+let toastT;
+function toast(msg) {
+  let el = document.querySelector('.toast');
+  if (!el) { el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role', 'status'); stage.appendChild(el); }
+  el.textContent = msg; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => el.hidden = true, 2200);
+}
+$('copyJson').onclick = () => {
+  if (!state.grid) return toast('コピーするブロックがありません');
+  const { g, v } = state.grid, out = [];
+  const hex = i => '#' + [0, 1, 2].map(k => g.col[i * 3 + k].toString(16).padStart(2, '0')).join('');
+  for (let y = 0; y < g.h; y++) for (let x = 0; x < g.w; x++) {
+    const i = y * g.w + x; if (!g.mask[i]) continue;
+    for (let z = v.zmin[i]; z <= v.zmax[i]; z++) out.push([x, g.h - 1 - y, z - v.lo, hex(i)]);
+  }
+  const json = JSON.stringify({ size: [g.w, g.h, v.hi - v.lo + 1], format: '[x, y(上向き), z, 色]', voxels: out });
+  navigator.clipboard.writeText(json).then(() => toast(`${out.length.toLocaleString()} ブロック分をコピーしました`))
+    .catch(() => toast('コピーできませんでした。ブラウザの許可を確かめてください'));
+};
+
+/* start */
+state.img = null;
+const sample = sampleImage();
+const pre = new Image(); pre.onload = () => { state.img = pre; state.view = { x: 0, y: 0, w: 16, h: 16 }; drawCrop(); $('dropTitle').textContent = '見本：キノコ（16×16）'; $('dropSub').textContent = 'クリックで自分の画像を選ぶ'; }; pre.src = sample;
+$('res').value = state.res.text; syncOutputs(); resize(); schedule();
+})();
+</script>
