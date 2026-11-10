@@ -23,6 +23,7 @@ python3 -m http.server 8766
 | `guide.html` | 使い方の説明ページ。`tools/build_guide.py` が `docs/public/index.html` から作る |
 | `docs/public/` | 説明ページの元原稿と挿絵 |
 | `tools/build_guide.py` | 説明ページを単体で開ける形に組み立てる |
+| `.github/workflows/deploy.yml` | `main` に送るたびに、公開に必要なファイルだけを `gh-pages` ブランチに置く |
 
 ## 挿絵について
 
