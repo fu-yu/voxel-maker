@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## 2026-11-11
+- GitHub Pages で公開を開始。公開先の URL を `README.md` と説明ページに記載
 - GitHub 公開の準備: `guide.html` (説明ページ) と `tools/build_guide.py`、`README.md` を追加。本体に説明へのリンクを追加 (詳細: sessions/2026-11-11-github-publish.md)
 - `LICENSE` (MIT) を追加
 - ブランチの決まりを決めた: `main` は公開してよい状態、作業は `work/<名前>` ブランチ、`main` → `gh-pages` は自動 (`.github/workflows/deploy.yml`)

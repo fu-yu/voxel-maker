@@ -4,7 +4,9 @@
 
 ![小さな立方体のブロックを積んで作った、オレンジ色のきのこの立体](docs/public/images/cover.jpg)
 
-- 使い方の説明: [guide.html](guide.html) (元原稿は [docs/public/index.md](docs/public/index.md))
+- 開く: https://fu-yu.github.io/voxel-maker/
+- 使い方の説明: https://fu-yu.github.io/voxel-maker/guide.html
+- 説明のファイル: [guide.html](guide.html) (元原稿は [docs/public/index.md](docs/public/index.md))
 - 本体: [index.html](index.html) の 1 ファイルだけです。組み立ての作業はいりません。
 
 ## 手元で動かす

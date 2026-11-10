@@ -39,12 +39,17 @@
 - 4 つの形 (常設の `dev` / 作業ごとの短いブランチ / タグで公開 / 手動) を比べ、ユーザーが「作業ごとの短いブランチ」を選んだ。
 - これに合わせて `.github/workflows/deploy.yml` を戻し、手動用の `tools/publish_pages.sh` は消した。この変更自体を、最初の作業ブランチ `work/pages-auto-publish` で行った。
 
+## 追記: 公開された
+- ユーザーが Settings → Pages で公開元を `gh-pages` ブランチのルートにした。
+- 確認済み: https://fu-yu.github.io/voxel-maker/ で本体が動く (文字の立体が出る、コンソールエラーなし)。`guide.html` は 375px 幅で横スクロールなし、画像 2 枚と書体が読み込まれる。
+- 作業ブランチ `work/public-url` で、公開先の URL を `README.md`・説明ページ・`PUBLISHED.md` に書いた。
+- 失敗の記録: 作業ブランチの取り込みで `git merge -F -` を使ったら失敗し (merge は標準入力からメッセージを読めない)、続けて書いていたブランチ削除が先に走った。コミットは残っていたのでハッシュから取り込み直した。取り込みと削除は別々のコマンドにし、メッセージは `-m` で渡す。
+
 ## 試してうまくいかなかったこと
 - 頼まれていない自動化 (GitHub Actions) を入れて、取り消すことになった。公開のやり方は先に確認する。
 - `gh` コマンドは入っていない。コマンドからリポジトリを作れない。
 - アプリ内のブラウザは GitHub にサインインしていない。リポジトリの作成と Pages の設定はユーザーの操作が要る。
 
 ## 残っている課題・次にやること
-- GitHub に空のリポジトリを作ってもらい、`git remote add origin` と `git push -u origin main` をする。
-- Settings → Pages で `main` ブランチのルートを公開元にする。
-- 公開後の URL を `docs/public/index.md` と `docs/public/PUBLISHED.md` に書き、表示を確かめる。
+- 範囲の選択と「下絵をコピー」の動作確認。
+- 説明ページを直したら、Artifact も同じ内容で更新する (`docs/public/PUBLISHED.md` の URL)。
