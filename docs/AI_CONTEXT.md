@@ -12,7 +12,7 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 | 本体 `index.html` | 動作確認済み (2026-11-10、ローカルの静的サーバーで。文字、見本のドット絵、3 つの形、写真のイラスト化、背景を消す、下絵クリック、マス数・厚み、座標データのコピー) |
 | 範囲の選択、「下絵をコピー」 | **未確認** (コードを読んだだけ) |
 | 説明ページ `guide.html` | ローカルで表示確認済み (2026-11-11) |
-| GitHub への公開 | 手元のコミットまで済み。GitHub 側のリポジトリ作成と Pages の設定は **未完了** |
+| GitHub への公開 | `main` と `gh-pages` を送信済み。Pages の公開元の設定 (ユーザーの操作) は **未完了** |
 
 ## 構成
 - `index.html` — 本体
@@ -21,11 +21,12 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 - `docs/public/index.html` — 説明ページの本文 (Artifact 用。`<!doctype>` や `<head>` を持たない形)
 - `docs/public/images/` — 挿絵 (AI が作った絵)
 - `tools/build_guide.py` — `docs/public/index.html` から `guide.html` を作る
-- `.github/workflows/deploy.yml` — `main` への push で `index.html`, `guide.html`, `LICENSE`, `docs/public/images/` だけを `gh-pages` ブランチに強制 push する (`gh-pages` は毎回 1 コミットに作り直される。手で触らない)
+- `tools/publish_pages.sh` — `index.html`, `guide.html`, `LICENSE`, `docs/public/images/` だけを `gh-pages` ブランチに強制 push する。**手で実行したときだけ動く** (`gh-pages` は毎回 1 コミットに作り直される)
 
 ## 注意
 - 説明を直すときは `docs/public/index.md` と `docs/public/index.html` の両方を直し、`python3 tools/build_guide.py` で `guide.html` を作り直す。
 - `docs/public/index.html` は Artifact として公開するための形なので、`<!doctype>`・`<html>`・`<head>`・`<body>` を書かない。
+- 公開の自動化 (GitHub Actions など、勝手にブランチを作る・更新する仕組み) は入れない。ユーザーが 2026-11-11 に望まないと言った。`gh-pages` の更新は、頼まれたときに `bash tools/publish_pages.sh` で行う。
 - このリポジトリは公開。秘密情報、個人名、メールアドレス、ローカルのファイルパスを書かない。
 - コミットのメールアドレスは GitHub の noreply アドレスを使う (リポジトリごとの設定に入れてある)。
 
