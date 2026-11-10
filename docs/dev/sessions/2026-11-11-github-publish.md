@@ -26,6 +26,7 @@
 ## 会話の中で決まったこと
 - 公開するのは voxel-maker だけ。Gemini との協調の道具 (別フォルダ) は出さない。
 - 挿絵の絵柄はフラットイラストで確定 (2026-11-10)。
+- ライセンスは MIT、著作権の表示の名前は GitHub のアカウント名にする (ユーザーが選んだ)。`LICENSE` を追加し、`README.md` に節を足した。
 
 ## 試してうまくいかなかったこと
 - `gh` コマンドは入っていない。コマンドからリポジトリを作れない。
@@ -35,4 +36,3 @@
 - GitHub に空のリポジトリを作ってもらい、`git remote add origin` と `git push -u origin main` をする。
 - Settings → Pages で `main` ブランチのルートを公開元にする。
 - 公開後の URL を `docs/public/index.md` と `docs/public/PUBLISHED.md` に書き、表示を確かめる。
-- ライセンスは未定 (ユーザーが決める)。
