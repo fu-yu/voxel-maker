@@ -848,24 +848,25 @@ document.addEventListener('paste', e => {
 
 /* sample pixel art: a mushroom, 16×16 */
 function sampleImage() {
+  // 説明ページの表紙の挿絵 (オレンジのきのこ) をもとにした、オリジナルのドット絵
   const art = [
     '................',
-    '.....KKKKKK.....',
-    '...KKRRRRWWKK...',
-    '..KRRRRRWWWWRK..',
-    '.KWWRRRRWWWWRRK.',
-    '.KWWWRRRRWWRRRK.',
-    'KRWWWRRRRRRRRRRK',
-    'KRRRRRRWWWRRRRRK',
-    'KRRRRRWWWWWRWWRK',
-    '.KRRRRWWWWWRWWK.',
-    '..KKKSSSSSSKKK..',
-    '...KSSKSSKSSK...',
-    '...KSSKSSKSSK...',
-    '...KSSSSSSSSK...',
-    '....KKKKKKKK....',
+    '.....DDDDDD.....',
+    '...DDLLLOOODD...',
+    '..DLLLOOOOOOOD..',
+    '.DLLOOOOOOOOOOD.',
+    '.DLOOOOOOOOOOOD.',
+    'DLOOOOOOOOOOOOOD',
+    'DOOOOOOOOOOOOOOD',
+    'DOOOOOOOOOOOOOOD',
+    '.DDDDDDDDDDDDDD.',
+    '.....TSSSST.....',
+    '.....TSSSST.....',
+    '.....TSSSST.....',
+    '.....TSSSST.....',
+    '.....TTTTTT.....',
     '................'];
-  const pal = { K: '#2b1d24', R: '#e2393f', W: '#fff4e2', S: '#f3cf9f' };
+  const pal = { D: '#c96a22', O: '#f08a3c', L: '#f8bd7a', S: '#f3e6c4', T: '#d9c79a' };
   const c = document.createElement('canvas'); c.width = c.height = 16;
   const x = c.getContext('2d');
   art.forEach((row, y) => row.padEnd(16, '.').slice(0, 16).split('').forEach((ch, i) => { if (pal[ch]) { x.fillStyle = pal[ch]; x.fillRect(i, y, 1, 1); } }));
