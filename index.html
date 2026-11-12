@@ -34,10 +34,10 @@ h1{font-family:var(--f-display);font-weight:400;font-size:28px;line-height:1.1;m
 .lede a{color:var(--accent);font-weight:700}
 .group{display:flex;flex-direction:column;gap:10px}
 .label{font-size:11px;letter-spacing:.12em;color:var(--muted);font-weight:700}
-.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px}
 .tabs button{font:inherit;font-weight:700;border:0;border-radius:7px;padding:9px 0;background:transparent;color:var(--muted);cursor:pointer}
 .tabs button[aria-selected="true"]{background:var(--chip);color:var(--fg);box-shadow:0 1px 2px rgb(0 0 0/.12)}
-textarea,select,input[type=text]{font:inherit;color:var(--fg);background:var(--chip);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea,select,input[type=text],input[type=number]{font:inherit;color:var(--fg);background:var(--chip);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;box-sizing:border-box}
 textarea{resize:vertical;min-height:64px;font-size:16px;font-weight:500}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .row > label{display:flex;gap:6px;align-items:center;cursor:pointer}
@@ -89,12 +89,13 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
   <aside>
     <header>
       <h1>ボクセル工房</h1>
-      <p class="lede">文字や画像を、積み木のような立方体（ボクセル）の立体にします。 <a href="guide.html">使い方の説明</a></p>
+      <p class="lede">文字や画像を、積み木のような立方体（ボクセル）の立体にします。風景を作ることもできます。 <a href="guide.html">使い方の説明</a></p>
     </header>
 
     <div class="tabs" role="tablist" aria-label="入力の種類">
       <button id="tabText" role="tab" aria-selected="true">文字から</button>
       <button id="tabImage" role="tab" aria-selected="false">画像から</button>
+      <button id="tabScene" role="tab" aria-selected="false">風景を作る</button>
     </div>
 
     <section id="panelText" class="group">
@@ -182,9 +183,43 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
       </div>
     </section>
 
+    <section id="panelScene" class="group" hidden>
+      <span class="label">風景</span>
+      <select id="terrain" aria-label="地形の種類">
+        <option value="lake">山と湖</option>
+        <option value="island">島</option>
+        <option value="hills">なだらかな丘</option>
+      </select>
+      <div class="row">
+        <button class="btn" id="reroll">別の風景にする</button>
+        <label>風景の番号 <input type="number" id="seed" min="1" max="9999" step="1" value="12" style="width:5.5em"></label>
+      </div>
+      <p class="note">番号ごとに違う風景ができます。同じ番号なら、いつでも同じ風景になります。</p>
+      <div class="field">
+        <label for="peak">山の高さ</label><span class="val" id="peakOut"></span>
+        <input type="range" id="peak" min="4" max="40" step="1" value="16">
+      </div>
+      <div class="field">
+        <label for="water">水の量</label><span class="val" id="waterOut"></span>
+        <input type="range" id="water" min="0" max="60" step="5" value="25">
+      </div>
+      <div class="field">
+        <label for="trees">木の量</label><span class="val" id="treesOut"></span>
+        <input type="range" id="trees" min="0" max="100" step="5" value="40">
+      </div>
+      <div class="field">
+        <label for="season">季節</label>
+        <select id="season" style="width:auto">
+          <option value="summer">夏</option>
+          <option value="autumn">秋</option>
+          <option value="winter">冬</option>
+        </select>
+      </div>
+    </section>
+
     <section class="group">
       <span class="label">形</span>
-      <div class="shape" role="group" aria-label="立体の形">
+      <div class="shape" id="shapeBtns" role="group" aria-label="立体の形">
         <button data-shape="flat" aria-pressed="false">
           <svg viewBox="0 0 34 18"><rect x="2" y="6" width="30" height="7"/></svg>板</button>
         <button data-shape="inflate" aria-pressed="true">
@@ -196,7 +231,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
         <label for="res">横のマス数</label><span class="val" id="resOut"></span>
         <input type="range" id="res" min="8" max="128" step="1">
       </div>
-      <div class="field">
+      <div class="field" id="thickField">
         <label for="thick">厚み</label><span class="val" id="thickOut"></span>
         <input type="range" id="thick" min="1" max="32" step="1" value="9">
       </div>
@@ -230,7 +265,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 <script>
 (() => {
 const $ = id => document.getElementById(id);
-const state = { mode: 'text', shape: 'inflate', img: null, crop: null, view: null, res: { text: 64, image: 16 }, lastSize: null, grid: null, ops: [], opsVer: 0 };
+const state = { mode: 'text', shape: 'inflate', img: null, crop: null, view: null, res: { text: 64, image: 16, scene: 48 }, lastSize: null, grid: null, ops: [], opsVer: 0 };
 
 /* ---------- three.js stage ---------- */
 const stage = $('stage');
@@ -273,7 +308,8 @@ function fitCamera(size) {
   const vHalf = THREE.MathUtils.degToRad(camera.fov / 2);
   const half = Math.min(vHalf, Math.atan(Math.tan(vHalf) * aspect));
   const dist = r / Math.sin(half) * 1.08;
-  const dir = new THREE.Vector3(0.45, 0.3, 1).normalize();
+  // 風景は地面を見下ろせるように、少し高いところから見る
+  const dir = (state.mode === 'scene' ? new THREE.Vector3(0.7, 0.62, 1) : new THREE.Vector3(0.45, 0.3, 1)).normalize();
   camera.position.copy(dir.multiplyScalar(dist));
   camera.near = dist / 100; camera.far = dist * 10; camera.updateProjectionMatrix();
   controls.target.set(0, 0, 0); controls.update();
@@ -656,6 +692,118 @@ function buildMesh(g, v) {
   state.lastSize = size;
 }
 
+/* ---------- scene: a landscape grown from a number ---------- */
+const SEASONS = {
+  summer: { grass: '#6f9a4e', dirt: '#8a6a48', stone: '#8d8b86', sand: '#d9c690', water: '#4f86a8', snow: '#eef0ee', trunk: '#6b4a32', pine: '#33603f', leaf: ['#4c7a3c', '#5d8a44', '#447038'] },
+  autumn: { grass: '#a39a52', dirt: '#8a6a48', stone: '#8d8b86', sand: '#d9c690', water: '#4a7d9c', snow: '#eef0ee', trunk: '#6b4a32', pine: '#3a5f3c', leaf: ['#c9692c', '#b8433a', '#d6a53a'] },
+  winter: { grass: '#e4e8ea', dirt: '#857060', stone: '#8d8b86', sand: '#cdc7b4', water: '#a9c6d6', snow: '#f4f6f6', trunk: '#5e4534', pine: '#35584a', leaf: ['#5d7a55', '#536f4f', '#66805a'], cap: true },
+};
+const MAT = { grass: 0, dirt: 1, stone: 2, sand: 3, water: 4, snow: 5, trunk: 6, pine: 7, leaf: 8 };   // leaf takes 8, 9, 10
+const SHADES = [0.94, 1, 1.06];
+const hashN = (x, y, s) => {
+  let h = (Math.imul(x, 374761393) + Math.imul(y, 668265263) + Math.imul(s, 1274126177)) | 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177);
+  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+};
+function vnoise(x, y, s) {
+  const xi = Math.floor(x), yi = Math.floor(y), fx = x - xi, fy = y - yi;
+  const u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy);
+  const a = hashN(xi, yi, s), b = hashN(xi + 1, yi, s), c = hashN(xi, yi + 1, s), d = hashN(xi + 1, yi + 1, s);
+  return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+}
+function fbm(x, y, s, oct) {
+  let sum = 0, amp = 1, tot = 0;
+  for (let k = 0; k < oct; k++) { sum += amp * vnoise(x, y, s + k * 31); tot += amp; amp *= 0.5; x *= 2; y *= 2; }
+  return sum / tot;
+}
+const clamp01 = v => Math.max(0, Math.min(1, v));
+
+function sceneModel(N) {
+  const seed = Math.max(1, Math.min(9999, Math.round(+$('seed').value) || 1));
+  const kind = $('terrain').value, S = SEASONS[$('season').value];
+  const H = +$('peak').value, wl = +$('water').value / 100, dens = +$('trees').value / 100;
+
+  /* palette: slot 0 is "empty"; every material comes in three slightly different shades */
+  const mats = [S.grass, S.dirt, S.stone, S.sand, S.water, S.snow, S.trunk, S.pine, ...S.leaf].map(hexRGB);
+  const col = new Uint8Array((1 + mats.length * 3) * 3);
+  mats.forEach((rgb, m) => SHADES.forEach((f, k) => col.set(rgb.map(v => Math.min(255, Math.round(v * (m === MAT.water ? 1 : f)))), (1 + m * 3 + k) * 3)));
+
+  /* ground height. The picture is sampled in 0–1 coordinates, so more cells show the same land in finer detail */
+  const gh = new Int16Array(N * N);
+  for (let z = 0; z < N; z++) for (let x = 0; x < N; x++) {
+    const u = (x + 0.5) / N, v = (z + 0.5) / N;
+    let e;
+    if (kind === 'hills') e = 0.18 + 0.5 * clamp01((fbm(u * 1.7, v * 1.7, seed, 3) - 0.5) * 2.2 + 0.5);
+    else {
+      const c = clamp01((fbm(u * 2.4, v * 2.4, seed, 5) - 0.5) * 2.2 + 0.5);
+      if (kind === 'island') { const d2 = ((u - 0.5) ** 2 + (v - 0.5) ** 2) * 4; e = clamp01(c * 0.9 + 0.35 - d2 * 0.95) ** 1.2; }
+      else e = c ** 1.5;
+    }
+    gh[z * N + x] = 1 + Math.round(e * (H - 1));
+  }
+  const wlv = Math.round(wl * (H - 1));          // water fills every cell up to this height
+  const HY0 = H + 8, vol = new Uint8Array(N * N * HY0);
+  const put = (x, y, z, m) => { vol[(y * N + z) * N + x] = 1 + m * 3 + Math.floor(hashN(x * 7 + y, z * 13 + y, seed) * 3); };
+  const at = (x, z) => gh[Math.max(0, Math.min(N - 1, z)) * N + Math.max(0, Math.min(N - 1, x))];
+  const top = new Int8Array(N * N);              // material on the surface of each cell
+  for (let z = 0; z < N; z++) for (let x = 0; x < N; x++) {
+    const g = gh[z * N + x], ty = g - 1, t = ty / (H - 1);
+    const steep = Math.max(Math.abs(g - at(x - 1, z)), Math.abs(g - at(x + 1, z)), Math.abs(g - at(x, z - 1)), Math.abs(g - at(x, z + 1))) >= 3;
+    let m = MAT.grass;
+    if (wlv > 0 && ty <= wlv) m = MAT.sand;
+    else if (t > 0.88) m = MAT.snow;
+    else if (t > 0.72 || steep) m = MAT.stone;
+    top[z * N + x] = m;
+    for (let y = 0; y < g; y++) put(x, y, z, y === ty ? m : (ty - y <= 3 ? (m === MAT.sand ? MAT.sand : m === MAT.grass ? MAT.dirt : MAT.stone) : MAT.stone));
+    for (let y = g; y <= wlv; y++) put(x, y, z, MAT.water);
+  }
+
+  /* trees: only on grass, never touching each other; pines take over higher up */
+  const taken = new Uint8Array(N * N);
+  const leafAt = (x, y, z, m) => { if (x < 0 || z < 0 || x >= N || z >= N || y >= HY0) return; if (!vol[(y * N + z) * N + x]) put(x, y, z, m); };
+  if (dens > 0) for (let z = 1; z < N - 1; z++) for (let x = 1; x < N - 1; x++) {
+    const i = z * N + x;
+    if (top[i] !== MAT.grass || gh[i] - 1 < wlv) continue;
+    const grove = 0.25 + 1.5 * vnoise(x / N * 6, z / N * 6, seed + 500);
+    if (hashN(x, z, seed + 900) > dens * 0.16 * grove) continue;
+    if (taken[i - 1] || taken[i - N] || taken[i - N - 1] || taken[i - N + 1] || taken[i - 2] || taken[i - 2 * N]) continue;
+    taken[i] = 1;
+    const y0 = gh[i], r = hashN(x, z, seed + 901), t = (y0 - 1) / (H - 1);
+    const pine = t > 0.45 + 0.2 * r, cap = S.cap ? MAT.snow : -1;
+    if (pine) {
+      const th = 1 + (r > 0.5), m = MAT.pine;
+      for (let y = 0; y < th + 2; y++) put(x, y0 + y, z, MAT.trunk);
+      for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) if (dx || dz) {
+        leafAt(x + dx, y0 + th, z + dz, m);
+        if (!dx || !dz) leafAt(x + dx, y0 + th + 1, z + dz, m);
+      }
+      leafAt(x, y0 + th + 2, z, m); leafAt(x, y0 + th + 3, z, cap >= 0 ? cap : m);
+    } else {
+      const th = 2 + (r > 0.6), m = MAT.leaf + Math.floor(hashN(x, z, seed + 902) * 3);
+      for (let y = 0; y < th; y++) put(x, y0 + y, z, MAT.trunk);
+      for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
+        const corner = dx && dz;
+        if ((dx || dz) && !(corner && hashN(x + dx, z + dz, seed + 903) < 0.5)) leafAt(x + dx, y0 + th - 1, z + dz, m);
+        leafAt(x + dx, y0 + th, z + dz, m);
+        if (!corner) leafAt(x + dx, y0 + th + 1, z + dz, cap >= 0 ? cap : m);
+      }
+    }
+  }
+
+  /* keep only the blocks that can be seen */
+  let HY = 1;
+  for (let i = vol.length - 1; i >= 0; i--) if (vol[i]) { HY = Math.floor(i / (N * N)) + 1; break; }
+  const full = (x, y, z) => x >= 0 && z >= 0 && y >= 0 && x < N && z < N && y < HY && vol[(y * N + z) * N + x] > 0;
+  const vis = []; let total = 0;
+  for (let y = 0; y < HY; y++) for (let z = 0; z < N; z++) for (let x = 0; x < N; x++) {
+    const p = vol[(y * N + z) * N + x]; if (!p) continue;
+    total++;
+    if (full(x - 1, y, z) && full(x + 1, y, z) && full(x, y - 1, z) && full(x, y + 1, z) && full(x, y, z - 1) && full(x, y, z + 1)) continue;
+    vis.push(x, HY - 1 - y, z, p);
+  }
+  return { g: { w: N, h: HY, col }, v: { vis, total, lo: 0, hi: N - 1 }, scene: { vol, N, HY } };
+}
+
 /* ---------- rebuild ---------- */
 let timer, token = 0;
 function schedule() { clearTimeout(timer); timer = setTimeout(rebuild, 40); }
@@ -667,6 +815,7 @@ async function rebuild() {
     try { await document.fonts.load(`${weight} 140px ${fam}`, $('txt').value || 'A'); } catch (e) {}
     if (my !== token) return;
   }
+  if (state.mode === 'scene') { const m = sceneModel(N); state.grid = m; buildMesh(m.g, m.v); return; }
   const g = state.mode === 'text' ? textGrid(N) : imageGrid(N);
   if (!g) { state.grid = null; buildMesh({ w: 1, h: 1, col: [] }, { vis: [], total: 0 }); return; }
   const v = voxelize(g, state.shape, T);
@@ -680,19 +829,27 @@ function syncOutputs() {
   $('kOut').textContent = $('k').value + ' 色'; $('smoothOut').textContent = ['なし', '弱', 'やや弱', '中', 'やや強', '強'][$('smooth').value];
   $('satOut').textContent = $('sat').value + '%'; $('tolOut').textContent = $('tol').value;
   $('illusOpts').hidden = !$('illus').checked;
+  $('peakOut').textContent = $('peak').value + ' マス'; $('waterOut').textContent = $('water').value + '%'; $('treesOut').textContent = $('trees').value + '%';
 }
 function setMode(mode) {
   state.res[state.mode] = +$('res').value;
   state.mode = mode;
   $('tabText').setAttribute('aria-selected', mode === 'text');
   $('tabImage').setAttribute('aria-selected', mode === 'image');
+  $('tabScene').setAttribute('aria-selected', mode === 'scene');
   $('panelText').hidden = mode !== 'text';
   $('panelImage').hidden = mode !== 'image';
+  $('panelScene').hidden = mode !== 'scene';
+  $('shapeBtns').hidden = $('thickField').hidden = mode === 'scene';   // 風景は高さを自分で決めるので、形と厚みは使わない
   $('res').value = state.res[mode]; syncOutputs();
   state.lastSize = null; schedule(); drawCrop();
 }
 $('tabText').onclick = () => setMode('text');
 $('tabImage').onclick = () => setMode('image');
+$('tabScene').onclick = () => setMode('scene');
+['terrain', 'season', 'seed'].forEach(id => $(id).addEventListener('input', schedule));
+['peak', 'water', 'trees'].forEach(id => $(id).addEventListener('input', () => { syncOutputs(); state.lastSize = null; schedule(); }));
+$('reroll').onclick = () => { let n; do n = 1 + Math.floor(Math.random() * 9999); while (n === +$('seed').value); $('seed').value = n; schedule(); };
 document.querySelectorAll('.shape button').forEach(b => b.onclick = () => {
   state.shape = b.dataset.shape;
   document.querySelectorAll('.shape button').forEach(o => o.setAttribute('aria-pressed', o === b));
@@ -885,9 +1042,12 @@ function toast(msg) {
 }
 $('copyJson').onclick = () => {
   if (!state.grid) return toast('コピーするブロックがありません');
-  const { g, v } = state.grid, out = [];
+  const { g, v, scene } = state.grid, out = [];
   const hex = i => '#' + [0, 1, 2].map(k => g.col[i * 3 + k].toString(16).padStart(2, '0')).join('');
-  for (let y = 0; y < g.h; y++) for (let x = 0; x < g.w; x++) {
+  if (scene) {
+    const { vol, N, HY } = scene;
+    for (let y = 0; y < HY; y++) for (let z = 0; z < N; z++) for (let x = 0; x < N; x++) { const p = vol[(y * N + z) * N + x]; if (p) out.push([x, y, z, hex(p)]); }
+  } else for (let y = 0; y < g.h; y++) for (let x = 0; x < g.w; x++) {
     const i = y * g.w + x; if (!g.mask[i]) continue;
     for (let z = v.zmin[i]; z <= v.zmax[i]; z++) out.push([x, g.h - 1 - y, z - v.lo, hex(i)]);
   }
