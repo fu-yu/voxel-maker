@@ -201,7 +201,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
       </div>
       <div class="field">
         <label for="water">水の量</label><span class="val" id="waterOut"></span>
-        <input type="range" id="water" min="0" max="60" step="5" value="25">
+        <input type="range" id="water" min="0" max="100" step="5" value="25">
       </div>
       <div class="field">
         <label for="trees">木の量</label><span class="val" id="treesOut"></span>
@@ -215,6 +215,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
           <option value="winter">冬</option>
         </select>
       </div>
+      <p class="note">水の量は、全体の広さのうち水になる割合です。木の量は、草の生えた土地のうち木におおわれる割合です。</p>
     </section>
 
     <section class="group">
@@ -729,7 +730,7 @@ function sceneModel(N) {
   mats.forEach((rgb, m) => SHADES.forEach((f, k) => col.set(rgb.map(v => Math.min(255, Math.round(v * (m === MAT.water ? 1 : f)))), (1 + m * 3 + k) * 3)));
 
   /* ground height. The picture is sampled in 0–1 coordinates, so more cells show the same land in finer detail */
-  const gh = new Int16Array(N * N);
+  const gh = new Int16Array(N * N), el = new Float32Array(N * N);
   for (let z = 0; z < N; z++) for (let x = 0; x < N; x++) {
     const u = (x + 0.5) / N, v = (z + 0.5) / N;
     let e;
@@ -739,9 +740,20 @@ function sceneModel(N) {
       if (kind === 'island') { const d2 = ((u - 0.5) ** 2 + (v - 0.5) ** 2) * 4; e = clamp01(c * 0.9 + 0.35 - d2 * 0.95) ** 1.2; }
       else e = c ** 1.5;
     }
-    gh[z * N + x] = 1 + Math.round(e * (H - 1));
+    el[z * N + x] = e;
   }
-  const wlv = Math.round(wl * (H - 1));          // water fills every cell up to this height
+  /* water: the lowest cells go under, exactly as many as the chosen share of the whole map */
+  const wet = new Uint8Array(N * N), nWet = Math.round(wl * N * N);
+  let wlv = 0;                                   // water fills the wet cells up to this height
+  if (nWet > 0) {
+    const order = Array.from(el.keys()).sort((a, b) => el[a] - el[b] || a - b);
+    for (let k = 0; k < nWet; k++) wet[order[k]] = 1;
+    wlv = Math.max(1, Math.min(H - 1, Math.round(el[order[nWet - 1]] * (H - 1))));
+  }
+  for (let i = 0; i < N * N; i++) {
+    const g = 1 + Math.round(el[i] * (H - 1));
+    gh[i] = !wlv ? g : wet[i] ? Math.min(g, wlv) : Math.max(g, wlv + 1);
+  }
   const HY0 = H + 8, vol = new Uint8Array(N * N * HY0);
   const put = (x, y, z, m) => { vol[(y * N + z) * N + x] = 1 + m * 3 + Math.floor(hashN(x * 7 + y, z * 13 + y, seed) * 3); };
   const at = (x, z) => gh[Math.max(0, Math.min(N - 1, z)) * N + Math.max(0, Math.min(N - 1, x))];
@@ -758,16 +770,24 @@ function sceneModel(N) {
     for (let y = g; y <= wlv; y++) put(x, y, z, MAT.water);
   }
 
-  /* trees: only on grass, never touching each other; pines take over higher up */
-  const taken = new Uint8Array(N * N);
+  /* trees: only on grass. They are planted in a fixed order (groves first) until their crowns
+     cover the chosen share of the grass, so a higher setting keeps the earlier trees and adds more */
   const leafAt = (x, y, z, m) => { if (x < 0 || z < 0 || x >= N || z >= N || y >= HY0) return; if (!vol[(y * N + z) * N + x]) put(x, y, z, m); };
-  if (dens > 0) for (let z = 1; z < N - 1; z++) for (let x = 1; x < N - 1; x++) {
+  const cand = [], crown = new Uint8Array(N * N);
+  for (let z = 0; z < N; z++) for (let x = 0; x < N; x++) {
     const i = z * N + x;
-    if (top[i] !== MAT.grass || gh[i] - 1 < wlv) continue;
-    const grove = 0.25 + 1.5 * vnoise(x / N * 6, z / N * 6, seed + 500);
-    if (hashN(x, z, seed + 900) > dens * 0.16 * grove) continue;
-    if (taken[i - 1] || taken[i - N] || taken[i - N - 1] || taken[i - N + 1] || taken[i - 2] || taken[i - 2 * N]) continue;
-    taken[i] = 1;
+    if (top[i] === MAT.grass) cand.push([hashN(x, z, seed + 900) / (0.25 + 1.5 * vnoise(x / N * 6, z / N * 6, seed + 500)), i]);
+  }
+  cand.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const want = Math.round(dens * cand.length); let shaded = 0;
+  for (const [, i] of cand) {
+    if (shaded >= want) break;
+    if (crown[i]) continue;                      // under another tree already
+    const x = i % N, z = (i / N) | 0;
+    for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
+      const nx = x + dx, nz = z + dz; if (nx < 0 || nz < 0 || nx >= N || nz >= N) continue;
+      const j = nz * N + nx; if (!crown[j]) { crown[j] = 1; if (top[j] === MAT.grass) shaded++; }
+    }
     const y0 = gh[i], r = hashN(x, z, seed + 901), t = (y0 - 1) / (H - 1);
     const pine = t > 0.45 + 0.2 * r, cap = S.cap ? MAT.snow : -1;
     if (pine) {
