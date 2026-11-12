@@ -1,6 +1,6 @@
 # AI_CONTEXT: voxel-maker (ボクセル工房)
 
-最終更新: 2026-11-11
+最終更新: 2026-11-13
 
 ## これは何か
 文字や画像を、立方体 (ボクセル) を積んだ立体に変える、ブラウザだけで動く道具。本体は `index.html` の 1 ファイル。
@@ -35,4 +35,4 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 - コミットのメールアドレスは GitHub の noreply アドレスを使う (リポジトリごとの設定に入れてある)。
 
 ## 最新のセッション
-`docs/dev/sessions/2026-11-11-github-publish.md`
+`docs/dev/sessions/2026-11-13-heart-shadow.md`
