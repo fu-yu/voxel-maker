@@ -10,7 +10,8 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 | 項目 | 状態 |
 | --- | --- |
 | 本体 `index.html` | 動作確認済み (2026-11-10、ローカルの静的サーバーで。文字、見本のドット絵、3 つの形、写真のイラスト化、背景を消す、下絵クリック、マス数・厚み、座標データのコピー) |
-| 「風景を作る」タブ | 動作確認済み (2026-11-13、ローカルで。地形 3 種・季節 3 種・最大と最小の設定・座標データの書き出し・375px 幅)。2026-11-13 にユーザーが良いと言い、`main` に取り込んだ (公開)。公開ページでの確認結果は `docs/dev/sessions/2026-11-13-landscape.md` には書いていない (取り込みの後に確かめたため) |
+| 「風景を作る」タブ | 動作確認済み (2026-11-13、ローカルで。地形 3 種・季節 3 種・最大と最小の設定・座標データの書き出し・375px 幅)。2026-11-13 に `main` に取り込んで公開。公開ページでも確認済み (結果は `docs/dev/sessions/2026-11-13-seo.md` の「前回の確認の追記」) |
+| 検索と共有のための設定 (題・説明文・`og:*`・共有用の画像) | ローカルで確認済み (2026-11-13)。**作業ブランチ `work/seo` にあり、`main` には未取り込み**。共有したときのカードは **未確認** |
 | 範囲の選択、「下絵をコピー」 | **未確認** (コードを読んだだけ) |
 | スマホ幅 (375px) | 確認済み (2026-11-11、ブラウザの幅を 375px にして。配置が切り替わり、立体の全体が画面に入る)。実機の Android は **未確認** |
 | GitHub Pages での公開 | 公開中 (https://fu-yu.github.io/voxel-maker/)。2026-11-11 に本体と `guide.html` の表示を確認 (デスクトップ幅と 375px 幅、コンソールエラーなし)。公開元は `gh-pages` ブランチのルート |
@@ -20,7 +21,7 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 - `guide.html` — 使い方の説明ページ (生成物。手で直さない)
 - `docs/public/index.md` — 説明の元原稿 (これが正)
 - `docs/public/index.html` — 説明ページの本文 (Artifact 用。`<!doctype>` や `<head>` を持たない形)
-- `docs/public/images/` — 挿絵 (AI が作った絵)
+- `docs/public/images/` — 挿絵 (AI が作った絵) と、共有用の画像 `og.jpg` (本体の画面を撮ったもの。作り方は `docs/dev/sessions/2026-11-13-seo.md`)
 - `tools/build_guide.py` — `docs/public/index.html` から `guide.html` を作る
 - `.github/workflows/deploy.yml` — `main` への push で `index.html`, `guide.html`, `LICENSE`, `docs/public/images/` だけを `gh-pages` ブランチに強制 push する (`gh-pages` は毎回 1 コミットに作り直される。手で触らない)
 
@@ -36,4 +37,4 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 - コミットのメールアドレスは GitHub の noreply アドレスを使う (リポジトリごとの設定に入れてある)。
 
 ## 最新のセッション
-`docs/dev/sessions/2026-11-13-landscape.md`
+`docs/dev/sessions/2026-11-13-seo.md` (その前: `2026-11-13-landscape.md`)

@@ -11,6 +11,19 @@ HEAD = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="ボクセル工房の使い方の説明です。文字・画像・風景をブロックの立体にする手順と、できること・できないことをまとめています。">
+<link rel="canonical" href="https://fu-yu.github.io/voxel-maker/guide.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ボクセル工房">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="ボクセル工房のてびき — 使い方とできること">
+<meta property="og:description" content="ボクセル工房の使い方の説明です。文字・画像・風景をブロックの立体にする手順と、できること・できないことをまとめています。">
+<meta property="og:url" content="https://fu-yu.github.io/voxel-maker/guide.html">
+<meta property="og:image" content="https://fu-yu.github.io/voxel-maker/docs/public/images/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ブロックを積んで作った、山と湖と木のある小さな風景。左に「ボクセル工房」の文字">
+<meta name="twitter:card" content="summary_large_image">
 <style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 """
 OPEN_APP = '<p class="open"><a href="./">ボクセル工房を開く</a></p>'
