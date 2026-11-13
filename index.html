@@ -1085,7 +1085,7 @@ $('copyJson').onclick = () => {
     const i = y * g.w + x; if (!g.mask[i]) continue;
     for (let z = v.zmin[i]; z <= v.zmax[i]; z++) out.push([x, g.h - 1 - y, z - v.lo, hex(i)]);
   }
-  const json = JSON.stringify({ size: [g.w, g.h, v.hi - v.lo + 1], format: '[x, y(上向き), z, 色]', voxels: out });
+  const json = JSON.stringify({ size: [g.w, g.h, v.hi - v.lo + 1], order: ['x', 'y', 'z', 'color'], up: 'y', voxels: out });
   navigator.clipboard.writeText(json).then(() => toast(`${out.length.toLocaleString()} ブロック分をコピーしました`))
     .catch(() => toast('コピーできませんでした。ブラウザの許可を確かめてください'));
 };
