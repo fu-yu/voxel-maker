@@ -31,3 +31,22 @@
 ## 残っている課題・次にやること
 - **`work/roads` との取り込み順に注意**: `work/roads` も `mcBlocks()` の `real` の表と `nameOf()` の行 (`m >= 8 && m <= 10` の条件) を変えている。あとから取り込むほうで同じ行がぶつかる。解き方: `nameOf` は `real[Math.floor((p - 1) / 3)]` にし、`real` に `dirt_path`・`oak_planks` を足し、秋は `real.splice(8, 3, ...)` で 8〜10 番だけを替える。
 - 木の見直しのほかの候補 (ユーザーはまだ選んでいない): 幹を `spruce_log` / `birch_log` に分ける。木の形をマインクラフトの木に近づける。
+
+## 続き: ポプラの葉に替えた (同じ日)
+ユーザーが「ブロックを自分でつくれる?」と聞いた。データパックだけでは新しいブロックは作れない。リソースパックで絵を描きかえる方法と、見た目だけの物を浮かべる方法があると答えた。そのあと、ユーザーに「Web でどういう工夫がないか調べて欲しい」と頼まれた。
+
+- **調べてわかったこと**: 2026-09-15 に出た Java 版 26.3 で、`red_poplar_leaves` / `orange_poplar_leaves` / `yellow_poplar_leaves` (ポプラの葉) と `poplar_log` が加わっていた。色はバイオームで変わらない (Minecraft Wiki の「Java Edition 26.3」「Poplar Leaves」)。前に「赤・オレンジ・黄色の葉はない」と答えたのは、知識が古かったための誤り。
+- ほかの工夫として、リソースパックで葉の絵を描きかえる方法と、データパックの自作バイオームで `foliage_color` を決める方法も見つけた。自作バイオームには、ワールドを開き直す必要や、保存のあとでバイオームが入れかわる不具合 (MC-196336) の報告がある。ユーザーはポプラの葉を選んだ。
+- **サーバー版での名前の確認**: 26.3 の `server.jar` のデータ生成 (`java -DbundlerMainClass=net.minecraft.data.Main -jar server.jar --reports`) で `reports/blocks.json` を作った。3 つの葉には `distance` / `persistent` / `waterlogged` があり、`poplar_log` には `axis` がある。
+- `index.html` の `mcBlocks()`: 秋の `real` の 8〜10 番を `orange_poplar_leaves[persistent=true]`、`red_poplar_leaves[persistent=true]`、`yellow_poplar_leaves[persistent=true]` にした (案 B のブロックから替えた)。幹は `oak_log` のまま。
+- 名前に `_leaves` を含むので、葉の真下の草はまた草のままになる。同じ条件で数えると、秋の `dirt` / `grass_block` は夏と同じ 735 / 519 に戻った。
+- `docs/public/minecraft.md` / `.html`: 表と注をポプラの葉に直した。「使えるマインクラフト」に「秋の風景は 26.3 以降でだけ使えます」を足した。
+
+| 項目 | 状態 |
+| --- | --- |
+| 書き出しのブロック名 | 確認済み (前と同じやり方。秋は `orange_poplar_leaves` 431、`red_poplar_leaves` 359、`yellow_poplar_leaves` 323。夏と冬は変わらない) |
+| 名前と状態がサーバー版 26.3 にあるか | 確認済み (`blocks.json`) |
+| サーバー版に実際に置いて、2 分後も残るか | **未確認** (前回の RCON での照合はしていない) |
+| ゲームの画面での見た目 | **未確認** (ユーザーにお願いする) |
+| 26.3 より前の版で秋の風景を置いたとき | **未確認**。ブロック名がないので、関数の読み込みでエラーになり、置けないと考えられる |
+| 画面の表示 | 本体と `minecraft.html` を表示し、コンソールのエラーなし (375px 幅も表示) |
