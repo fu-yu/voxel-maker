@@ -1266,8 +1266,24 @@ $('saveMc').onclick = () => {
   const files = [['pack.mcmeta', JSON.stringify(meta, null, 2) + '\n']];
   for (let i = 0; i < n; i++) files.push([`data/voxel/function/build${n > 1 ? i + 1 : ''}.mcfunction`,
     `# Voxel Koubou ${B.w}x${B.h}x${B.d}${n > 1 ? ` (${i + 1}/${n})` : ''}\n` +
-    (i === 0 ? 'kill @e[type=minecraft:marker,tag=voxel_site]\nexecute align xyz run summon minecraft:marker ~ ~ ~ {Tags:["voxel_site"]}\n' : '') +
+    /* a builder or breaker still running would remove the new place mark (it has no score), so stop them first */
+    (i === 0 ? 'execute if score #on voxel matches 1 run function voxel:slow/stop\nexecute if score #on voxel matches 2 run function voxel:slow/bstop\nkill @e[type=minecraft:marker,tag=voxel_site]\nexecute align xyz run summon minecraft:marker ~ ~ ~ {Tags:["voxel_site"]}\n' : '') +
     lines.slice(i * PER, (i + 1) * PER).join('\n') + '\n']);
+  /* voxel:break clears the whole model at once, around the place mark left by voxel:build. It also stops a builder
+     or breaker that is still running, so it doubles as the way out when one of them got stuck */
+  const clearLines = mcCommands(B, null, true), nc = Math.ceil(clearLines.length / PER), site = '@e[type=minecraft:marker,tag=voxel_site,limit=1,sort=nearest]';
+  for (let i = 0; i < nc; i++) {
+    const tag = nc > 1 ? i + 1 : '';
+    files.push([`data/voxel/function/clear/c${i}.mcfunction`, clearLines.slice(i * PER, (i + 1) * PER).join('\n') + '\n']);
+    files.push([`data/voxel/function/break${tag}.mcfunction`, [
+      `# Voxel Koubou: clear at once${nc > 1 ? ` (${i + 1}/${nc})` : ''}`,
+      'execute if score #on voxel matches 1 run function voxel:slow/stop',
+      'execute if score #on voxel matches 2 run function voxel:slow/bstop',
+      'execute unless entity @e[type=minecraft:marker,tag=voxel_site] run return run tellraw @s "消す立体の目印が見つかりません。すでに消したか、まだ置いていません"',
+      `execute at ${site} run function voxel:clear/c${i}`,
+      ...(i === nc - 1 ? ['kill @e[type=minecraft:marker,tag=voxel_site]', 'tellraw @s "消しました"'] : [`tellraw @s "${i + 1}/${nc} を消しました。続けて /function voxel:break${i + 2}"`]),
+    ].join('\n') + '\n']);
+  }
   /* step-by-step builder (voxel:build_slow) with an Allay helper, and breaker (voxel:break_slow) with a Vex helper */
   const S = mcSteps(B), stepCmds = mcCommands(B, S.stepOf), breakCmds = mcCommands(B, S.stepOf, true), packId = 1 + Math.floor(Math.random() * 0x7fffffff), OX = 2;
   const gridPts = len => { const a = []; for (let v = 0; v < len; v += 16) a.push(v); if (a[a.length - 1] !== len - 1) a.push(len - 1); return a; };
@@ -1417,7 +1433,7 @@ $('saveMc').onclick = () => {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(zipStore(files)); a.download = 'voxel-koubou-datapack.zip';
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 10000);
-  toast(n > 1 ? `保存しました。/function voxel:build1〜${n}（または voxel:build_slow / voxel:break_slow）が使えます` : `保存しました（/function voxel:build、voxel:build_slow、voxel:break_slow が使えます）`);
+  toast(n > 1 ? `保存しました。/function voxel:build1〜${n}（または voxel:build_slow / voxel:break_slow / voxel:break${nc > 1 ? `1〜${nc}` : ''}）が使えます` : `保存しました（/function voxel:build、voxel:build_slow、voxel:break_slow、voxel:break が使えます）`);
 };
 
 /* start */

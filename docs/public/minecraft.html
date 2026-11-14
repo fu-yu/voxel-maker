@@ -43,7 +43,7 @@ tbody th { font-weight:700; white-space:nowrap; }
     <li><span>開いたフォルダの中の <code>datapacks</code> フォルダに、保存したファイルを入れます。ファイルは開かずに、そのまま入れます。</span></li>
     <li><span>ワールドに入り、立体を置きたい場所に立ちます。</span></li>
     <li><span>チャットの欄に <code>/reload</code> と打ちます。</span></li>
-    <li><span>続けて <code>/function voxel:build</code> と打ちます。少しずつ置きたいときは、代わりに <code>/function voxel:build_slow</code> と打ちます。置いた立体を壊して消したいときは、<code>/function voxel:break_slow</code> と打ちます。</span></li>
+    <li><span>続けて <code>/function voxel:build</code> と打ちます。少しずつ置きたいときは、代わりに <code>/function voxel:build_slow</code> と打ちます。置いた立体を壊して消したいときは、<code>/function voxel:break_slow</code> (少しずつ) か <code>/function voxel:break</code> (一気に) と打ちます。</span></li>
   </ol>
   <p class="source">手順 3 と 4 は、Minecraft Wiki の「<a href="https://ja.minecraft.wiki/w/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB:%E3%83%87%E3%83%BC%E3%82%BF%E3%83%91%E3%83%83%E3%82%AF%E3%81%AE%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%81%BF">データパックの読み込み</a>」の説明によります。Minecraft Wiki は、公式のサイトではありません。</p>
 </section>
@@ -71,9 +71,22 @@ tbody th { font-weight:700; white-space:nowrap; }
     <li>最後に <code>/function voxel:build</code> または <code>/function voxel:build_slow</code> で置いた場所を覚えているので、離れた場所から打ってもその立体を壊します (記録がないときは、いま立っている場所を基準にします)。</li>
     <li>上の段から順に、水はまわりの枠より先に消すので、途中で砂が落ちたり水があふれたりしません。</li>
     <li>途中で止めたいときは、<code>/function voxel:break_stop</code> と打ちます。残ったブロックはそのまま残ります。</li>
+    <li>壊している途中で <code>/function voxel:build</code> を打つと、壊す係は止まり、立体が置き直されます。</li>
     <li>終わると、壊す係は消えます。</li>
   </ul>
   <p class="source">この壊し方は、5 種類のファイルで最後までたどると残るブロックが 0 になることを確かめ、ゲームの画面でも大きな風景を最後まで壊せることと <code>/function voxel:break_stop</code> で止められることを確かめました。</p>
+</section>
+
+<section>
+  <h2>一気に消す (<code>voxel:break</code>、試験中)</h2>
+  <p>置いた立体を、待たずに一度で消したいときは、<code>/function voxel:break</code> と打ちます。壊す係は出てきません。</p>
+  <ul>
+    <li><code>/function voxel:break_slow</code> と同じく、最後に置いた場所を覚えているので、離れた場所から打ってもその立体を消します。</li>
+    <li>建てる係や壊す係が動いていたら、先に止めてから消します。「いま壊しているところです」と出て先に進めなくなったときにも使えます。</li>
+    <li>消したあとに、もう一度打つと「消す立体の目印が見つかりません」と出ます。</li>
+    <li>立体の下の地面には手をつけません。</li>
+  </ul>
+  <p class="source">この消し方は、画面のないサーバー用のマインクラフト 26.3 で、秋の風景を置いて消し、置いた場所のブロックがすべて空気になること、落ちる砂や落とし物が出ないことを確かめました (2026-11-15)。ゲームの画面ではまだ見ていません。</p>
 </section>
 
 <section>
@@ -92,7 +105,7 @@ tbody th { font-weight:700; white-space:nowrap; }
   <h2>置く前に知っておくこと</h2>
   <ul class="caution">
     <li>立体が置かれる場所にもとからあったブロックは、置きかえられます。建物のそばでは実行しないでください。</li>
-    <li>置いた立体は <code>/function voxel:break_slow</code> で消せますが、そこにもとからあった地面や建物が元に戻るわけではありません。はじめは、新しいワールドか、何もない場所で試すのがおすすめです。</li>
+    <li>置いた立体は <code>/function voxel:break_slow</code> や <code>/function voxel:break</code> で消せますが、そこにもとからあった地面や建物が元に戻るわけではありません。はじめは、新しいワールドか、何もない場所で試すのがおすすめです。</li>
     <li>広くて平らな場所が向いています。ワールドの種類を「スーパーフラット」にすると、見やすくなります。</li>
   </ul>
 </section>
@@ -128,6 +141,7 @@ tbody th { font-weight:700; white-space:nowrap; }
     <li><b>「関数が見つからない」という意味の赤い文字が出る</b><span>ファイルが <code>datapacks</code> フォルダに入っているか、<code>/reload</code> を打ったかを確かめます。ファイルを開いて中身だけを入れた場合は、開く前のファイルを入れ直します。</span></li>
     <li><b>コマンドが使えない</b><span>ワールドの「チートの許可」がオフになっています。</span></li>
     <li><b>立体の一部が置かれない</b><span>遠くの土地がまだ読み込まれていないと、そこには置かれません。大きな立体で起きやすくなります。マスの数を減らして、作り直してみてください。</span></li>
+    <li><b>「いま壊しているところです」(または「いま建てているところです」) と出て、何も始まらない</b><span>前の係の記録が残っています。<code>/function voxel:break_stop</code> (または <code>/function voxel:build_stop</code>) と打つか、<code>/function voxel:break</code> で立体ごと消してから、やり直してください。</span></li>
     <li><b>新しいファイルに入れ替えたのに、前の立体が置かれる</b><span><code>datapacks</code> フォルダに前の zip ファイルが残っていると、ファイルの名前を変えていても前のほうが読み込まれることがあります。前の zip ファイルは <code>datapacks</code> フォルダの外に出すか消してから、<code>/reload</code> と打ってください。</span></li>
   </ul>
 </section>
