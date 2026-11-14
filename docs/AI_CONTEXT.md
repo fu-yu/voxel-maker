@@ -15,6 +15,7 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 | 座標データ (JSON) の書き出し | 項目は `size`, `order`, `up`, `voxels` (英数字だけ)。2026-11-14 にローカルで確認し、同じ日に公開 |
 | マインクラフト (Java 版) 用の書き出し (`#saveMc`) | 公式のサーバー版 26.3 で全ブロックの配置を確認済み。ゲームの画面でも、ユーザーが文字と風景 (山と湖・夏) を置いて確認した (2026-11-14)。色の選び方を OKLab に直したあとの見た目は **未確認**。2026-11-14 に「試験中」として公開 |
 | マインクラフト用の説明ページ `minecraft.html` | ローカルで表示を確認済み (2026-11-14)。同じ日に `deploy.yml` に足して公開 (ユーザーが「すすめましょう」と言った) |
+| 試した記録のページ `tried.html` | ローカルで表示を確認済み。2026-11-14 に `deploy.yml` に足して公開 (ユーザーが「足して公開」と言った)。ユーザーが次に試したら、写真と結果を足していく |
 | 範囲の選択、「下絵をコピー」 | **未確認** (コードを読んだだけ) |
 | スマホ幅 (375px) | 確認済み (2026-11-11、ブラウザの幅を 375px にして。配置が切り替わり、立体の全体が画面に入る)。実機の Android は **未確認** |
 | GitHub Pages での公開 | 公開中 (https://fu-yu.github.io/voxel-maker/)。2026-11-11 に本体と `guide.html` の表示を確認 (デスクトップ幅と 375px 幅、コンソールエラーなし)。公開元は `gh-pages` ブランチのルート |
@@ -22,6 +23,7 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 ## やりかけの作業 (2026-11-14 の時点)
 マインクラフト (Java 版) 用の書き出しと説明ページは、2026-11-14 に「試験中」として `main` に取り込んで公開した (ユーザーが「公開しても修正が続きそう」と言い、直しながら進めると決めた)。くわしくは `docs/dev/sessions/2026-11-14-minecraft-java.md`。続きの直しは、新しい作業ブランチで行う。
 
+0. **歩いて楽しめる大きな地図**: ユーザーの希望。案 a〜d を出した (同じ記録にある)。どれを作るかは未定。
 1. **直した色を、ゲームの画面で見る**: 色の選び方を OKLab に変えたあとの文字を、ユーザーにもう一度置いてもらう。見本の画像の軸に入る `yellow_concrete` が浮かないかも見る。
 2. **ゲームの画面でまだ見ていないもの**: 秋・冬・島・丘の風景、見本の画像。
 3. **見た目の直しの候補** (ユーザーが気になると言ったら): 水をせき止めるガラスの枠の線が目立つ。風景の横の面が石の壁に見える。
@@ -38,8 +40,9 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 - `docs/public/index.html` — 説明ページの本文 (Artifact 用。`<!doctype>` や `<head>` を持たない形)
 - `docs/public/images/` — 挿絵 (AI が作った絵) と、共有用の画像 `og.jpg` (本体の画面を撮ったもの。作り方は `docs/dev/sessions/2026-11-13-seo.md`)
 - `minecraft.html` — マインクラフトに置く手順のページ (生成物。手で直さない)。元原稿は `docs/public/minecraft.md`、本文は `docs/public/minecraft.html`
-- `tools/build_guide.py` — `docs/public/index.html` から `guide.html` を、`docs/public/minecraft.html` から `minecraft.html` を作る
-- `.github/workflows/deploy.yml` — `main` への push で `index.html`, `guide.html`, `minecraft.html`, `LICENSE`, `docs/public/images/` だけを `gh-pages` ブランチに強制 push する (`gh-pages` は毎回 1 コミットに作り直される。手で触らない)
+- `tried.html` — マインクラフトで試した記録のページ (生成物。手で直さない)。元原稿は `docs/public/tried.md`、本文は `docs/public/tried.html`。写真は `docs/public/images/mc-*.jpg`
+- `tools/build_guide.py` — `docs/public/index.html` から `guide.html` を作る。`SUB_PAGES` の一覧にあるページ (`minecraft.html`, `tried.html`) も作る
+- `.github/workflows/deploy.yml` — `main` への push で `index.html`, `guide.html`, `minecraft.html`, `tried.html`, `LICENSE`, `docs/public/images/` だけを `gh-pages` ブランチに強制 push する (`gh-pages` は毎回 1 コミットに作り直される。手で触らない)
 
 ## 注意
 - 説明を直すときは `docs/public/index.md` と `docs/public/index.html` の両方を直し、`python3 tools/build_guide.py` で `guide.html` を作り直す。
@@ -53,4 +56,4 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 - コミットのメールアドレスは GitHub の noreply アドレスを使う (リポジトリごとの設定に入れてある)。
 
 ## 最新のセッション
-`docs/dev/sessions/2026-11-14-minecraft-java.md` (その前: `2026-11-14-json-ascii.md`)
+`docs/dev/sessions/2026-11-14-tried-page.md` (その前: `2026-11-14-minecraft-java.md`)

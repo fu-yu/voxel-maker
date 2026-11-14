@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""docs/public/ の本文だけの HTML から、単体で開ける guide.html と minecraft.html を作る。
+"""docs/public/ の本文だけの HTML から、単体で開ける guide.html と、SUB_PAGES のページ (minecraft.html など) を作る。
 
 使い方: python3 tools/build_guide.py
 """
@@ -30,10 +30,14 @@ OPEN_APP = '<p class="open"><a href="./">ボクセル工房を開く</a></p>'
 OPEN_CSS = ".open a{display:inline-block;font-weight:700;color:var(--bg);background:var(--fg);padding:8px 18px;text-decoration:none}.open a:focus-visible{outline:3px solid var(--orange);outline-offset:2px}"
 
 
-MC_HEAD = HEAD.replace("https://fu-yu.github.io/voxel-maker/guide.html", "https://fu-yu.github.io/voxel-maker/minecraft.html").replace(
-    "ボクセル工房の使い方の説明です。文字・画像・風景をブロックの立体にする手順と、できること・できないことをまとめています。",
-    "ボクセル工房で作った立体を、マインクラフト (Java 版) のワールドに置く手順です。保存したファイルを入れて、コマンドを 1 つ打ちます。",
-).replace("ボクセル工房のてびき — 使い方とできること", "マインクラフトに置く — ボクセル工房")
+GUIDE_URL = "https://fu-yu.github.io/voxel-maker/guide.html"
+GUIDE_DESC = "ボクセル工房の使い方の説明です。文字・画像・風景をブロックの立体にする手順と、できること・できないことをまとめています。"
+GUIDE_TITLE = "ボクセル工房のてびき — 使い方とできること"
+# 本文だけのページ: (ファイル名, 説明文, 共有したときの題)
+SUB_PAGES = [
+    ("minecraft.html", "ボクセル工房で作った立体を、マインクラフト (Java 版) のワールドに置く手順です。保存したファイルを入れて、コマンドを 1 つ打ちます。", "マインクラフトに置く — ボクセル工房"),
+    ("tried.html", "ボクセル工房で作った立体を、本物のマインクラフトに置いて確かめた記録です。うまくいったことも、見つけた問題も書いています。", "マインクラフトで試してみた — ボクセル工房"),
+]
 
 
 def shared_style() -> str:
@@ -55,21 +59,26 @@ def build_guide() -> None:
     print("guide.html を書き出しました")
 
 
-def build_minecraft() -> None:
-    """docs/public/minecraft.html (このページだけの決まり + 本文) に、共通の見た目を足して minecraft.html を作る。"""
-    body = (ROOT / "docs/public/minecraft.html").read_text(encoding="utf-8")
+def build_sub(name: str, desc: str, title: str) -> None:
+    """docs/public/<name> (そのページだけの決まり + 本文) に、共通の見た目を足して、単体で開ける <name> を作る。"""
+    for part in (GUIDE_URL, GUIDE_DESC, GUIDE_TITLE):
+        assert part in HEAD, part
+    head = HEAD.replace(GUIDE_URL, "https://fu-yu.github.io/voxel-maker/" + name).replace(GUIDE_DESC, desc).replace(GUIDE_TITLE, title)
+    body = (ROOT / "docs/public" / name).read_text(encoding="utf-8")
     body = body.replace("<style>", "<style>" + shared_style(), 1)
+    body = body.replace('src="images/', 'src="docs/public/images/')
     # 公開ページの中では、同じ場所のページどうしを短いアドレスでつなぐ
-    body = body.replace('href="https://fu-yu.github.io/voxel-maker/guide.html"', 'href="guide.html"').replace('href="https://fu-yu.github.io/voxel-maker/"', 'href="./"')
+    body = body.replace('href="https://fu-yu.github.io/voxel-maker/"', 'href="./"').replace('href="https://fu-yu.github.io/voxel-maker/', 'href="')
     style_end = body.index("</style>") + len("</style>")
-    out = MC_HEAD + body[:style_end] + "\n</head>\n<body>\n" + body[style_end:] + "</body>\n</html>\n"
-    (ROOT / "minecraft.html").write_text(out, encoding="utf-8")
-    print("minecraft.html を書き出しました")
+    out = head + body[:style_end] + "\n</head>\n<body>\n" + body[style_end:] + "</body>\n</html>\n"
+    (ROOT / name).write_text(out, encoding="utf-8")
+    print(name + " を書き出しました")
 
 
 def main() -> None:
     build_guide()
-    build_minecraft()
+    for page in SUB_PAGES:
+        build_sub(*page)
 
 
 if __name__ == "__main__":
