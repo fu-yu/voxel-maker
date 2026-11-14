@@ -260,7 +260,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
         <button class="btn" id="saveMc">マインクラフト用に保存</button>
       </div>
       <p class="note">「座標データをコピー」は、各ブロックの位置と色を JSON でコピーします。ほかの道具で使うには、その道具の形式に直す作業が要ります。</p>
-      <p class="note">「マインクラフト用に保存」は、Java 版 1.21 以降のデータパック（zip）を保存します。ワールドの datapacks フォルダに入れて <code>/reload</code> し、<code>/function voxel:build</code> を実行すると、立っている場所のとなりに置かれます。色は近い色のブロックに置きかえます。実際のゲームでの動作は、まだ確かめていません。</p>
+      <p class="note">「マインクラフト用に保存」は、Java 版 1.21 以降のデータパック（zip）を保存します。ワールドの datapacks フォルダに入れて <code>/reload</code> し、<code>/function voxel:build</code> を実行すると、立っている場所のとなりに置かれます。色は近い色のブロックに置きかえます。ブロックが正しく置かれることは 26.3 で確かめましたが、ゲームの画面での見た目は、まだ確かめていません。</p>
     </section>
   </aside>
 
@@ -1125,10 +1125,14 @@ function mcBlocks() {
     const real = ['grass_block', 'dirt', 'stone', 'sand', 'water', 'snow_block', 'oak_log', 'spruce_leaves[persistent=true]', 'oak_leaves[persistent=true]', 'birch_leaves[persistent=true]', 'oak_leaves[persistent=true]'];
     if (winter) { real[0] = 'snow_block'; real[4] = 'ice'; }
     const set = (x, y, z, n) => { ids[(y * w + z + 1) * w + x + 1] = id(n); };
+    const nameOf = p => { const m = Math.floor((p - 1) / 3); return autumn && m >= 8 ? mcNearest(g.col[p * 3], g.col[p * 3 + 1], g.col[p * 3 + 2]) : real[m]; };
     for (let y = 0; y < HY; y++) for (let z = 0; z < N; z++) for (let x = 0; x < N; x++) {
       const p = vol[(y * N + z) * N + x]; if (!p) continue;
       const m = Math.floor((p - 1) / 3);
-      set(x, y, z, autumn && m >= 8 ? mcNearest(g.col[p * 3], g.col[p * 3 + 1], g.col[p * 3 + 2]) : real[m]);
+      let n = nameOf(p);
+      /* in the game, grass with a solid block right above it turns into dirt, so put dirt there from the start */
+      if (n === 'grass_block' && y + 1 < HY) { const q = vol[((y + 1) * N + z) * N + x]; if (q && !nameOf(q).includes('_leaves')) n = 'dirt'; }
+      set(x, y, z, n);
       if (real[m] !== 'water') continue;
       if (x === 0) set(-1, y, z, 'glass'); if (x === N - 1) set(N, y, z, 'glass');
       if (z === 0) set(x, y, -1, 'glass'); if (z === N - 1) set(x, y, N, 'glass');
