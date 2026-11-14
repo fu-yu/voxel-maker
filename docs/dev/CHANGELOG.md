@@ -1,7 +1,7 @@
 # CHANGELOG
 
 ## 2026-11-15
-- てびき (`guide.html`) の「できること」と「できないこと・注意」に挿絵を 1 枚ずつ足した (AI (Gemini) が作った絵。`docs/public/images/can.jpg`, `cannot.jpg`) (詳細: sessions/2026-11-15-guide-illust.md)
+- てびき (`guide.html`) の「できること」に、できること・できないことをまとめた図を入れた (ブロックで描いた 8 つの絵。Claude が SVG で描いた。作るスクリプトは `tools/cancan_figure.py`) (詳細: sessions/2026-11-15-guide-illust.md)
 - 全 8 ページ (`index.html`, `guide.html`, `minecraft.html`, `tried/*.html`) に Google Analytics (GA4) の計測タグを追加した (`tools/build_guide.py` の `HEAD` と `index.html`)
 - 利用規約に沿って「アクセス解析とクッキーについて」の案内を `guide.html` (`docs/public/index.md` / `index.html`) に追加し、全ページの「ページの一覧」の下に案内とリンクを入れた (詳細: sessions/2026-11-15-analytics.md)
 
