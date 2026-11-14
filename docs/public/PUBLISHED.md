@@ -5,6 +5,7 @@
 - 本体: https://fu-yu.github.io/voxel-maker/
 - 説明ページ: https://fu-yu.github.io/voxel-maker/guide.html
 - マインクラフトに置く手順: https://fu-yu.github.io/voxel-maker/minecraft.html (2026-11-14 から)
+- マインクラフトで試してみた: https://fu-yu.github.io/voxel-maker/tried.html (2026-11-14 から)
 - 公開を始めた日: 2026-11-11
 - 更新のしかた: `main` に取り込むと自動で反映される
 
