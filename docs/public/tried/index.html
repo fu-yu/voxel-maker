@@ -8,14 +8,20 @@ code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.88em;
 table { border-collapse:collapse; width:100%; font-size:15px; line-height:1.6; }
 th,td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid var(--line); }
 thead th { font-size:13px; color:var(--muted); font-weight:700; }
-.shot { display:flex; flex-direction:column; gap:10px; }
-.shot figure img { border-radius:0; border:1px solid var(--line); }
+.cards { list-style:none; padding:0; display:flex; flex-direction:column; gap:14px; }
+.cards li a { display:grid; grid-template-columns:180px 1fr; gap:14px; align-items:center; background:var(--surface); border:1px solid var(--line); padding:12px; text-decoration:none; color:var(--fg); }
+.cards li a:hover { border-color:var(--accent); }
+.cards li img { display:block; width:100%; height:auto; border:1px solid var(--line); border-radius:0; }
+.cards .body { display:flex; flex-direction:column; gap:4px; min-width:0; }
+.cards b { font-size:18px; color:var(--accent); }
+.cards span { font-size:15px; line-height:1.65; color:var(--fg); }
+.cards small { font-size:13px; color:var(--muted); }
+@media (max-width:520px) { .cards li a { grid-template-columns:1fr; } }
 </style>
 <div class="page">
 <header>
   <h1>マインクラフトで試してみた</h1>
   <p class="lede">ボクセル工房で作った立体を、本物のマインクラフトに置いて確かめた記録です。うまくいったことも、見つけた問題も、そのまま書いています。</p>
-  <figure><img src="images/mc-lake-top.jpg" width="1100" height="708" alt="山の上から見下ろした、湖と林のある風景。マインクラフトの画面"></figure>
 </header>
 
 <section>
@@ -29,36 +35,33 @@ thead th { font-size:13px; color:var(--muted); font-weight:700; }
 </section>
 
 <section>
-  <h2>1. 風景を置いてみた</h2>
-  <p>地形は「山と湖」、季節は「夏」です。</p>
-  <div class="shot">
-    <h3>上から見る</h3>
-    <p>いちばん上の写真です。湖、岸の砂、草の斜面、林、雪ののった石の山が、ボクセル工房の画面と同じ並びで置かれました。水は湖の形におさまり、木の葉も残りました。</p>
-  </div>
-  <div class="shot">
-    <h3>横から見る</h3>
-    <figure><img src="images/mc-lake-side.jpg" width="1100" height="708" alt="地面に立って横から見た風景。土と石の高い壁の上に、木が並んでいる" loading="lazy"></figure>
-    <p>風景は、地面の上に台のようにのります。地面に立って見ると、まわりが土と石の高い壁になりました。歩いては登れないので、空を飛んで中に入りました。</p>
-  </div>
-  <div class="shot">
-    <h3>角から見る</h3>
-    <figure><img src="images/mc-lake-corner.jpg" width="1100" height="493" alt="風景の角。水のまわりを、ガラスの枠が囲んでいる" loading="lazy"></figure>
-    <p>水がふちにある所には、ガラスが立ちます。水は外に流れ出しませんでした。近くで見ると、ガラスの枠の線が見えます。</p>
-  </div>
-  <div class="shot">
-    <h3>夕方に見る</h3>
-    <figure><img src="images/mc-lake-dusk.jpg" width="1100" height="708" alt="夕方に上から見た湖。全体が暗く写っている" loading="lazy"></figure>
-    <p>夕方や夜は、全体が暗く写ります。色を見比べたいときは、昼にします。チャットの欄に <code>/time set day</code> と打つと、昼になります。</p>
-  </div>
-</section>
-
-<section>
-  <h2>2. 文字を置いてみた</h2>
-  <figure><img src="images/mc-text-before.jpg" width="1100" height="622" alt="ブロックでできた大きな文字。上が橙、まん中が黄、その下に灰色と黄緑の帯がある" loading="lazy"><figcaption>色の選び方を直す前の写真です。</figcaption></figure>
-  <ul>
-    <li>文字は、裏返しにならず、左から読める向きに置かれました。</li>
-    <li>色に問題がありました。上の橙から下の黄緑へ変わる色づけの途中に、灰色の帯が入りました。</li>
-    <li>同じ日に、色の選び方を直しました。直したあとの写真は、まだありません。</li>
+  <h2>試した記録</h2>
+  <p>3 つの記録を、それぞれ別のページに分けています。</p>
+  <ul class="cards">
+    <li><a href="https://fu-yu.github.io/voxel-maker/tried/scene.html">
+      <img src="../images/mc-lake-top.jpg" width="1100" height="708" alt="山の上から見下ろした、湖と林のある風景">
+      <div class="body">
+        <b>1. 風景を置いてみた</b>
+        <span>「山と湖・夏」の風景を、上から・横から・角から・夕方の 4 つの見え方で確かめた記録です。</span>
+        <small>写真 4 枚</small>
+      </div>
+    </a></li>
+    <li><a href="https://fu-yu.github.io/voxel-maker/tried/text.html">
+      <img src="../images/mc-text-before.jpg" width="1100" height="622" alt="ブロックでできた大きな文字" loading="lazy">
+      <div class="body">
+        <b>2. 文字を置いてみた</b>
+        <span>文字の立体を置いて、読める向きと色の出方を確かめた記録です。</span>
+        <small>写真 1 枚</small>
+      </div>
+    </a></li>
+    <li><a href="https://fu-yu.github.io/voxel-maker/tried/slow.html">
+      <img src="../images/mc-slow-low.jpg" width="1100" height="618" alt="下の段から少しずつ置かれていく風景と、建てる係のアレイ" loading="lazy">
+      <div class="body">
+        <b>3. 少しずつ置いてみた (<code>voxel:build_slow</code>)</b>
+        <span>大きな風景を建てる係 (アレイ) つきで下の段から少しずつ置いた記録と、空中で置いたときの水漏れを直した記録です。</span>
+        <small>写真 6 枚</small>
+      </div>
+    </a></li>
   </ul>
 </section>
 
@@ -69,6 +72,7 @@ thead th { font-size:13px; color:var(--muted); font-weight:700; }
     <tbody>
       <tr><td>木の幹の下の草が、時間がたつと土に変わった</td><td>はじめから土を置くようにした</td></tr>
       <tr><td>文字の色分けに、灰色がまじった</td><td>近い色の選び方を、人の目の感じ方に近い方法に変えた</td></tr>
+      <tr><td>空を飛んだ状態で風景を置くと、1 段目の砂が落ちてふちの水も下から漏れた</td><td>1 段目の砂を石にし、ふちのガラスの下端にも石を置くようにして、空中で置いても漏れないことを確かめた</td></tr>
     </tbody>
   </table></div>
 </section>
@@ -76,7 +80,7 @@ thead th { font-size:13px; color:var(--muted); font-weight:700; }
 <section>
   <h2>試すときのこつ</h2>
   <ul>
-    <li>空を飛ぶと、上から全体を見られます。クリエイティブモードで、スペースのキーを 2 回すばやく押します。</li>
+    <li>空を飛ぶと、上から全体を見られます。クリエイティブモードで、スペースのキーを 2 回すばやく押します。下がるときは左の <code>shift</code> キーを押します。</li>
     <li>写真は、マインクラフトのスクリーンショットの機能で撮りました。ノート型の Mac では、はじめのキー (F2) がそのままでは効きませんでした。マインクラフトの「キー割り当て」で、別のキーに変えると撮れました。</li>
   </ul>
 </section>
@@ -96,3 +100,4 @@ thead th { font-size:13px; color:var(--muted); font-weight:700; }
   <span>ボクセル工房は、Minecraft の公式の製品ではありません。Mojang や Microsoft とは関係ありません。</span>
 </footer>
 </div>
+

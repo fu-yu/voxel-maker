@@ -36,7 +36,10 @@ GUIDE_TITLE = "ボクセル工房のてびき — 使い方とできること"
 # 本文だけのページ: (ファイル名, 説明文, 共有したときの題)
 SUB_PAGES = [
     ("minecraft.html", "ボクセル工房で作った立体を、マインクラフト (Java 版) のワールドに置く手順です。保存したファイルを入れて、コマンドを 1 つ打ちます。", "マインクラフトに置く — ボクセル工房"),
-    ("tried.html", "ボクセル工房で作った立体を、本物のマインクラフトに置いて確かめた記録です。うまくいったことも、見つけた問題も書いています。", "マインクラフトで試してみた — ボクセル工房"),
+    ("tried/index.html", "ボクセル工房で作った立体を、本物のマインクラフトに置いて確かめた記録です。うまくいったことも、見つけた問題も書いています。", "マインクラフトで試してみた — ボクセル工房"),
+    ("tried/scene.html", "ボクセル工房で作った「山と湖・夏」の風景を、マインクラフトに置いて上から・横から・角から・夕方の見え方を確かめた記録です。", "1. 風景を置いてみた — ボクセル工房"),
+    ("tried/text.html", "ボクセル工房で作った文字の立体を、マインクラフトに置いて向きと色の出方を確かめた記録です。", "2. 文字を置いてみた — ボクセル工房"),
+    ("tried/slow.html", "ボクセル工房で作った大きな風景を、建てる係 (アレイ) つきで下の段から少しずつ置いた記録です。", "3. 少しずつ置いてみた — ボクセル工房"),
 ]
 
 
@@ -45,7 +48,7 @@ SITE_PAGES = [
     ("./", "ボクセル工房", "文字・画像・風景を、ブロックの立体にする道具です。"),
     ("guide.html", "てびき", "使い方と、できること・できないことの説明です。"),
     ("minecraft.html", "マインクラフトに置く", "作った立体を、マインクラフトのワールドに置く手順です。"),
-    ("tried.html", "マインクラフトで試してみた", "本物のマインクラフトに置いて確かめた、写真つきの記録です。"),
+    ("tried/index.html", "マインクラフトで試してみた", "本物のマインクラフトに置いて確かめた、写真つきの記録です。"),
 ]
 NAV_CSS = (
     ".sitenav{display:flex;flex-wrap:wrap;gap:8px;font-size:14px;margin:0}"
@@ -60,10 +63,14 @@ NAV_CSS = (
 
 def add_site_nav(body: str, current: str) -> str:
     """ページの上に短い一覧を、下に説明つきの一覧を入れる。current は今のページのファイル名。"""
+    depth = current.count("/")
+    prefix = "../" * depth
+    active = "tried/index.html" if current.startswith("tried/") else current
+    link = lambda href: ("../" * depth if href == "./" else prefix + href) if depth else href
     top = '<nav class="sitenav" aria-label="ページの一覧">' + "".join(
-        f'<a href="{href}"' + (' aria-current="page"' if href == current else "") + f">{name}</a>" for href, name, _ in SITE_PAGES
+        f'<a href="{link(href)}"' + (' aria-current="page"' if href == active else "") + f">{name}</a>" for href, name, _ in SITE_PAGES
     ) + "</nav>"
-    items = "\n".join(f'    <li><a href="{href}">{name}</a><span>{desc}</span></li>' for href, name, desc in SITE_PAGES if href != current)
+    items = "\n".join(f'    <li><a href="{link(href)}">{name}</a><span>{desc}</span></li>' for href, name, desc in SITE_PAGES if href != current)
     bottom = f'<section class="siteindex">\n  <h2>ページの一覧</h2>\n  <ul>\n{items}\n  </ul>\n</section>\n\n'
     for marker in ('<div class="page">\n', "<footer>", "</style>"):
         assert body.count(marker) == 1, marker
@@ -96,16 +103,24 @@ def build_sub(name: str, desc: str, title: str) -> None:
     """docs/public/<name> (そのページだけの決まり + 本文) に、共通の見た目を足して、単体で開ける <name> を作る。"""
     for part in (GUIDE_URL, GUIDE_DESC, GUIDE_TITLE):
         assert part in HEAD, part
+    depth = name.count("/")
+    prefix = "../" * depth
     head = HEAD.replace(GUIDE_URL, "https://fu-yu.github.io/voxel-maker/" + name).replace(GUIDE_DESC, desc).replace(GUIDE_TITLE, title)
     body = (ROOT / "docs/public" / name).read_text(encoding="utf-8")
     body = body.replace("<style>", "<style>" + shared_style(), 1)
-    body = body.replace('src="images/', 'src="docs/public/images/')
+    if depth:
+        body = body.replace('src="../images/', f'src="{prefix}docs/public/images/')
+    else:
+        body = body.replace('src="images/', 'src="docs/public/images/')
     # 公開ページの中では、同じ場所のページどうしを短いアドレスでつなぐ
-    body = body.replace('href="https://fu-yu.github.io/voxel-maker/"', 'href="./"').replace('href="https://fu-yu.github.io/voxel-maker/', 'href="')
+    root_rel = prefix if depth else "./"
+    body = body.replace('href="https://fu-yu.github.io/voxel-maker/"', f'href="{root_rel}"').replace('href="https://fu-yu.github.io/voxel-maker/', f'href="{prefix}')
     body = add_site_nav(body, name)
     style_end = body.index("</style>") + len("</style>")
     out = head + body[:style_end] + "\n</head>\n<body>\n" + body[style_end:] + "</body>\n</html>\n"
-    (ROOT / name).write_text(out, encoding="utf-8")
+    out_path = ROOT / name
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(out, encoding="utf-8")
     print(name + " を書き出しました")
 
 

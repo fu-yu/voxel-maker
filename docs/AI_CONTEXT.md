@@ -15,7 +15,7 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 | 「風景を作る」タブ | 動作確認済み (2026-11-13、ローカルで。地形 3 種・季節 3 種・最大と最小の設定・座標データの書き出し・375px 幅)。2026-11-13 に `main` に取り込んで公開。公開ページでも確認済み (結果は `docs/dev/sessions/2026-11-13-seo.md` の「前回の確認の追記」) |
 | 検索と共有のための設定 (題・説明文・`og:*`・共有用の画像) | 公開中 (2026-11-13)。公開ページでタグと画像を確認済み。共有したときのカードも確認済み (ユーザーのスクリーンショット。結果は `docs/dev/sessions/2026-11-14-json-ascii.md` の追記) |
 | 座標データ (JSON) の書き出し | 項目は `size`, `order`, `up`, `voxels` (英数字だけ)。2026-11-14 にローカルで確認し、同じ日に公開 |
-| マインクラフト (Java 版) 用の書き出し (`#saveMc`) | 公式のサーバー版 26.3 で全ブロックの配置を確認済み。ゲームの画面でも、ユーザーが文字と風景 (山と湖・夏) を置いて確認した (2026-11-14)。色の選び方を OKLab に直したあとの見た目は **未確認**。2026-11-14 に「試験中」として公開 |
+| マインクラフト (Java 版) 用の書き出し (`#saveMc`) | 公式のサーバー版 26.3 で全ブロックの配置を確認済み。ゲームの画面でも、ユーザーが文字と風景 (山と湖・夏) を置いて確認した (2026-11-14)。色の選び方を OKLab に直したあとの見た目は **未確認**。2026-11-14 に「試験中」として公開。「建てる係」つきで少しずつ置く `voxel:build_slow` を `work/builder` ブランチで組み込み、ポートを使わない照合 (5 種類) とゲームの画面 (最大設定の風景) で確認済み |
 | マインクラフト用の説明ページ `minecraft.html` | ローカルで表示を確認済み (2026-11-14)。同じ日に `deploy.yml` に足して公開 (ユーザーが「すすめましょう」と言った) |
 | 試した記録のページ `tried.html` | ローカルで表示を確認済み。2026-11-14 に `deploy.yml` に足して公開 (ユーザーが「足して公開」と言った)。ユーザーが次に試したら、写真と結果を足していく |
 | 範囲の選択、「下絵をコピー」 | **未確認** (コードを読んだだけ) |
@@ -25,7 +25,7 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 ## やりかけの作業 (2026-11-14 の時点)
 マインクラフト (Java 版) 用の書き出しと説明ページは、2026-11-14 に「試験中」として `main` に取り込んで公開した (ユーザーが「公開しても修正が続きそう」と言い、直しながら進めると決めた)。くわしくは `docs/dev/sessions/2026-11-14-minecraft-java.md`。続きの直しは、新しい作業ブランチで行う。
 
--1. **「建てる係」つきで少しずつ置く (`voxel:build_slow`)**: 設計と小さな試しまで終わり、本体はまだ変えていない。設計書は `docs/dev/builder-design.md` (作業ブランチ `work/builder`)。続きは Antigravity に引き継ぐ (ユーザーが 2026-11-14 に決めた)。
+-1. **「建てる係」つきで少しずつ置く (`voxel:build_slow`)**: 作業ブランチ `work/builder` で本体 (`index.html`)・説明ページ (`minecraft.html`)・試した記録 (`tried.html`) に組み込み、ポートを使わない照合 (5 種類) とゲームの画面での確認 (最大設定の風景) まで完了 (2026-11-14)。空中で置いたときの水漏れ対策も入れた。終わった瞬間にアレイが消える動き・`voxel:build_stop` のゲーム画面での見た目・サーバー版での本物の立体の照合は **未確認**。設計書は `docs/dev/builder-design.md`、記録は `docs/dev/sessions/2026-11-14-builder.md`。
 0. **歩いて楽しめる大きな地図**: ユーザーの希望。案 a〜d を出した (同じ記録にある)。どれを作るかは未定。
 1. **直した色を、ゲームの画面で見る**: 色の選び方を OKLab に変えたあとの文字を、ユーザーにもう一度置いてもらう。見本の画像の軸に入る `yellow_concrete` が浮かないかも見る。
 2. **ゲームの画面でまだ見ていないもの**: 秋・冬・島・丘の風景、見本の画像、文字を置いたときに北を向いていたか (説明ページの「北を向くと読める」の確認)、パックの一覧の警告 (`max_format: 9999`)。
@@ -43,9 +43,9 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 - `docs/public/index.html` — 説明ページの本文 (Artifact 用。`<!doctype>` や `<head>` を持たない形)
 - `docs/public/images/` — 挿絵 (AI が作った絵) と、共有用の画像 `og.jpg` (本体の画面を撮ったもの。作り方は `docs/dev/sessions/2026-11-13-seo.md`)
 - `minecraft.html` — マインクラフトに置く手順のページ (生成物。手で直さない)。元原稿は `docs/public/minecraft.md`、本文は `docs/public/minecraft.html`
-- `tried.html` — マインクラフトで試した記録のページ (生成物。手で直さない)。元原稿は `docs/public/tried.md`、本文は `docs/public/tried.html`。写真は `docs/public/images/mc-*.jpg`
-- `tools/build_guide.py` — `docs/public/index.html` から `guide.html` を作る。`SUB_PAGES` の一覧にあるページ (`minecraft.html`, `tried.html`) も作る。どのページにも、`SITE_PAGES` の一覧から「ページの一覧」を入れる
-- `.github/workflows/deploy.yml` — `main` への push で `index.html`, `guide.html`, `minecraft.html`, `tried.html`, `LICENSE`, `docs/public/images/` だけを `gh-pages` ブランチに強制 push する (`gh-pages` は毎回 1 コミットに作り直される。手で触らない)
+- `tried/index.html`, `tried/scene.html`, `tried/text.html`, `tried/slow.html` — マインクラフトで試した記録のページ (生成物。手で直さない)。元原稿は `docs/public/tried/*.md`、本文は `docs/public/tried/*.html`。写真は `docs/public/images/mc-*.jpg`
+- `tools/build_guide.py` — `docs/public/index.html` から `guide.html` を作る。`SUB_PAGES` の一覧にあるページ (`minecraft.html`, `tried/index.html`, `tried/scene.html`, `tried/text.html`, `tried/slow.html`) も作る。どのページにも、`SITE_PAGES` の一覧から「ページの一覧」を入れる
+- `.github/workflows/deploy.yml` — `main` への push で `index.html`, `guide.html`, `minecraft.html`, `tried/`, `LICENSE`, `docs/public/images/` だけを `gh-pages` ブランチに強制 push する (`gh-pages` は毎回 1 コミットに作り直される。手で触らない)
 
 ## 注意
 - **ページを足すときに直す所は 4 つ**: `tools/build_guide.py` の `SUB_PAGES` と `SITE_PAGES`、`.github/workflows/deploy.yml` の `cp` の行 (自動化の変更なので、ユーザーに確かめてから)、本体 `index.html` の「ページの一覧」の欄。
@@ -61,4 +61,4 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 - コミットのメールアドレスは GitHub の noreply アドレスを使う (リポジトリごとの設定に入れてある)。
 
 ## 最新のセッション
-`docs/dev/sessions/2026-11-14-site-index.md` (その前: `2026-11-14-tried-page.md`)
+`docs/dev/sessions/2026-11-14-builder.md` (その前: `2026-11-14-site-index.md`)

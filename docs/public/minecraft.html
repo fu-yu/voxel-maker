@@ -43,9 +43,25 @@ tbody th { font-weight:700; white-space:nowrap; }
     <li><span>開いたフォルダの中の <code>datapacks</code> フォルダに、保存したファイルを入れます。ファイルは開かずに、そのまま入れます。</span></li>
     <li><span>ワールドに入り、立体を置きたい場所に立ちます。</span></li>
     <li><span>チャットの欄に <code>/reload</code> と打ちます。</span></li>
-    <li><span>続けて <code>/function voxel:build</code> と打ちます。</span></li>
+    <li><span>続けて <code>/function voxel:build</code> と打ちます。少しずつ置きたいときは、代わりに <code>/function voxel:build_slow</code> と打ちます。</span></li>
   </ol>
   <p class="source">手順 3 と 4 は、Minecraft Wiki の「<a href="https://ja.minecraft.wiki/w/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB:%E3%83%87%E3%83%BC%E3%82%BF%E3%83%91%E3%83%83%E3%82%AF%E3%81%AE%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%81%BF">データパックの読み込み</a>」の説明によります。Minecraft Wiki は、公式のサイトではありません。</p>
+</section>
+
+<section>
+  <h2>少しずつ置く (<code>voxel:build_slow</code>、試験中)</h2>
+  <div class="flow">
+    <div><svg viewBox="0 0 160 104" role="img" aria-label="1 段目の石のブロックが並び、その上を水色の小さな生き物が飛んでいるところ"><line x1="12" y1="88" x2="148" y2="88" stroke="var(--grid)" stroke-width="2"/><rect x="24" y="74" width="14" height="14" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="38" y="74" width="14" height="14" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="52" y="74" width="14" height="14" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="66" y="74" width="14" height="14" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="80" y="74" width="14" height="14" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><circle cx="88" cy="52" r="6" fill="var(--blue)" stroke="var(--fg)" stroke-width="1.2"/><path d="M82 50 l-8 -5 l2 8 z" fill="var(--cream-block)" stroke="var(--fg)" stroke-width="1"/><path d="M94 50 l8 -5 l-2 8 z" fill="var(--cream-block)" stroke="var(--fg)" stroke-width="1"/><circle cx="72" cy="60" r="2" fill="var(--orange)"/><circle cx="102" cy="58" r="1.8" fill="var(--orange)"/></svg><b>1 段目から</b><span>建てる係が飛び回りながら、いちばん下の段から置きます。</span></div>
+    <div><svg viewBox="0 0 160 104" role="img" aria-label="中腹まで土と草と水が積み上がり、建てる係が上へ移動しているところ"><line x1="12" y1="88" x2="148" y2="88" stroke="var(--grid)" stroke-width="2"/><rect x="24" y="74" width="14" height="14" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="38" y="74" width="14" height="14" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="52" y="74" width="14" height="14" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="66" y="74" width="14" height="14" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="80" y="74" width="14" height="14" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="94" y="74" width="14" height="14" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="24" y="60" width="14" height="14" fill="#b0845a" stroke="var(--fg)" stroke-width="1"/><rect x="38" y="60" width="14" height="14" fill="#b0845a" stroke="var(--fg)" stroke-width="1"/><rect x="52" y="60" width="14" height="14" fill="var(--blue)" stroke="var(--fg)" stroke-width="1"/><rect x="66" y="60" width="14" height="14" fill="var(--blue)" stroke="var(--fg)" stroke-width="1"/><rect x="80" y="60" width="14" height="14" fill="#b0845a" stroke="var(--fg)" stroke-width="1"/><rect x="94" y="60" width="14" height="14" fill="#b0845a" stroke="var(--fg)" stroke-width="1"/><rect x="24" y="46" width="14" height="14" fill="var(--green)" stroke="var(--fg)" stroke-width="1"/><rect x="38" y="46" width="14" height="14" fill="var(--green)" stroke="var(--fg)" stroke-width="1"/><rect x="80" y="46" width="14" height="14" fill="var(--green)" stroke="var(--fg)" stroke-width="1"/><circle cx="106" cy="34" r="6" fill="var(--blue)" stroke="var(--fg)" stroke-width="1.2"/><path d="M100 32 l-8 -5 l2 8 z" fill="var(--cream-block)" stroke="var(--fg)" stroke-width="1"/><path d="M112 32 l8 -5 l-2 8 z" fill="var(--cream-block)" stroke="var(--fg)" stroke-width="1"/><circle cx="92" cy="40" r="2" fill="var(--orange)"/></svg><b>段ごとに上へ</b><span>水はその段の最後に置くので、外へ流れ出しません。</span></div>
+    <div><svg viewBox="0 0 160 104" role="img" aria-label="木まで積み上がって完成し、光の粒だけが残って建てる係が消えるところ"><line x1="12" y1="88" x2="148" y2="88" stroke="var(--grid)" stroke-width="2"/><rect x="24" y="74" width="84" height="14" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="24" y="60" width="28" height="14" fill="#b0845a" stroke="var(--fg)" stroke-width="1"/><rect x="52" y="60" width="28" height="14" fill="var(--blue)" stroke="var(--fg)" stroke-width="1"/><rect x="80" y="60" width="28" height="14" fill="#b0845a" stroke="var(--fg)" stroke-width="1"/><rect x="24" y="46" width="28" height="14" fill="var(--green)" stroke="var(--fg)" stroke-width="1"/><rect x="80" y="46" width="28" height="14" fill="var(--green)" stroke="var(--fg)" stroke-width="1"/><rect x="88" y="32" width="12" height="14" fill="#8a5a36" stroke="var(--fg)" stroke-width="1"/><rect x="78" y="18" width="32" height="14" fill="var(--green)" stroke="var(--fg)" stroke-width="1"/><circle cx="126" cy="26" r="3" fill="var(--orange)"/><circle cx="136" cy="34" r="2.2" fill="var(--blue)"/><circle cx="118" cy="38" r="2" fill="var(--green)"/><circle cx="132" cy="20" r="1.8" fill="var(--orange)"/></svg><b>終わると消える</b><span>2 分ほどで置き終わり、建てる係は消えます。</span></div>
+  </div>
+  <p><code>/function voxel:build</code> の代わりに <code>/function voxel:build_slow</code> と打つと、小さな生き物 (アレイ) が建てる係として飛び回りながら、下の段から 1 段ずつブロックを置いていきます。大きな風景でも、2 分ほどで置き終わります。</p>
+  <ul>
+    <li>途中で止めたいときは、<code>/function voxel:build_stop</code> と打ちます。そこまでに置いたブロックは、そのまま残ります。</li>
+    <li>建てている途中でワールドを閉じて開き直しても、続きから進みます。</li>
+    <li>終わると、建てる係は消えます。</li>
+  </ul>
+  <p class="source">この置き方は、ゲームの画面で大きな風景 (山と湖・夏、横 128 マス・山の高さ 40 マス) を下の段から最後まで置けることを確かめました。終わったときに建てる係がきらきらして消える動きと、途中で止める <code>/function voxel:build_stop</code> は、ゲームの画面ではまだ見ていません。</p>
 </section>
 
 <section>
@@ -73,6 +89,7 @@ tbody th { font-weight:700; white-space:nowrap; }
   <h2>何のブロックになるか</h2>
   <p>文字と画像の立体は、色のそろった 49 種類のブロック (コンクリート・羊毛・テラコッタ) から、いちばん近い色のものになります。画面とまったく同じ色にはなりません。</p>
   <p>風景は、次のブロックになります。</p>
+  <figure class="map"><svg viewBox="0 0 320 148" role="img" aria-label="風景を横から切った断面図。いちばん下の段は石で、ふちの水の外側にはガラスと石の底があり、地面の上には草と土と木がある"><rect x="28" y="106" width="224" height="18" fill="#9a9892" stroke="var(--fg)" stroke-width="1.2"/><text x="140" y="119" text-anchor="middle" font-size="10" font-weight="700" fill="#2b221a">1 段目はすべて石 (砂も石にする)</text><rect x="28" y="88" width="22" height="18" fill="#9a9892" stroke="var(--fg)" stroke-width="1.2"/><rect x="28" y="52" width="22" height="36" fill="var(--cream-block)" opacity=".75" stroke="var(--fg)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="39" y="44" text-anchor="middle" font-size="10" font-weight="700" fill="var(--fg)">ガラス</text><rect x="50" y="52" width="68" height="54" fill="var(--blue)" opacity=".88" stroke="var(--fg)" stroke-width="1.2"/><text x="84" y="83" text-anchor="middle" font-size="11" font-weight="700" fill="#fffaf0">水 (冬は氷)</text><rect x="118" y="88" width="34" height="18" fill="var(--stem)" stroke="var(--fg)" stroke-width="1.2"/><text x="135" y="101" text-anchor="middle" font-size="10" font-weight="700" fill="#3d2f24">砂</text><rect x="152" y="70" width="100" height="36" fill="#b0845a" stroke="var(--fg)" stroke-width="1.2"/><text x="202" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#fffaf0">土・石</text><rect x="152" y="52" width="100" height="18" fill="var(--green)" stroke="var(--fg)" stroke-width="1.2"/><text x="182" y="65" text-anchor="middle" font-size="10" font-weight="700" fill="#2b221a">草</text><rect x="214" y="52" width="18" height="18" fill="#b0845a" stroke="var(--fg)" stroke-width="1.2"/><rect x="214" y="24" width="18" height="28" fill="#8a5a36" stroke="var(--fg)" stroke-width="1.2"/><rect x="196" y="8" width="54" height="20" fill="var(--green)" stroke="var(--fg)" stroke-width="1.2"/><text x="284" y="64" text-anchor="middle" font-size="10" fill="var(--muted)">幹の下は</text><text x="284" y="78" text-anchor="middle" font-size="10" fill="var(--muted)">最初から土</text><line x1="258" y1="64" x2="234" y2="61" stroke="var(--fg)" stroke-width="1"/></svg><figcaption>風景を横から切った図です。空中で置いても底の砂やふちの水が落ちないようになっています。</figcaption></figure>
   <div class="tablewrap"><table>
       <thead><tr><th>画面の見た目</th><th>夏・秋</th><th>冬</th></tr></thead>
       <tbody>
@@ -85,7 +102,7 @@ tbody th { font-weight:700; white-space:nowrap; }
       </tbody>
     </table></div>
   <ul>
-    <li>水がふちにある所には、外側にガラスを置きます。水がまわりに流れ出さないようにするためです。</li>
+    <li>水がふちにある所には、外側にガラス (その下端は石) を置きます。1 段目の砂も石にしてあります。空中で置いたときにも砂が落ちず、水が外に流れ出さないようにするためです。</li>
     <li>木の幹の下などの、上がふさがれた草は、土にしてあります。マインクラフトでは、そうした草は時間がたつと土に変わるためです。</li>
     <li>葉は、時間がたっても消えない設定で置かれます。</li>
   </ul>
@@ -93,10 +110,12 @@ tbody th { font-weight:700; white-space:nowrap; }
 
 <section>
   <h2>うまくいかないとき</h2>
+  <figure class="map"><svg viewBox="0 0 320 98" role="img" aria-label="datapacks フォルダの中に新しい zip を 1 つだけ入れ、古い zip は外に出す図"><path d="M18 22 h38 l8 9 h84 v52 h-130 z" fill="var(--stem)" stroke="var(--fg)" stroke-width="1.5"/><text x="83" y="46" text-anchor="middle" font-size="11" font-weight="700" fill="#3d2f24">datapacks フォルダ</text><rect x="46" y="53" width="74" height="22" fill="var(--surface)" stroke="var(--fg)" stroke-width="1.3"/><text x="83" y="68" text-anchor="middle" font-size="10" font-weight="700" fill="var(--fg)">新しい zip 1 つ</text><line x1="156" y1="56" x2="196" y2="56" stroke="var(--fg)" stroke-width="2"/><path d="M196 56 l-7 -4 v8 z" fill="var(--fg)"/><text x="176" y="46" text-anchor="middle" font-size="10" fill="var(--fg)">外に出す</text><rect x="206" y="42" width="96" height="28" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="254" y="60" text-anchor="middle" font-size="10" fill="var(--muted)">前の古い zip</text></svg><figcaption>2 つ目の立体を置くときは、前の zip を <code>datapacks</code> フォルダに残さないようにします。</figcaption></figure>
   <ul class="trouble">
     <li><b>「関数が見つからない」という意味の赤い文字が出る</b><span>ファイルが <code>datapacks</code> フォルダに入っているか、<code>/reload</code> を打ったかを確かめます。ファイルを開いて中身だけを入れた場合は、開く前のファイルを入れ直します。</span></li>
     <li><b>コマンドが使えない</b><span>ワールドの「チートの許可」がオフになっています。</span></li>
     <li><b>立体の一部が置かれない</b><span>遠くの土地がまだ読み込まれていないと、そこには置かれません。大きな立体で起きやすくなります。マスの数を減らして、作り直してみてください。</span></li>
+    <li><b>新しいファイルに入れ替えたのに、前の立体が置かれる</b><span><code>datapacks</code> フォルダに前の zip ファイルが残っていると、ファイルの名前を変えていても前のほうが読み込まれることがあります。前の zip ファイルは <code>datapacks</code> フォルダの外に出すか消してから、<code>/reload</code> と打ってください。</span></li>
   </ul>
 </section>
 
@@ -107,12 +126,13 @@ tbody th { font-weight:700; white-space:nowrap; }
     <li>ゲームの画面でも、文字と風景 (山と湖・夏) を置いて見ました (2026-11-14)。風景は、水がガラスの中におさまり、木の葉も残りました。文字は、正しく読める向きに置かれました。</li>
     <li>文字の色分けに灰色がまじる問題が見つかり、色の選び方を直しました。直したあとの見た目は、ゲームの画面ではまだ見ていません。</li>
     <li>1.21 から 26.2 までの版では、まだ試していません。</li>
+    <li><code>/function voxel:build_slow</code> (建てる係つきで少しずつ置く) は、文字・画像・風景のファイルで、少しずつ置く段階をすべてたどった結果が <code>/function voxel:build</code> と同じブロックになることを確かめました。ゲームの画面でも、いちばん大きい設定の風景 (山と湖・夏、横 128 マス・高さ 40 マス) を下の段から最後まで置けることを確かめました (2026-11-14)。終わったときに建てる係がきらきらして消えるところと、途中で止める <code>/function voxel:build_stop</code> は、ゲームの画面ではまだ確かめていません。</li>
   </ul>
 </section>
 
 <section>
   <h2>実際に置いてみた記録</h2>
-  <p>写真つきの記録を「<a href="https://fu-yu.github.io/voxel-maker/tried.html">マインクラフトで試してみた</a>」のページにまとめています。</p>
+  <p>写真つきの記録を「<a href="https://fu-yu.github.io/voxel-maker/tried/index.html">マインクラフトで試してみた</a>」のページにまとめています。</p>
 </section>
 
 <section>
