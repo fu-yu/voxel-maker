@@ -125,10 +125,21 @@ def build_sub(name: str, desc: str, title: str) -> None:
     print(name + " を書き出しました")
 
 
+def build_sitemap() -> None:
+    """公開するすべてのページのアドレスを並べた sitemap.xml を作る。"""
+    base = "https://fu-yu.github.io/voxel-maker/"
+    urls = [base, GUIDE_URL, *(base + name for name, _, _ in SUB_PAGES)]
+    items = "\n".join(f"  <url><loc>{u}</loc></url>" for u in urls)
+    out = f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{items}\n</urlset>\n'
+    (ROOT / "sitemap.xml").write_text(out, encoding="utf-8")
+    print("sitemap.xml を書き出しました")
+
+
 def main() -> None:
     build_guide()
     for page in SUB_PAGES:
         build_sub(*page)
+    build_sitemap()
 
 
 if __name__ == "__main__":
