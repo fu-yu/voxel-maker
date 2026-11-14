@@ -27,7 +27,7 @@ jobs:
       - name: 公開するファイルを集める
         run: |
           mkdir -p _site/docs/public
-          cp index.html guide.html LICENSE _site/
+          cp index.html guide.html minecraft.html LICENSE _site/
           cp -R docs/public/images _site/docs/public/
           touch _site/.nojekyll
 

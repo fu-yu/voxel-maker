@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="ボクセル工房で作った立体を、マインクラフト (Java 版) のワールドに置く手順です。保存したファイルを入れて、コマンドを 1 つ打ちます。">
+<link rel="canonical" href="https://fu-yu.github.io/voxel-maker/minecraft.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ボクセル工房">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="マインクラフトに置く — ボクセル工房">
+<meta property="og:description" content="ボクセル工房で作った立体を、マインクラフト (Java 版) のワールドに置く手順です。保存したファイルを入れて、コマンドを 1 つ打ちます。">
+<meta property="og:url" content="https://fu-yu.github.io/voxel-maker/minecraft.html">
+<meta property="og:image" content="https://fu-yu.github.io/voxel-maker/docs/public/images/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ブロックを積んで作った、山と湖と木のある小さな風景。左に「ボクセル工房」の文字">
+<meta name="twitter:card" content="summary_large_image">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>マインクラフトに置く</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
+<style>
+/* layout: 1 本の読みもの。挿絵が先、文章があと。図はブロック (正方形) の単位でそろえる */
+:root {
+  --bg:#fbf4e0; --surface:#fffaf0; --fg:#3d2f24; --muted:#7a6857; --line:#e6d9bd;
+  --orange:#f08a3c; --blue:#7fa9dc; --green:#8fbf5a; --stem:#f3e6c4; --cream-block:#fff6dc;
+  --block-edge:#c96a22; --grid:#d9caa8; --accent:#c25a12; --frame:#fbf4e0;
+  --display:"Dela Gothic One","Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif;
+  --body:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
+  --unit:18px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg:#2a211b; --surface:#35291f; --fg:#f5ead6; --muted:#c2b09a; --line:#4c3c2e;
+  --stem:#e9dab3; --cream-block:#fff6dc; --block-edge:#8a4513; --grid:#5e4c3a; --accent:#ffa862; --frame:#fbf4e0; color-scheme:dark } }
+:root[data-theme="dark"] {
+  --bg:#2a211b; --surface:#35291f; --fg:#f5ead6; --muted:#c2b09a; --line:#4c3c2e;
+  --stem:#e9dab3; --cream-block:#fff6dc; --block-edge:#8a4513; --grid:#5e4c3a; --accent:#ffa862; --frame:#fbf4e0; color-scheme:dark }
+body { background:var(--bg); color:var(--fg); font-family:var(--body); font-size:17px; line-height:1.85;
+  padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); padding-block:28px 56px; }
+.page { max-width:680px; margin:0 auto; display:flex; flex-direction:column; gap:44px; }
+header { display:flex; flex-direction:column; gap:14px; }
+h1 { font-family:var(--display); font-weight:400; font-size:clamp(34px,9vw,54px); line-height:1.15; margin:0; letter-spacing:.02em; text-wrap:balance; }
+.lede { font-size:19px; margin:0; font-weight:500; }
+figure { margin:0; }
+figure img { display:block; width:100%; height:auto; border-radius:calc(var(--unit)*1); background:var(--frame); }
+figcaption { font-size:13px; color:var(--muted); margin-top:6px; }
+section { display:flex; flex-direction:column; gap:14px; }
+h2 { font-size:22px; font-weight:700; margin:0; line-height:1.4; display:flex; align-items:center; gap:10px; text-wrap:balance; }
+h2::before { content:""; width:var(--unit); height:var(--unit); background:var(--orange); flex:none; }
+h3 { font-size:15px; font-weight:700; color:var(--accent); margin:6px 0 0; letter-spacing:.06em; }
+p { margin:0; }
+ul,ol { margin:0; padding-left:1.3em; display:flex; flex-direction:column; gap:6px; }
+.scenes { list-style:none; padding:0; gap:10px; }
+.scenes li { background:var(--surface); border:1px solid var(--line); padding:12px 16px; }
+.flow { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.flow div, .shapes div { display:flex; flex-direction:column; gap:6px; min-width:0; }
+.flow svg { width:100%; height:auto; background:var(--surface); border:1px solid var(--line); }
+.flow b, .shapes b { font-size:15px; }
+.flow span, .shapes span { font-size:14px; line-height:1.6; color:var(--muted); }
+.shapes { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.shapes svg { width:100%; height:auto; background:var(--surface); border:1px solid var(--line); padding:10px; box-sizing:border-box; }
+@media (max-width:520px) { .flow, .shapes { grid-template-columns:1fr; } .flow div, .shapes div { display:grid; grid-template-columns:120px 1fr; column-gap:14px; align-items:center; } .flow svg, .shapes svg { grid-row:span 2; } }
+ol.steps { list-style:none; padding:0; counter-reset:s; gap:10px; }
+ol.steps li { counter-increment:s; display:grid; grid-template-columns:32px 1fr; gap:12px; align-items:start; }
+ol.steps li::before { content:counter(s); font-family:var(--display); width:32px; height:32px; display:grid; place-items:center; background:var(--fg); color:var(--bg); font-size:15px; margin-top:1px; }
+.btn { font-weight:700; border:1px solid var(--line); background:var(--surface); padding:1px 8px; white-space:nowrap; }
+.caution li::marker { color:var(--accent); }
+a { color:var(--accent); overflow-wrap:anywhere; }
+dl { margin:0; display:flex; flex-direction:column; gap:10px; }
+dt { font-weight:700; } dd { margin:0; color:var(--muted); }
+footer { border-top:1px solid var(--line); padding-top:16px; font-size:13px; color:var(--muted); display:flex; flex-direction:column; gap:4px; }
+
+/* このページだけの決まり。共通の決まりは index.html のものを tools/build_guide.py が前に足す */
+code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.88em; background:var(--surface); border:1px solid var(--line); padding:1px 6px; overflow-wrap:anywhere; }
+.map svg { display:block; width:100%; height:auto; background:var(--surface); border:1px solid var(--line); }
+.tablewrap { overflow-x:auto; }
+table { border-collapse:collapse; width:100%; font-size:15px; line-height:1.6; }
+th,td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid var(--line); }
+thead th { font-size:13px; color:var(--muted); font-weight:700; }
+tbody th { font-weight:700; white-space:nowrap; }
+.source { font-size:14px; color:var(--muted); }
+.back { font-size:15px; margin:0; display:flex; gap:18px; flex-wrap:wrap; }
+.trouble { list-style:none; padding:0; gap:12px; }
+.trouble li { background:var(--surface); border:1px solid var(--line); padding:12px 16px; display:flex; flex-direction:column; gap:4px; }
+</style>
+</head>
+<body>
+
+<div class="page">
+<header>
+  <p class="back"><a href="./">ボクセル工房を開く</a><a href="guide.html">てびきを読む</a></p>
+  <h1>マインクラフトに置く</h1>
+  <p class="lede">ボクセル工房で作った立体を、マインクラフトのワールドに置くための手順です。保存したファイルをワールドに入れて、コマンドを 1 つ打つと、立っている場所のとなりに立体が置かれます。</p>
+  <div class="flow">
+    <div><svg viewBox="0 0 160 104" role="img" aria-label="ボクセル工房の「マインクラフト用に保存」から、ファイルが 1 つ保存されるところ"><rect x="32" y="30" width="14" height="14" fill="var(--orange)" stroke="var(--block-edge)" stroke-width="1"/><rect x="18" y="44" width="14" height="14" fill="var(--orange)" stroke="var(--block-edge)" stroke-width="1"/><rect x="32" y="44" width="14" height="14" fill="var(--orange)" stroke="var(--block-edge)" stroke-width="1"/><rect x="46" y="44" width="14" height="14" fill="var(--orange)" stroke="var(--block-edge)" stroke-width="1"/><rect x="32" y="58" width="14" height="14" fill="var(--orange)" stroke="var(--block-edge)" stroke-width="1"/><line x1="70" y1="51" x2="92" y2="51" stroke="var(--fg)" stroke-width="2"/><path d="M92 51 l-6 -4 v8 z" fill="var(--fg)"/><path d="M102 26 h26 l10 10 v40 h-36 z" fill="var(--surface)" stroke="var(--fg)" stroke-width="1.5"/><path d="M128 26 v10 h10" fill="none" stroke="var(--fg)" stroke-width="1.5"/><text x="120" y="62" text-anchor="middle" font-family="inherit" font-size="11" fill="var(--fg)" font-weight="700">zip</text></svg><b>保存する</b><span>ボクセル工房で、ファイルを保存します。</span></div>
+    <div><svg viewBox="0 0 160 104" role="img" aria-label="保存したファイルを、datapacks という名前のフォルダに入れるところ"><path d="M18 26 h20 l8 8 v30 h-28 z" fill="var(--surface)" stroke="var(--fg)" stroke-width="1.5"/><text x="32" y="53" text-anchor="middle" font-family="inherit" font-size="11" fill="var(--fg)" font-weight="700">zip</text><line x1="52" y1="48" x2="72" y2="48" stroke="var(--fg)" stroke-width="2"/><path d="M72 48 l-6 -4 v8 z" fill="var(--fg)"/><path d="M80 34 h20 l6 7 h36 v38 h-62 z" fill="var(--stem)" stroke="var(--fg)" stroke-width="1.5"/><text x="111" y="65" text-anchor="middle" font-family="inherit" font-size="10" fill="#3d2f24">datapacks</text></svg><b>ワールドに入れる</b><span>ワールドの中の datapacks フォルダに入れます。</span></div>
+    <div><svg viewBox="0 0 160 104" role="img" aria-label="コマンドを打つと、地面の上にブロックの立体が置かれるところ"><rect x="12" y="14" width="136" height="20" fill="var(--surface)" stroke="var(--fg)" stroke-width="1.5"/><text x="18" y="28" font-family="ui-monospace,Menlo,monospace" font-size="10" fill="var(--fg)">/function voxel:build</text><line x1="10" y1="92" x2="150" y2="92" stroke="var(--grid)" stroke-width="2"/><rect x="66" y="50" width="14" height="14" fill="var(--orange)" stroke="var(--block-edge)" stroke-width="1"/><rect x="52" y="64" width="14" height="14" fill="var(--orange)" stroke="var(--block-edge)" stroke-width="1"/><rect x="66" y="64" width="14" height="14" fill="var(--orange)" stroke="var(--block-edge)" stroke-width="1"/><rect x="80" y="64" width="14" height="14" fill="var(--orange)" stroke="var(--block-edge)" stroke-width="1"/><rect x="66" y="78" width="14" height="14" fill="var(--orange)" stroke="var(--block-edge)" stroke-width="1"/></svg><b>コマンドで置く</b><span>コマンドを打つと、立体が置かれます。</span></div>
+  </div>
+</header>
+
+<section>
+  <h2>使えるマインクラフト</h2>
+  <ul>
+    <li>パソコンの「Java 版」の 1.21 以降で使えます。動きを確かめたのは 26.3 です。</li>
+    <li>スマホ、ゲーム機、Windows の「統合版」では使えません。</li>
+    <li>コマンドを使うので、「チートの許可」がオンのワールドが必要です。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>手順</h2>
+  <ol class="steps">
+    <li><span><a href="./">ボクセル工房</a>で、置きたい立体を作ります。</span></li>
+    <li><span>左の欄のいちばん下にある <span class="btn">マインクラフト用に保存</span> を押します。<code>voxel-koubou-datapack.zip</code> というファイルが保存されます。</span></li>
+    <li><span>マインクラフトを開き、置きたいワールドを選んで「編集」を押し、「ワールドフォルダーを開く」を押します。</span></li>
+    <li><span>開いたフォルダの中の <code>datapacks</code> フォルダに、保存したファイルを入れます。ファイルは開かずに、そのまま入れます。</span></li>
+    <li><span>ワールドに入り、立体を置きたい場所に立ちます。</span></li>
+    <li><span>チャットの欄に <code>/reload</code> と打ちます。</span></li>
+    <li><span>続けて <code>/function voxel:build</code> と打ちます。</span></li>
+  </ol>
+  <p class="source">手順 3 と 4 は、Minecraft Wiki の「<a href="https://ja.minecraft.wiki/w/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB:%E3%83%87%E3%83%BC%E3%82%BF%E3%83%91%E3%83%83%E3%82%AF%E3%81%AE%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%81%BF">データパックの読み込み</a>」の説明によります。Minecraft Wiki は、公式のサイトではありません。</p>
+</section>
+
+<section>
+  <h2>どこに置かれるか</h2>
+  <figure class="map"><svg viewBox="0 0 320 200" role="img" aria-label="上から見た図。立っている場所の 2 マス東に立体の角があり、立体はそこから東と南に向かって広がっている"><line x1="20" y1="20" x2="20" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="36" y1="20" x2="36" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="52" y1="20" x2="52" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="68" y1="20" x2="68" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="84" y1="20" x2="84" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="100" y1="20" x2="100" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="116" y1="20" x2="116" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="132" y1="20" x2="132" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="148" y1="20" x2="148" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="164" y1="20" x2="164" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="180" y1="20" x2="180" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="196" y1="20" x2="196" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="212" y1="20" x2="212" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="228" y1="20" x2="228" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="244" y1="20" x2="244" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="260" y1="20" x2="260" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="276" y1="20" x2="276" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="20" y1="20" x2="276" y2="20" stroke="var(--grid)" stroke-width="1"/><line x1="20" y1="36" x2="276" y2="36" stroke="var(--grid)" stroke-width="1"/><line x1="20" y1="52" x2="276" y2="52" stroke="var(--grid)" stroke-width="1"/><line x1="20" y1="68" x2="276" y2="68" stroke="var(--grid)" stroke-width="1"/><line x1="20" y1="84" x2="276" y2="84" stroke="var(--grid)" stroke-width="1"/><line x1="20" y1="100" x2="276" y2="100" stroke="var(--grid)" stroke-width="1"/><line x1="20" y1="116" x2="276" y2="116" stroke="var(--grid)" stroke-width="1"/><line x1="20" y1="132" x2="276" y2="132" stroke="var(--grid)" stroke-width="1"/><line x1="20" y1="148" x2="276" y2="148" stroke="var(--grid)" stroke-width="1"/><line x1="20" y1="164" x2="276" y2="164" stroke="var(--grid)" stroke-width="1"/><line x1="20" y1="180" x2="276" y2="180" stroke="var(--grid)" stroke-width="1"/><rect x="84" y="68" width="160" height="96" fill="var(--orange)" opacity=".85" stroke="var(--block-edge)" stroke-width="1.5"/><circle cx="60" cy="76" r="7" fill="var(--fg)"/><text x="60" y="58" text-anchor="middle" font-family="inherit" font-size="11" fill="var(--fg)" font-weight="700">立っている場所</text><text x="164" y="124" text-anchor="middle" font-family="inherit" font-size="12" font-weight="700" fill="#3d2f24">立体</text><line x1="68" y1="76" x2="92" y2="76" stroke="var(--fg)" stroke-width="1.5" stroke-dasharray="3 3"/><circle cx="92" cy="76" r="3" fill="#3d2f24"/><text x="60" y="100" text-anchor="middle" font-family="inherit" font-size="10" fill="var(--fg)">東へ 2 マス</text><line x1="252" y1="44" x2="288" y2="44" stroke="var(--fg)" stroke-width="2"/><path d="M288 44 l-6 -4 v8 z" fill="var(--fg)"/><text x="270" y="36" text-anchor="middle" font-family="inherit" font-size="11" fill="var(--fg)" font-weight="700">東</text><line x1="296" y1="150" x2="296" y2="178" stroke="var(--fg)" stroke-width="2"/><path d="M296 184 l-4 -6 h8 z" fill="var(--fg)"/><text x="296" y="142" text-anchor="middle" font-family="inherit" font-size="11" fill="var(--fg)" font-weight="700">南</text></svg><figcaption>上から見た図です。上が北です。</figcaption></figure>
+  <ul>
+    <li>立っている場所の 2 マス東が、立体の角になります。そこから東・南・上に向かって置かれます。立っている場所との間は、1 マスあきます。</li>
+    <li>高さは、足もとの高さから上です。</li>
+    <li>大きさは、ボクセル工房の画面の左下に「48×17×48」のように出ています。順に、東西・高さ・南北のマスの数です。</li>
+    <li>風景は、まわりに 1 マスずつ広くなります。水をせき止めるガラスを置くためです。</li>
+    <li>文字は、南側に立って北を向くと読める向きに置かれます。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>置く前に知っておくこと</h2>
+  <ul class="caution">
+    <li>立体が置かれる場所にもとからあったブロックは、置きかえられます。建物のそばでは実行しないでください。</li>
+    <li>置いたあとで元に戻す機能はありません。はじめは、新しいワールドか、何もない場所で試すのがおすすめです。</li>
+    <li>広くて平らな場所が向いています。ワールドの種類を「スーパーフラット」にすると、見やすくなります。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>何のブロックになるか</h2>
+  <p>文字と画像の立体は、色のそろった 49 種類のブロック (コンクリート・羊毛・テラコッタ) から、いちばん近い色のものになります。画面とまったく同じ色にはなりません。</p>
+  <p>風景は、次のブロックになります。</p>
+  <div class="tablewrap"><table>
+      <thead><tr><th>画面の見た目</th><th>夏・秋</th><th>冬</th></tr></thead>
+      <tbody>
+        <tr><th>草</th><td>草ブロック</td><td>雪ブロック</td></tr>
+        <tr><th>土・石・砂・雪</th><td>土・石・砂・雪ブロック</td><td>同じ</td></tr>
+        <tr><th>水</th><td>水</td><td>氷</td></tr>
+        <tr><th>木の幹</th><td>オークの原木</td><td>同じ</td></tr>
+        <tr><th>とがった木の葉</th><td>トウヒの葉</td><td>同じ</td></tr>
+        <tr><th>丸い木の葉</th><td>オークの葉・シラカバの葉 (秋は、近い色のブロック)</td><td>オークの葉・シラカバの葉</td></tr>
+      </tbody>
+    </table></div>
+  <ul>
+    <li>水がふちにある所には、外側にガラスを置きます。水がまわりに流れ出さないようにするためです。</li>
+    <li>木の幹の下などの、上がふさがれた草は、土にしてあります。マインクラフトでは、そうした草は時間がたつと土に変わるためです。</li>
+    <li>葉は、時間がたっても消えない設定で置かれます。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>うまくいかないとき</h2>
+  <ul class="trouble">
+    <li><b>「関数が見つからない」という意味の赤い文字が出る</b><span>ファイルが <code>datapacks</code> フォルダに入っているか、<code>/reload</code> を打ったかを確かめます。ファイルを開いて中身だけを入れた場合は、開く前のファイルを入れ直します。</span></li>
+    <li><b>コマンドが使えない</b><span>ワールドの「チートの許可」がオフになっています。</span></li>
+    <li><b>立体の一部が置かれない</b><span>遠くの土地がまだ読み込まれていないと、そこには置かれません。大きな立体で起きやすくなります。マスの数を減らして、作り直してみてください。</span></li>
+  </ul>
+</section>
+
+<section>
+  <h2>確かめたこと・まだのこと</h2>
+  <ul>
+    <li>マインクラフト 26.3 で、文字・画像・風景 (3 つの地形、3 つの季節、いちばん大きい設定) を置きました。どれも、すべてのブロックが正しく置かれ、ゲームの中の 2 分後もそのまま残りました (2026-11-14)。この確認は、画面のないサーバー用のマインクラフトで行いました。</li>
+    <li>ゲームの画面でも、文字と風景 (山と湖・夏) を置いて見ました (2026-11-14)。風景は、水がガラスの中におさまり、木の葉も残りました。文字は、正しく読める向きに置かれました。</li>
+    <li>文字の色分けに灰色がまじる問題が見つかり、色の選び方を直しました。直したあとの見た目は、ゲームの画面ではまだ見ていません。</li>
+    <li>1.21 から 26.2 までの版では、まだ試していません。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>ことばの説明</h2>
+  <dl>
+    <div><dt>Java 版・統合版</dt><dd>マインクラフトには 2 つの種類があります。Java 版はパソコン用です。統合版は、スマホ・ゲーム機・Windows 用です。</dd></div>
+    <div><dt>データパック</dt><dd>マインクラフトのワールドに、あとから足せるファイルのこと。</dd></div>
+    <div><dt>コマンド</dt><dd>チャットの欄に打ちこむ命令のこと。<code>/</code> から始まります。</dd></div>
+    <div><dt>ワールド</dt><dd>マインクラフトで遊ぶ世界 1 つ分のこと。</dd></div>
+  </dl>
+</section>
+
+<footer>
+  <span>ボクセル工房は、Minecraft の公式の製品ではありません。Mojang や Microsoft とは関係ありません。</span>
+  <span>このページの図は Claude が描きました。</span>
+</footer>
+</div>
+</body>
+</html>
