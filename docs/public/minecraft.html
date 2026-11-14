@@ -43,7 +43,7 @@ tbody th { font-weight:700; white-space:nowrap; }
     <li><span>開いたフォルダの中の <code>datapacks</code> フォルダに、保存したファイルを入れます。ファイルは開かずに、そのまま入れます。</span></li>
     <li><span>ワールドに入り、立体を置きたい場所に立ちます。</span></li>
     <li><span>チャットの欄に <code>/reload</code> と打ちます。</span></li>
-    <li><span>続けて <code>/function voxel:build</code> と打ちます。少しずつ置きたいときは、代わりに <code>/function voxel:build_slow</code> と打ちます。</span></li>
+    <li><span>続けて <code>/function voxel:build</code> と打ちます。少しずつ置きたいときは、代わりに <code>/function voxel:build_slow</code> と打ちます。置いた立体を壊して消したいときは、<code>/function voxel:break_slow</code> と打ちます。</span></li>
   </ol>
   <p class="source">手順 3 と 4 は、Minecraft Wiki の「<a href="https://ja.minecraft.wiki/w/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB:%E3%83%87%E3%83%BC%E3%82%BF%E3%83%91%E3%83%83%E3%82%AF%E3%81%AE%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%81%BF">データパックの読み込み</a>」の説明によります。Minecraft Wiki は、公式のサイトではありません。</p>
 </section>
@@ -65,6 +65,18 @@ tbody th { font-weight:700; white-space:nowrap; }
 </section>
 
 <section>
+  <h2>少しずつ壊す (<code>voxel:break_slow</code>、試験中)</h2>
+  <p>置いた立体を消したいときは、<code>/function voxel:break_slow</code> と打ちます。小さな生き物 (ヴェックス、難易度ピースフルのときはアレイ) が壊す係として飛び回りながら、爆発の粒と音を出して、上の段から 1 段ずつブロックを消していきます。</p>
+  <ul>
+    <li>最後に <code>/function voxel:build</code> または <code>/function voxel:build_slow</code> で置いた場所を覚えているので、離れた場所から打ってもその立体を壊します (記録がないときは、いま立っている場所を基準にします)。</li>
+    <li>上の段から順に、水はまわりの枠より先に消すので、途中で砂が落ちたり水があふれたりしません。</li>
+    <li>途中で止めたいときは、<code>/function voxel:break_stop</code> と打ちます。残ったブロックはそのまま残ります。</li>
+    <li>終わると、壊す係は消えます。</li>
+  </ul>
+  <p class="source">この壊し方は、5 種類のファイルで最後までたどると残るブロックが 0 になることを確かめ、ゲームの画面でも大きな風景を最後まで壊せることと <code>/function voxel:break_stop</code> で止められることを確かめました。</p>
+</section>
+
+<section>
   <h2>どこに置かれるか</h2>
   <figure class="map"><svg viewBox="0 0 320 200" role="img" aria-label="上から見た図。立っている場所の 2 マス東に立体の角があり、立体はそこから東と南に向かって広がっている"><line x1="20" y1="20" x2="20" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="36" y1="20" x2="36" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="52" y1="20" x2="52" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="68" y1="20" x2="68" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="84" y1="20" x2="84" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="100" y1="20" x2="100" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="116" y1="20" x2="116" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="132" y1="20" x2="132" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="148" y1="20" x2="148" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="164" y1="20" x2="164" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="180" y1="20" x2="180" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="196" y1="20" x2="196" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="212" y1="20" x2="212" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="228" y1="20" x2="228" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="244" y1="20" x2="244" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="260" y1="20" x2="260" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="276" y1="20" x2="276" y2="180" stroke="var(--grid)" stroke-width="1"/><line x1="20" y1="20" x2="276" y2="20" stroke="var(--grid)" stroke-width="1"/><line x1="20" y1="36" x2="276" y2="36" stroke="var(--grid)" stroke-width="1"/><line x1="20" y1="52" x2="276" y2="52" stroke="var(--grid)" stroke-width="1"/><line x1="20" y1="68" x2="276" y2="68" stroke="var(--grid)" stroke-width="1"/><line x1="20" y1="84" x2="276" y2="84" stroke="var(--grid)" stroke-width="1"/><line x1="20" y1="100" x2="276" y2="100" stroke="var(--grid)" stroke-width="1"/><line x1="20" y1="116" x2="276" y2="116" stroke="var(--grid)" stroke-width="1"/><line x1="20" y1="132" x2="276" y2="132" stroke="var(--grid)" stroke-width="1"/><line x1="20" y1="148" x2="276" y2="148" stroke="var(--grid)" stroke-width="1"/><line x1="20" y1="164" x2="276" y2="164" stroke="var(--grid)" stroke-width="1"/><line x1="20" y1="180" x2="276" y2="180" stroke="var(--grid)" stroke-width="1"/><rect x="84" y="68" width="160" height="96" fill="var(--orange)" opacity=".85" stroke="var(--block-edge)" stroke-width="1.5"/><circle cx="60" cy="76" r="7" fill="var(--fg)"/><text x="60" y="58" text-anchor="middle" font-family="inherit" font-size="11" fill="var(--fg)" font-weight="700">立っている場所</text><text x="164" y="124" text-anchor="middle" font-family="inherit" font-size="12" font-weight="700" fill="#3d2f24">立体</text><line x1="68" y1="76" x2="92" y2="76" stroke="var(--fg)" stroke-width="1.5" stroke-dasharray="3 3"/><circle cx="92" cy="76" r="3" fill="#3d2f24"/><text x="60" y="100" text-anchor="middle" font-family="inherit" font-size="10" fill="var(--fg)">東へ 2 マス</text><line x1="252" y1="44" x2="288" y2="44" stroke="var(--fg)" stroke-width="2"/><path d="M288 44 l-6 -4 v8 z" fill="var(--fg)"/><text x="270" y="36" text-anchor="middle" font-family="inherit" font-size="11" fill="var(--fg)" font-weight="700">東</text><line x1="296" y1="150" x2="296" y2="178" stroke="var(--fg)" stroke-width="2"/><path d="M296 184 l-4 -6 h8 z" fill="var(--fg)"/><text x="296" y="142" text-anchor="middle" font-family="inherit" font-size="11" fill="var(--fg)" font-weight="700">南</text></svg><figcaption>上から見た図です。上が北です。</figcaption></figure>
   <ul>
@@ -80,7 +92,7 @@ tbody th { font-weight:700; white-space:nowrap; }
   <h2>置く前に知っておくこと</h2>
   <ul class="caution">
     <li>立体が置かれる場所にもとからあったブロックは、置きかえられます。建物のそばでは実行しないでください。</li>
-    <li>置いたあとで元に戻す機能はありません。はじめは、新しいワールドか、何もない場所で試すのがおすすめです。</li>
+    <li>置いた立体は <code>/function voxel:break_slow</code> で消せますが、そこにもとからあった地面や建物が元に戻るわけではありません。はじめは、新しいワールドか、何もない場所で試すのがおすすめです。</li>
     <li>広くて平らな場所が向いています。ワールドの種類を「スーパーフラット」にすると、見やすくなります。</li>
   </ul>
 </section>
@@ -127,6 +139,7 @@ tbody th { font-weight:700; white-space:nowrap; }
     <li>文字の色分けに灰色がまじる問題が見つかり、色の選び方を直しました。直したあとの見た目は、ゲームの画面ではまだ見ていません。</li>
     <li>1.21 から 26.2 までの版では、まだ試していません。</li>
     <li><code>/function voxel:build_slow</code> (建てる係つきで少しずつ置く) は、文字・画像・風景のファイルで、少しずつ置く段階をすべてたどった結果が <code>/function voxel:build</code> と同じブロックになることを確かめました。ゲームの画面でも、いちばん大きい設定の風景 (山と湖・夏、横 128 マス・高さ 40 マス) を下の段から最後まで置けることを確かめました (2026-11-14)。終わったときに建てる係がきらきらして消えるところと、途中で止める <code>/function voxel:build_stop</code> は、ゲームの画面ではまだ確かめていません。</li>
+    <li><code>/function voxel:break_slow</code> (壊す係つきで少しずつ壊す) は、文字・画像・風景のファイルで、少しずつ壊す段階をすべてたどると置いたブロックがすべて消え、途中で水や砂が落ちない順序になっていることを確かめました。ゲームの画面でも、いちばん大きい設定の風景を上の段から爆発させながら最後まで消せることと、途中で <code>/function voxel:break_stop</code> で止められることを確かめました (2026-11-14)。難易度ピースフル以外でのヴェックスの見た目は、ゲームの画面ではまだ確かめていません。</li>
   </ul>
 </section>
 
