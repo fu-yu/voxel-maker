@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""docs/public/index.html (Artifact 用の本文だけの HTML) から、単体で開ける guide.html を作る。
+"""docs/public/ の本文だけの HTML から、単体で開ける guide.html と minecraft.html を作る。
 
 使い方: python3 tools/build_guide.py
 """
@@ -30,7 +30,19 @@ OPEN_APP = '<p class="open"><a href="./">ボクセル工房を開く</a></p>'
 OPEN_CSS = ".open a{display:inline-block;font-weight:700;color:var(--bg);background:var(--fg);padding:8px 18px;text-decoration:none}.open a:focus-visible{outline:3px solid var(--orange);outline-offset:2px}"
 
 
-def main() -> None:
+MC_HEAD = HEAD.replace("https://fu-yu.github.io/voxel-maker/guide.html", "https://fu-yu.github.io/voxel-maker/minecraft.html").replace(
+    "ボクセル工房の使い方の説明です。文字・画像・風景をブロックの立体にする手順と、できること・できないことをまとめています。",
+    "ボクセル工房で作った立体を、マインクラフト (Java 版) のワールドに置く手順です。保存したファイルを入れて、コマンドを 1 つ打ちます。",
+).replace("ボクセル工房のてびき — 使い方とできること", "マインクラフトに置く — ボクセル工房")
+
+
+def shared_style() -> str:
+    """docs/public/index.html の <style> の中身 (説明ページ共通の見た目)。"""
+    body = (ROOT / "docs/public/index.html").read_text(encoding="utf-8")
+    return body[body.index("<style>") + len("<style>"):body.index("</style>")]
+
+
+def build_guide() -> None:
     body = (ROOT / "docs/public/index.html").read_text(encoding="utf-8")
     body = body.replace('src="images/', 'src="docs/public/images/')
     body = body.replace("</style>", OPEN_CSS + "\n</style>", 1)
@@ -41,6 +53,23 @@ def main() -> None:
     out = HEAD + body[:style_end] + "\n</head>\n<body>\n" + body[style_end:] + "</body>\n</html>\n"
     (ROOT / "guide.html").write_text(out, encoding="utf-8")
     print("guide.html を書き出しました")
+
+
+def build_minecraft() -> None:
+    """docs/public/minecraft.html (このページだけの決まり + 本文) に、共通の見た目を足して minecraft.html を作る。"""
+    body = (ROOT / "docs/public/minecraft.html").read_text(encoding="utf-8")
+    body = body.replace("<style>", "<style>" + shared_style(), 1)
+    # 公開ページの中では、同じ場所のページどうしを短いアドレスでつなぐ
+    body = body.replace('href="https://fu-yu.github.io/voxel-maker/guide.html"', 'href="guide.html"').replace('href="https://fu-yu.github.io/voxel-maker/"', 'href="./"')
+    style_end = body.index("</style>") + len("</style>")
+    out = MC_HEAD + body[:style_end] + "\n</head>\n<body>\n" + body[style_end:] + "</body>\n</html>\n"
+    (ROOT / "minecraft.html").write_text(out, encoding="utf-8")
+    print("minecraft.html を書き出しました")
+
+
+def main() -> None:
+    build_guide()
+    build_minecraft()
 
 
 if __name__ == "__main__":

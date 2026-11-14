@@ -14,6 +14,7 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 | 検索と共有のための設定 (題・説明文・`og:*`・共有用の画像) | 公開中 (2026-11-13)。公開ページでタグと画像を確認済み。共有したときのカードも確認済み (ユーザーのスクリーンショット。結果は `docs/dev/sessions/2026-11-14-json-ascii.md` の追記) |
 | 座標データ (JSON) の書き出し | 項目は `size`, `order`, `up`, `voxels` (英数字だけ)。2026-11-14 にローカルで確認し、同じ日に公開 |
 | マインクラフト (Java 版) 用の書き出し (`#saveMc`) | 公式のサーバー版 26.3 で確認済み (2026-11-14。文字・画像・風景の 8 種類。置いた直後とゲーム内の 2 分後に、全ブロックが正しい)。**画面での見た目 (色・文字の向き) は未確認** (ユーザーがまだゲームを買えていない)。作業ブランチ `work/minecraft-java` にあり、`main` への取り込みはユーザーの返事待ち。説明ページには「試験中」と書いてある |
+| マインクラフト用の説明ページ `minecraft.html` | ローカルで表示を確認済み (2026-11-14)。**`deploy.yml` にまだ入れていないので、このまま `main` に取り込むとリンクが切れる**。設定を変えてよいかは、ユーザーの返事待ち |
 | 範囲の選択、「下絵をコピー」 | **未確認** (コードを読んだだけ) |
 | スマホ幅 (375px) | 確認済み (2026-11-11、ブラウザの幅を 375px にして。配置が切り替わり、立体の全体が画面に入る)。実機の Android は **未確認** |
 | GitHub Pages での公開 | 公開中 (https://fu-yu.github.io/voxel-maker/)。2026-11-11 に本体と `guide.html` の表示を確認 (デスクトップ幅と 375px 幅、コンソールエラーなし)。公開元は `gh-pages` ブランチのルート |
@@ -24,7 +25,8 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 - `docs/public/index.md` — 説明の元原稿 (これが正)
 - `docs/public/index.html` — 説明ページの本文 (Artifact 用。`<!doctype>` や `<head>` を持たない形)
 - `docs/public/images/` — 挿絵 (AI が作った絵) と、共有用の画像 `og.jpg` (本体の画面を撮ったもの。作り方は `docs/dev/sessions/2026-11-13-seo.md`)
-- `tools/build_guide.py` — `docs/public/index.html` から `guide.html` を作る
+- `minecraft.html` — マインクラフトに置く手順のページ (生成物。手で直さない)。元原稿は `docs/public/minecraft.md`、本文は `docs/public/minecraft.html`
+- `tools/build_guide.py` — `docs/public/index.html` から `guide.html` を、`docs/public/minecraft.html` から `minecraft.html` を作る
 - `.github/workflows/deploy.yml` — `main` への push で `index.html`, `guide.html`, `LICENSE`, `docs/public/images/` だけを `gh-pages` ブランチに強制 push する (`gh-pages` は毎回 1 コミットに作り直される。手で触らない)
 
 ## 注意
