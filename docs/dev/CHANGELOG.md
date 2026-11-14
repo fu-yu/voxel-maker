@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## 2026-11-14
+- すべてのページに共通の「ページの一覧」を入れた (上に短い一覧、下に説明つきの一覧。`tools/build_guide.py` の `SITE_PAGES` から作る)。本体にも一覧の欄を足した (詳細: sessions/2026-11-14-site-index.md)
 - 「マインクラフトで試してみた」ページ `tried.html` を追加 (ゲームの写真 5 枚つきの記録。元原稿は `docs/public/tried.md`)。同じ日に公開の設定に足して公開 (詳細: sessions/2026-11-14-tried-page.md)
 - マインクラフト用の色の選び方を OKLab の距離に変えた (文字のグラデーションに灰色のブロックがまじる問題を、ゲームの画面で見つけた)。ユーザーが 26.3 の画面で文字と風景を確認 (詳細: sessions/2026-11-14-minecraft-java.md)
 - マインクラフトに置く手順の説明ページ `minecraft.html` を追加 (元原稿は `docs/public/minecraft.md`)。同じ日に公開の設定 (`deploy.yml`) に足し、「試験中」として `main` に取り込んで公開 (詳細: sessions/2026-11-14-minecraft-java.md)

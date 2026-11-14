@@ -80,16 +80,16 @@ th,td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px
 thead th { font-size:13px; color:var(--muted); font-weight:700; }
 tbody th { font-weight:700; white-space:nowrap; }
 .source { font-size:14px; color:var(--muted); }
-.back { font-size:15px; margin:0; display:flex; gap:18px; flex-wrap:wrap; }
 .trouble { list-style:none; padding:0; gap:12px; }
 .trouble li { background:var(--surface); border:1px solid var(--line); padding:12px 16px; display:flex; flex-direction:column; gap:4px; }
+.sitenav{display:flex;flex-wrap:wrap;gap:8px;font-size:14px;margin:0}.sitenav a{padding:3px 10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);text-decoration:none;font-weight:700}.sitenav a[aria-current]{background:var(--fg);border-color:var(--fg);color:var(--bg)}.sitenav a:focus-visible,.siteindex a:focus-visible{outline:3px solid var(--orange);outline-offset:2px}.siteindex ul{list-style:none;padding:0;gap:10px}.siteindex li{background:var(--surface);border:1px solid var(--line);padding:12px 16px;display:flex;flex-direction:column;gap:2px}.siteindex li a{font-weight:700}.siteindex li span{font-size:14px;color:var(--muted)}
 </style>
 </head>
 <body>
 
 <div class="page">
+<nav class="sitenav" aria-label="ページの一覧"><a href="./">ボクセル工房</a><a href="guide.html">てびき</a><a href="minecraft.html" aria-current="page">マインクラフトに置く</a><a href="tried.html">マインクラフトで試してみた</a></nav>
 <header>
-  <p class="back"><a href="./">ボクセル工房を開く</a><a href="guide.html">てびきを読む</a></p>
   <h1>マインクラフトに置く</h1>
   <p class="lede">ボクセル工房で作った立体を、マインクラフトのワールドに置くための手順です。保存したファイルをワールドに入れて、コマンドを 1 つ打つと、立っている場所のとなりに立体が置かれます。</p>
   <div class="flow">
@@ -197,6 +197,15 @@ tbody th { font-weight:700; white-space:nowrap; }
     <div><dt>コマンド</dt><dd>チャットの欄に打ちこむ命令のこと。<code>/</code> から始まります。</dd></div>
     <div><dt>ワールド</dt><dd>マインクラフトで遊ぶ世界 1 つ分のこと。</dd></div>
   </dl>
+</section>
+
+<section class="siteindex">
+  <h2>ページの一覧</h2>
+  <ul>
+    <li><a href="./">ボクセル工房</a><span>文字・画像・風景を、ブロックの立体にする道具です。</span></li>
+    <li><a href="guide.html">てびき</a><span>使い方と、できること・できないことの説明です。</span></li>
+    <li><a href="tried.html">マインクラフトで試してみた</a><span>本物のマインクラフトに置いて確かめた、写真つきの記録です。</span></li>
+  </ul>
 </section>
 
 <footer>
