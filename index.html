@@ -1095,21 +1095,30 @@ $('copyJson').onclick = () => {
 
 /* ---------- Minecraft: Java Edition data pack ---------- */
 const MC_DYES = ['white', 'orange', 'magenta', 'light_blue', 'yellow', 'lime', 'pink', 'gray', 'light_gray', 'cyan', 'purple', 'blue', 'brown', 'green', 'red', 'black'];
-/* rough average colours of the block textures, in the order of MC_DYES */
+/* average colours of the block textures (checked against the 26.3 game files), in the order of MC_DYES */
 const MC_PALETTE = [
   ['concrete', 'cfd5d6 e06101 a9309f 2489c7 f1af15 5ea918 d6658f 373a3e 7d7d73 157788 64209c 2d2f8f 603c20 495b24 8e2121 080a0f'],
-  ['wool', 'eaeced f17614 bd44b3 3aafd9 f9c628 70b91a ee8dac 3f4448 8e8e87 158a91 7a2aad 35399d 724829 556e1c a12723 15151a'],
-  ['terracotta', 'd2b2a1 a25426 96586d 716d8a ba8523 687635 a24e4f 3a2a24 876b62 575b5b 764656 4a3c5b 4d3324 4c532a 8f3d2f 251711'],
+  ['wool', 'eaeced f17614 be45b4 3aafd9 f9c628 70b91a ee8dac 3f4448 8e8e87 158a91 7a2aad 35399d 724829 556e1c a12723 15151a'],
+  ['terracotta', 'd2b2a1 a25426 96586d 716d8a ba8523 687635 a24e4f 3a2a24 876b62 575b5b 764656 4a3c5b 4d3324 4c532a 8f3d2f 251710'],
 ].flatMap(([kind, list]) => list.split(' ').map((h, i) => [MC_DYES[i] + '_' + kind, ...hexRGB('#' + h)])).concat([['terracotta', 152, 94, 68]]);
+/* colours are compared in OKLab, where equal distances look about equally different to the eye.
+   Plain RGB distance put a grey block in the middle of an orange-to-green gradient */
+const okLab = (r, g, b) => {
+  const f = c => { c /= 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
+  r = f(r); g = f(g); b = f(b);
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b), m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b), q = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  return [0.2104542553 * l + 0.793617785 * m - 0.0040720468 * q, 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * q, 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * q];
+};
+const MC_LAB = MC_PALETTE.map(([n, r, g, b]) => [n, ...okLab(r, g, b)]);
 const mcCache = new Map();
 function mcNearest(r, g, b) {
   const key = (r << 16) | (g << 8) | b;
   let name = mcCache.get(key);
   if (!name) {
+    const [L, A, B] = okLab(r, g, b);
     let best = Infinity;
-    for (const [n, pr, pg, pb] of MC_PALETTE) {
-      const rm = (r + pr) / 2, dr = r - pr, dg = g - pg, db = b - pb;      // "redmean" distance: closer to how the eye compares colours than plain RGB
-      const d = (2 + rm / 256) * dr * dr + 4 * dg * dg + (2 + (255 - rm) / 256) * db * db;
+    for (const [n, pl, pa, pb] of MC_LAB) {
+      const d = (L - pl) ** 2 + (A - pa) ** 2 + (B - pb) ** 2;
       if (d < best) { best = d; name = n; }
     }
     mcCache.set(key, name);
