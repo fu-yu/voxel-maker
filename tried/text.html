@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="ボクセル工房で作った立体を、本物のマインクラフトに置いて確かめた記録です。うまくいったことも、見つけた問題も書いています。">
-<link rel="canonical" href="https://fu-yu.github.io/voxel-maker/tried.html">
+<meta name="description" content="ボクセル工房で作った文字の立体を、マインクラフトに置いて向きと色の出方を確かめた記録です。">
+<link rel="canonical" href="https://fu-yu.github.io/voxel-maker/tried/text.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="ボクセル工房">
 <meta property="og:locale" content="ja_JP">
-<meta property="og:title" content="マインクラフトで試してみた — ボクセル工房">
-<meta property="og:description" content="ボクセル工房で作った立体を、本物のマインクラフトに置いて確かめた記録です。うまくいったことも、見つけた問題も書いています。">
-<meta property="og:url" content="https://fu-yu.github.io/voxel-maker/tried.html">
+<meta property="og:title" content="2. 文字を置いてみた — ボクセル工房">
+<meta property="og:description" content="ボクセル工房で作った文字の立体を、マインクラフトに置いて向きと色の出方を確かめた記録です。">
+<meta property="og:url" content="https://fu-yu.github.io/voxel-maker/tried/text.html">
 <meta property="og:image" content="https://fu-yu.github.io/voxel-maker/docs/public/images/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <meta name="claude:viewport-fit-sides" content="cover">
-<title>マインクラフトで試してみた</title>
+<title>2. 文字を置いてみた — マインクラフトで試してみた</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
 <style>
 /* layout: 1 本の読みもの。挿絵が先、文章があと。図はブロック (正方形) の単位でそろえる */
@@ -73,104 +73,46 @@ footer { border-top:1px solid var(--line); padding-top:16px; font-size:13px; col
 
 /* このページだけの決まり。共通の決まりは index.html のものを tools/build_guide.py が前に足す */
 code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.88em; background:var(--surface); border:1px solid var(--line); padding:1px 6px; overflow-wrap:anywhere; }
-.tablewrap { overflow-x:auto; }
-table { border-collapse:collapse; width:100%; font-size:15px; line-height:1.6; }
-th,td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid var(--line); }
-thead th { font-size:13px; color:var(--muted); font-weight:700; }
-.shot { display:flex; flex-direction:column; gap:10px; }
-.shot figure img { border-radius:0; border:1px solid var(--line); }
+figure img { border-radius:0; border:1px solid var(--line); }
+.pager { display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; padding-top:8px; border-top:1px solid var(--line); font-size:15px; }
+.pager a { font-weight:700; text-decoration:none; background:var(--surface); border:1px solid var(--line); padding:8px 14px; }
+.pager a:hover { border-color:var(--accent); }
 .sitenav{display:flex;flex-wrap:wrap;gap:8px;font-size:14px;margin:0}.sitenav a{padding:3px 10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);text-decoration:none;font-weight:700}.sitenav a[aria-current]{background:var(--fg);border-color:var(--fg);color:var(--bg)}.sitenav a:focus-visible,.siteindex a:focus-visible{outline:3px solid var(--orange);outline-offset:2px}.siteindex ul{list-style:none;padding:0;gap:10px}.siteindex li{background:var(--surface);border:1px solid var(--line);padding:12px 16px;display:flex;flex-direction:column;gap:2px}.siteindex li a{font-weight:700}.siteindex li span{font-size:14px;color:var(--muted)}
 </style>
 </head>
 <body>
 
 <div class="page">
-<nav class="sitenav" aria-label="ページの一覧"><a href="./">ボクセル工房</a><a href="guide.html">てびき</a><a href="minecraft.html">マインクラフトに置く</a><a href="tried.html" aria-current="page">マインクラフトで試してみた</a></nav>
+<nav class="sitenav" aria-label="ページの一覧"><a href="../">ボクセル工房</a><a href="../guide.html">てびき</a><a href="../minecraft.html">マインクラフトに置く</a><a href="../tried/index.html" aria-current="page">マインクラフトで試してみた</a></nav>
 <header>
-  <h1>マインクラフトで試してみた</h1>
-  <p class="lede">ボクセル工房で作った立体を、本物のマインクラフトに置いて確かめた記録です。うまくいったことも、見つけた問題も、そのまま書いています。</p>
-  <figure><img src="docs/public/images/mc-lake-top.jpg" width="1100" height="708" alt="山の上から見下ろした、湖と林のある風景。マインクラフトの画面"></figure>
+  <p><a href="../tried/index.html">← マインクラフトで試してみた</a> (2 / 3)</p>
+  <h1>2. 文字を置いてみた</h1>
+  <p class="lede">初期設定の「ボクセル」という文字を、<code>/function voxel:build</code> で置いた記録です。</p>
 </header>
 
 <section>
-  <h2>試した環境</h2>
+  <h2>置いたところ</h2>
+  <figure><img src="../docs/public/images/mc-text-before.jpg" width="1100" height="622" alt="ブロックでできた大きな文字。上が橙、まん中が黄、その下に灰色と黄緑の帯がある"><figcaption>色の選び方を直す前の写真です。</figcaption></figure>
   <ul>
-    <li>マインクラフト Java 版 26.3 の、ひとりで遊ぶモードです。</li>
-    <li>平らな地面だけのワールド (スーパーフラット) に置きました。</li>
-    <li>試した日は 2026-11-14 です。</li>
-    <li>置き方は「<a href="minecraft.html">マインクラフトに置く</a>」のページのとおりです。</li>
-  </ul>
-</section>
-
-<section>
-  <h2>1. 風景を置いてみた</h2>
-  <p>地形は「山と湖」、季節は「夏」です。</p>
-  <div class="shot">
-    <h3>上から見る</h3>
-    <p>いちばん上の写真です。湖、岸の砂、草の斜面、林、雪ののった石の山が、ボクセル工房の画面と同じ並びで置かれました。水は湖の形におさまり、木の葉も残りました。</p>
-  </div>
-  <div class="shot">
-    <h3>横から見る</h3>
-    <figure><img src="docs/public/images/mc-lake-side.jpg" width="1100" height="708" alt="地面に立って横から見た風景。土と石の高い壁の上に、木が並んでいる" loading="lazy"></figure>
-    <p>風景は、地面の上に台のようにのります。地面に立って見ると、まわりが土と石の高い壁になりました。歩いては登れないので、空を飛んで中に入りました。</p>
-  </div>
-  <div class="shot">
-    <h3>角から見る</h3>
-    <figure><img src="docs/public/images/mc-lake-corner.jpg" width="1100" height="493" alt="風景の角。水のまわりを、ガラスの枠が囲んでいる" loading="lazy"></figure>
-    <p>水がふちにある所には、ガラスが立ちます。水は外に流れ出しませんでした。近くで見ると、ガラスの枠の線が見えます。</p>
-  </div>
-  <div class="shot">
-    <h3>夕方に見る</h3>
-    <figure><img src="docs/public/images/mc-lake-dusk.jpg" width="1100" height="708" alt="夕方に上から見た湖。全体が暗く写っている" loading="lazy"></figure>
-    <p>夕方や夜は、全体が暗く写ります。色を見比べたいときは、昼にします。チャットの欄に <code>/time set day</code> と打つと、昼になります。</p>
-  </div>
-</section>
-
-<section>
-  <h2>2. 文字を置いてみた</h2>
-  <figure><img src="docs/public/images/mc-text-before.jpg" width="1100" height="622" alt="ブロックでできた大きな文字。上が橙、まん中が黄、その下に灰色と黄緑の帯がある" loading="lazy"><figcaption>色の選び方を直す前の写真です。</figcaption></figure>
-  <ul>
-    <li>文字は、裏返しにならず、左から読める向きに置かれました。</li>
+    <li>文字は、裏返しにならず、南側から北を向いたときに左から読める向きに置かれました。</li>
     <li>色に問題がありました。上の橙から下の黄緑へ変わる色づけの途中に、灰色の帯が入りました。</li>
-    <li>同じ日に、色の選び方を直しました。直したあとの写真は、まだありません。</li>
+    <li>同じ日に、近い色のブロックを選ぶ計算を、人の目の感じ方に近い方法 (OKLab) に直しました。直したあとのデータでは灰色が消えていることを確かめましたが、ゲームの画面での写真はまだありません。</li>
   </ul>
 </section>
 
-<section>
-  <h2>見つけて直したこと</h2>
-  <div class="tablewrap"><table>
-    <thead><tr><th>見つけたこと</th><th>直し方</th></tr></thead>
-    <tbody>
-      <tr><td>木の幹の下の草が、時間がたつと土に変わった</td><td>はじめから土を置くようにした</td></tr>
-      <tr><td>文字の色分けに、灰色がまじった</td><td>近い色の選び方を、人の目の感じ方に近い方法に変えた</td></tr>
-    </tbody>
-  </table></div>
-</section>
-
-<section>
-  <h2>試すときのこつ</h2>
-  <ul>
-    <li>空を飛ぶと、上から全体を見られます。クリエイティブモードで、スペースのキーを 2 回すばやく押します。</li>
-    <li>写真は、マインクラフトのスクリーンショットの機能で撮りました。ノート型の Mac では、はじめのキー (F2) がそのままでは効きませんでした。マインクラフトの「キー割り当て」で、別のキーに変えると撮れました。</li>
-  </ul>
-</section>
-
-<section>
-  <h2>これから試すこと</h2>
-  <ul>
-    <li>歩きやすい設定 (なだらかな丘、横 128 マス、山を低め) で置いて、歩いてみる。</li>
-    <li>風景を少し下にずらして置き、まわりの壁を低くする。</li>
-    <li>色の選び方を直したあとの文字を置く。</li>
-    <li>秋と冬の風景、島と丘の地形を置く。</li>
-  </ul>
-</section>
+<nav class="pager" aria-label="試した記録の移動">
+  <a href="../tried/scene.html">← 前: 1. 風景を置いてみた</a>
+  <a href="../tried/index.html">試してみた一覧</a>
+  <a href="../tried/slow.html">次: 3. 少しずつ置いてみた →</a>
+</nav>
 
 <section class="siteindex">
   <h2>ページの一覧</h2>
   <ul>
-    <li><a href="./">ボクセル工房</a><span>文字・画像・風景を、ブロックの立体にする道具です。</span></li>
-    <li><a href="guide.html">てびき</a><span>使い方と、できること・できないことの説明です。</span></li>
-    <li><a href="minecraft.html">マインクラフトに置く</a><span>作った立体を、マインクラフトのワールドに置く手順です。</span></li>
+    <li><a href="../">ボクセル工房</a><span>文字・画像・風景を、ブロックの立体にする道具です。</span></li>
+    <li><a href="../guide.html">てびき</a><span>使い方と、できること・できないことの説明です。</span></li>
+    <li><a href="../minecraft.html">マインクラフトに置く</a><span>作った立体を、マインクラフトのワールドに置く手順です。</span></li>
+    <li><a href="../tried/index.html">マインクラフトで試してみた</a><span>本物のマインクラフトに置いて確かめた、写真つきの記録です。</span></li>
   </ul>
 </section>
 
@@ -179,5 +121,6 @@ thead th { font-size:13px; color:var(--muted); font-weight:700; }
   <span>ボクセル工房は、Minecraft の公式の製品ではありません。Mojang や Microsoft とは関係ありません。</span>
 </footer>
 </div>
+
 </body>
 </html>

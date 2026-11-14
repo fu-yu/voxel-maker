@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="ボクセル工房で作った大きな風景を、建てる係 (アレイ) つきで下の段から少しずつ置いた記録です。">
+<link rel="canonical" href="https://fu-yu.github.io/voxel-maker/tried/slow.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ボクセル工房">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="3. 少しずつ置いてみた — ボクセル工房">
+<meta property="og:description" content="ボクセル工房で作った大きな風景を、建てる係 (アレイ) つきで下の段から少しずつ置いた記録です。">
+<meta property="og:url" content="https://fu-yu.github.io/voxel-maker/tried/slow.html">
+<meta property="og:image" content="https://fu-yu.github.io/voxel-maker/docs/public/images/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ブロックを積んで作った、山と湖と木のある小さな風景。左に「ボクセル工房」の文字">
+<meta name="twitter:card" content="summary_large_image">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>3. 少しずつ置いてみた — マインクラフトで試してみた</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
+<style>
+/* layout: 1 本の読みもの。挿絵が先、文章があと。図はブロック (正方形) の単位でそろえる */
+:root {
+  --bg:#fbf4e0; --surface:#fffaf0; --fg:#3d2f24; --muted:#7a6857; --line:#e6d9bd;
+  --orange:#f08a3c; --blue:#7fa9dc; --green:#8fbf5a; --stem:#f3e6c4; --cream-block:#fff6dc;
+  --block-edge:#c96a22; --grid:#d9caa8; --accent:#c25a12; --frame:#fbf4e0;
+  --display:"Dela Gothic One","Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif;
+  --body:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
+  --unit:18px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg:#2a211b; --surface:#35291f; --fg:#f5ead6; --muted:#c2b09a; --line:#4c3c2e;
+  --stem:#e9dab3; --cream-block:#fff6dc; --block-edge:#8a4513; --grid:#5e4c3a; --accent:#ffa862; --frame:#fbf4e0; color-scheme:dark } }
+:root[data-theme="dark"] {
+  --bg:#2a211b; --surface:#35291f; --fg:#f5ead6; --muted:#c2b09a; --line:#4c3c2e;
+  --stem:#e9dab3; --cream-block:#fff6dc; --block-edge:#8a4513; --grid:#5e4c3a; --accent:#ffa862; --frame:#fbf4e0; color-scheme:dark }
+body { background:var(--bg); color:var(--fg); font-family:var(--body); font-size:17px; line-height:1.85;
+  padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); padding-block:28px 56px; }
+.page { max-width:680px; margin:0 auto; display:flex; flex-direction:column; gap:44px; }
+header { display:flex; flex-direction:column; gap:14px; }
+h1 { font-family:var(--display); font-weight:400; font-size:clamp(34px,9vw,54px); line-height:1.15; margin:0; letter-spacing:.02em; text-wrap:balance; }
+.lede { font-size:19px; margin:0; font-weight:500; }
+figure { margin:0; }
+figure img { display:block; width:100%; height:auto; border-radius:calc(var(--unit)*1); background:var(--frame); }
+figcaption { font-size:13px; color:var(--muted); margin-top:6px; }
+section { display:flex; flex-direction:column; gap:14px; }
+h2 { font-size:22px; font-weight:700; margin:0; line-height:1.4; display:flex; align-items:center; gap:10px; text-wrap:balance; }
+h2::before { content:""; width:var(--unit); height:var(--unit); background:var(--orange); flex:none; }
+h3 { font-size:15px; font-weight:700; color:var(--accent); margin:6px 0 0; letter-spacing:.06em; }
+p { margin:0; }
+ul,ol { margin:0; padding-left:1.3em; display:flex; flex-direction:column; gap:6px; }
+.scenes { list-style:none; padding:0; gap:10px; }
+.scenes li { background:var(--surface); border:1px solid var(--line); padding:12px 16px; }
+.flow { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.flow div, .shapes div { display:flex; flex-direction:column; gap:6px; min-width:0; }
+.flow svg { width:100%; height:auto; background:var(--surface); border:1px solid var(--line); }
+.flow b, .shapes b { font-size:15px; }
+.flow span, .shapes span { font-size:14px; line-height:1.6; color:var(--muted); }
+.shapes { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.shapes svg { width:100%; height:auto; background:var(--surface); border:1px solid var(--line); padding:10px; box-sizing:border-box; }
+@media (max-width:520px) { .flow, .shapes { grid-template-columns:1fr; } .flow div, .shapes div { display:grid; grid-template-columns:120px 1fr; column-gap:14px; align-items:center; } .flow svg, .shapes svg { grid-row:span 2; } }
+ol.steps { list-style:none; padding:0; counter-reset:s; gap:10px; }
+ol.steps li { counter-increment:s; display:grid; grid-template-columns:32px 1fr; gap:12px; align-items:start; }
+ol.steps li::before { content:counter(s); font-family:var(--display); width:32px; height:32px; display:grid; place-items:center; background:var(--fg); color:var(--bg); font-size:15px; margin-top:1px; }
+.btn { font-weight:700; border:1px solid var(--line); background:var(--surface); padding:1px 8px; white-space:nowrap; }
+.caution li::marker { color:var(--accent); }
+a { color:var(--accent); overflow-wrap:anywhere; }
+dl { margin:0; display:flex; flex-direction:column; gap:10px; }
+dt { font-weight:700; } dd { margin:0; color:var(--muted); }
+footer { border-top:1px solid var(--line); padding-top:16px; font-size:13px; color:var(--muted); display:flex; flex-direction:column; gap:4px; }
+
+/* このページだけの決まり。共通の決まりは index.html のものを tools/build_guide.py が前に足す */
+code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.88em; background:var(--surface); border:1px solid var(--line); padding:1px 6px; overflow-wrap:anywhere; }
+figure img { border-radius:0; border:1px solid var(--line); }
+.pager { display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; padding-top:8px; border-top:1px solid var(--line); font-size:15px; }
+.pager a { font-weight:700; text-decoration:none; background:var(--surface); border:1px solid var(--line); padding:8px 14px; }
+.pager a:hover { border-color:var(--accent); }
+.sitenav{display:flex;flex-wrap:wrap;gap:8px;font-size:14px;margin:0}.sitenav a{padding:3px 10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);text-decoration:none;font-weight:700}.sitenav a[aria-current]{background:var(--fg);border-color:var(--fg);color:var(--bg)}.sitenav a:focus-visible,.siteindex a:focus-visible{outline:3px solid var(--orange);outline-offset:2px}.siteindex ul{list-style:none;padding:0;gap:10px}.siteindex li{background:var(--surface);border:1px solid var(--line);padding:12px 16px;display:flex;flex-direction:column;gap:2px}.siteindex li a{font-weight:700}.siteindex li span{font-size:14px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<div class="page">
+<nav class="sitenav" aria-label="ページの一覧"><a href="../">ボクセル工房</a><a href="../guide.html">てびき</a><a href="../minecraft.html">マインクラフトに置く</a><a href="../tried/index.html" aria-current="page">マインクラフトで試してみた</a></nav>
+<header>
+  <p><a href="../tried/index.html">← マインクラフトで試してみた</a> (3 / 3)</p>
+  <h1>3. 少しずつ置いてみた (<code>voxel:build_slow</code>)</h1>
+  <p class="lede">いちばん大きい設定の風景 (山と湖・夏、横 128 マス・山の高さ 40 マス、約 32 万ブロック) を、<code>/function voxel:build_slow</code> で下の段から少しずつ置いた記録です。</p>
+</header>
+
+<section>
+  <h2>建てはじめ</h2>
+  <figure><img src="../docs/public/images/mc-slow-low.jpg" width="1100" height="618" alt="下の数段だけが置かれた風景。石と砂の層のまんなかに水があり、右側の土の上に水色の小さなアレイがいる"></figure>
+  <p>下の段から 1 段ずつ、石・砂・土が広がり、その段の最後に水とまわりのガラスが置かれていきます。右側の茶色い土の上に見える水色の小さな点が、建てる係のアレイです。</p>
+</section>
+
+<section>
+  <h2>途中</h2>
+  <figure><img src="../docs/public/images/mc-slow-mid.jpg" width="1100" height="618" alt="中腹まで積み上がった風景。手前の水はガラスの中におさまり、両側の斜面に木と草が並んでいる" loading="lazy"></figure>
+  <p>中腹まで積み上がり、斜面には草と木が並びはじめました。水もガラスの枠の中におさまっています。</p>
+</section>
+
+<section>
+  <h2>できあがり</h2>
+  <figure><img src="../docs/public/images/mc-slow-done.jpg" width="1100" height="618" alt="山頂の雪までできあがった大きな風景。真ん中に湖があり、まわりを木と岩山が囲んでいる" loading="lazy"></figure>
+  <p>2 分ほどで山頂の雪まで積み上がり、「できあがりました」と出ました。最後のアレイがきらきらして消えたかどうかは、広くて追いきれず、画面では確かめられませんでした。</p>
+</section>
+
+<section>
+  <h2>空中で始めたときに起きたことと、直したあと</h2>
+  <figure><img src="../docs/public/images/mc-slow-sand.jpg" width="1100" height="618" alt="空中に置かれた風景の底から、砂のブロックが地面に向かっていくつも落ちている" loading="lazy"></figure>
+  <figure><img src="../docs/public/images/mc-slow-air.jpg" width="1100" height="618" alt="地面から浮いた高さに置かれた風景。左側のガラスの下から、地面に向かって水が流れ出している" loading="lazy"></figure>
+  <p>最初に空を飛んだまま <code>/function voxel:build_slow</code> を打ったところ、その高さから上に建ちはじめたため、風景が地面から浮きました。1 段目にあった砂が下へ落ちて底に穴があき、ふちのガラスの下にもブロックがなかったため、そこから地面へ水が流れ出しました。</p>
+  <p>そこで、1 段目の砂をすべて石に変え、ふちのガラスの下端にも石を置くように直しました。</p>
+  <figure><img src="../docs/public/images/mc-slow-fixed.jpg" width="1100" height="618" alt="空中に浮いた風景を真下から見上げたところ。底がすべて石で埋まり、ふちのガラスの下にも石の縁がついている" loading="lazy"></figure>
+  <p>直したあとに、もう一度空中で置いて下から見上げた写真です。底がすべて石でふさがり、ガラスの下端も石で支えられて、砂も水も落ちなくなりました。また、試している途中で <code>datapacks</code> フォルダに古い zip ファイルの名前を変えて残していたところ、古いファイルの中身が読み込まれてしまうこともわかりました。入れ替えるときは、古い zip をフォルダの外に出す必要があります。</p>
+</section>
+
+<nav class="pager" aria-label="試した記録の移動">
+  <a href="../tried/text.html">← 前: 2. 文字を置いてみた</a>
+  <a href="../tried/index.html">試してみた一覧 →</a>
+</nav>
+
+<section class="siteindex">
+  <h2>ページの一覧</h2>
+  <ul>
+    <li><a href="../">ボクセル工房</a><span>文字・画像・風景を、ブロックの立体にする道具です。</span></li>
+    <li><a href="../guide.html">てびき</a><span>使い方と、できること・できないことの説明です。</span></li>
+    <li><a href="../minecraft.html">マインクラフトに置く</a><span>作った立体を、マインクラフトのワールドに置く手順です。</span></li>
+    <li><a href="../tried/index.html">マインクラフトで試してみた</a><span>本物のマインクラフトに置いて確かめた、写真つきの記録です。</span></li>
+  </ul>
+</section>
+
+<footer>
+  <span>このページの写真は、マインクラフトの画面を撮ったものです。</span>
+  <span>ボクセル工房は、Minecraft の公式の製品ではありません。Mojang や Microsoft とは関係ありません。</span>
+</footer>
+</div>
+
+</body>
+</html>

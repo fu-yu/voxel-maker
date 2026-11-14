@@ -267,7 +267,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 
     <section class="group">
       <span class="label">ページの一覧</span>
-      <p class="note pages"><a href="guide.html">てびき</a><a href="minecraft.html">マインクラフトに置く</a><a href="tried.html">マインクラフトで試してみた</a></p>
+      <p class="note pages"><a href="guide.html">てびき</a><a href="minecraft.html">マインクラフトに置く</a><a href="tried/index.html">マインクラフトで試してみた</a></p>
     </section>
   </aside>
 
@@ -1148,10 +1148,15 @@ function mcBlocks() {
       let n = nameOf(p);
       /* in the game, grass with a solid block right above it turns into dirt, so put dirt there from the start */
       if (n === 'grass_block' && y + 1 < HY) { const q = vol[((y + 1) * N + z) * N + x]; if (q && !nameOf(q).includes('_leaves')) n = 'dirt'; }
+      /* sand on the bottom layer has nothing under it when placed in the air, so use stone instead so it never falls */
+      if (y === 0 && n === 'sand') n = 'stone';
       set(x, y, z, n);
       if (real[m] !== 'water') continue;
-      if (x === 0) set(-1, y, z, 'glass'); if (x === N - 1) set(N, y, z, 'glass');
-      if (z === 0) set(x, y, -1, 'glass'); if (z === N - 1) set(x, y, N, 'glass');
+      const wall = k => k === 1 ? 'stone' : 'glass';
+      if (x === 0) for (let k = 1; k <= y; k++) set(-1, k, z, wall(k));
+      if (x === N - 1) for (let k = 1; k <= y; k++) set(N, k, z, wall(k));
+      if (z === 0) for (let k = 1; k <= y; k++) set(x, k, -1, wall(k));
+      if (z === N - 1) for (let k = 1; k <= y; k++) set(x, k, N, wall(k));
     }
     return { w, h: HY, d: w, ids, names };
   }
@@ -1163,13 +1168,40 @@ function mcBlocks() {
   }
   return { w, h, d, ids, names };
 }
+/* order blocks from the ground up (water last on each layer) and split into at most 1,200 steps */
+function mcSteps({ w, h, d, ids, names }) {
+  const waterId = names.indexOf('water'), order = [];
+  for (let y = 0; y < h; y++) {
+    const dry = [], wet = [];
+    for (let z = 0; z < d; z++) for (let u = 0; u < w; u++) {
+      const x = (z & 1) ? w - 1 - u : u, i = (y * d + z) * w + x, k = ids[i];
+      if (!k) continue;
+      (k === waterId ? wet : dry).push(i);
+    }
+    for (let j = 0; j < dry.length; j++) order.push(dry[j]);
+    for (let j = 0; j < wet.length; j++) order.push(wet[j]);
+  }
+  const total = order.length, N = Math.max(1, Math.min(1200, Math.ceil(total / 4))), per = Math.ceil(total / N);
+  const stepOf = new Int32Array(ids.length).fill(-1), mid = [];
+  for (let s = 0; s * per < total; s++) {
+    const a = s * per, b = Math.min(total, (s + 1) * per);
+    for (let j = a; j < b; j++) stepOf[order[j]] = s;
+    const m = order[(a + b) >> 1], mx = m % w, mz = ((m / w) | 0) % d, my = (m / (w * d)) | 0;
+    mid.push([mx, my, mz]);
+  }
+  return { stepOf, N: mid.length, order, mid };
+}
 /* join neighbouring blocks of the same kind into boxes, so one /fill does the work of many /setblock */
-function mcCommands({ w, h, d, ids, names }) {
-  const done = new Uint8Array(ids.length), out = [], OX = 2, MAXVOL = 32768;
+function mcCommands({ w, h, d, ids, names }, stepOf) {
+  const done = new Uint8Array(ids.length), OX = 2, MAXVOL = 32768;
+  let maxS = -1;
+  if (stepOf) for (let i = 0; i < stepOf.length; i++) if (stepOf[i] > maxS) maxS = stepOf[i];
+  const out = stepOf ? Array.from({ length: maxS + 1 }, () => []) : [];
   const at = (x, y, z) => (y * d + z) * w + x;
   for (let y = 0; y < h; y++) for (let z = 0; z < d; z++) for (let x = 0; x < w; x++) {
-    const k = ids[at(x, y, z)]; if (!k || done[at(x, y, z)]) continue;
-    const free = (a, b, c) => ids[at(a, b, c)] === k && !done[at(a, b, c)];
+    const i0 = at(x, y, z), k = ids[i0]; if (!k || done[i0]) continue;
+    const s0 = stepOf ? stepOf[i0] : 0;
+    const free = (a, b, c) => { const j = at(a, b, c); return ids[j] === k && !done[j] && (!stepOf || stepOf[j] === s0); };
     let x2 = x, z2 = z, y2 = y;
     while (x2 + 1 < w && free(x2 + 1, y, z)) x2++;
     grow: while (z2 + 1 < d) { for (let a = x; a <= x2; a++) if (!free(a, y, z2 + 1)) break grow; z2++; }
@@ -1177,7 +1209,8 @@ function mcCommands({ w, h, d, ids, names }) {
     rise: while (y2 + 1 < h && area * (y2 - y + 2) <= MAXVOL) { for (let c = z; c <= z2; c++) for (let a = x; a <= x2; a++) if (!free(a, y2 + 1, c)) break rise; y2++; }
     for (let b = y; b <= y2; b++) for (let c = z; c <= z2; c++) for (let a = x; a <= x2; a++) done[at(a, b, c)] = 1;
     const p = (a, b, c) => `~${a + OX} ~${b} ~${c}`, name = 'minecraft:' + names[k];
-    out.push(x === x2 && y === y2 && z === z2 ? `setblock ${p(x, y, z)} ${name}` : `fill ${p(x, y, z)} ${p(x2, y2, z2)} ${name}`);
+    const cmd = x === x2 && y === y2 && z === z2 ? `setblock ${p(x, y, z)} ${name}` : `fill ${p(x, y, z)} ${p(x2, y2, z2)} ${name}`;
+    if (stepOf) out[s0].push(cmd); else out.push(cmd);
   }
   return out;
 }
@@ -1213,10 +1246,77 @@ $('saveMc').onclick = () => {
   const files = [['pack.mcmeta', JSON.stringify(meta, null, 2) + '\n']];
   for (let i = 0; i < n; i++) files.push([`data/voxel/function/build${n > 1 ? i + 1 : ''}.mcfunction`,
     `# Voxel Koubou ${B.w}x${B.h}x${B.d}${n > 1 ? ` (${i + 1}/${n})` : ''}\n` + lines.slice(i * PER, (i + 1) * PER).join('\n') + '\n']);
+  /* step-by-step builder (voxel:build_slow) with an Allay helper */
+  const S = mcSteps(B), stepCmds = mcCommands(B, S.stepOf), packId = 1 + Math.floor(Math.random() * 0x7fffffff), OX = 2;
+  const gridPts = len => { const a = []; for (let v = 0; v < len; v += 16) a.push(v); if (a[a.length - 1] !== len - 1) a.push(len - 1); return a; };
+  const readyLines = [];
+  for (const z of gridPts(B.d)) for (const x of gridPts(B.w)) readyLines.push(`execute unless loaded ~${x + OX} ~ ~${z} run return 0`);
+  readyLines.push('return 1');
+  files.push(
+    ['data/minecraft/tags/function/tick.json', '{"values":["voxel:slow/tick"]}\n'],
+    ['data/minecraft/tags/function/load.json', '{"values":["voxel:slow/load"]}\n'],
+    ['data/voxel/function/slow/load.mcfunction', 'scoreboard objectives add voxel dummy\n'],
+    ['data/voxel/function/build_slow.mcfunction', [
+      'execute if score #on voxel matches 1 run return run tellraw @s "いま建てているところです。やめるときは /function voxel:build_stop"',
+      'scoreboard players add #run voxel 1',
+      'execute align xyz run summon minecraft:marker ~ ~ ~ {Tags:["voxel_site","voxel_new"]}',
+      'execute align xyz run summon minecraft:allay ~2.5 ~1 ~0.5 {NoAI:1b,Invulnerable:1b,PersistenceRequired:1b,Silent:1b,NoGravity:1b,Tags:["voxel_builder","voxel_new"]}',
+      'scoreboard players operation @e[tag=voxel_new] voxel = #run voxel',
+      'tag @e[tag=voxel_new] remove voxel_new',
+      'scoreboard players set #i voxel 0',
+      'scoreboard players set #t voxel 0',
+      `scoreboard players set #id voxel ${packId}`,
+      'scoreboard players set #on voxel 1',
+      'tellraw @s "建てる係が建てはじめます。やめるときは /function voxel:build_stop"',
+    ].join('\n') + '\n'],
+    ['data/voxel/function/build_stop.mcfunction', [
+      'execute unless score #on voxel matches 1 run return run tellraw @s "いまは建てていません"',
+      'function voxel:slow/stop',
+      'tellraw @s "やめました。置いたブロックはそのまま残ります"',
+    ].join('\n') + '\n'],
+    ['data/voxel/function/slow/tick.mcfunction', 'execute if score #on voxel matches 1 as @e[type=minecraft:marker,tag=voxel_site] at @s run function voxel:slow/next\n'],
+    ['data/voxel/function/slow/next.mcfunction', [
+      'execute unless score @s voxel = #run voxel run return run kill @s',
+      `execute unless score #id voxel matches ${packId} run return run function voxel:slow/stop`,
+      'execute as @e[type=minecraft:allay,tag=voxel_builder] unless score @s voxel = #run voxel run function voxel:slow/bye',
+      'execute store result score #ok voxel run function voxel:slow/ready',
+      'execute if score #ok voxel matches 0 run return 0',
+      'scoreboard players add #t voxel 1',
+      'execute if score #t voxel matches ..1 run return 0',
+      'scoreboard players set #t voxel 0',
+      'execute store result storage voxel:slow i int 1 run scoreboard players get #i voxel',
+      'function voxel:slow/run with storage voxel:slow',
+      'scoreboard players add #i voxel 1',
+      `execute if score #i voxel matches ${S.N}.. run function voxel:slow/done`,
+    ].join('\n') + '\n'],
+    ['data/voxel/function/slow/ready.mcfunction', readyLines.join('\n') + '\n'],
+    ['data/voxel/function/slow/run.mcfunction', '$function voxel:slow/s$(i)\n'],
+    ['data/voxel/function/slow/done.mcfunction', [
+      'execute at @e[type=minecraft:allay,tag=voxel_builder] run particle minecraft:firework ~ ~0.5 ~ 0.6 0.6 0.6 0.1 60',
+      'execute at @e[type=minecraft:allay,tag=voxel_builder] run playsound minecraft:entity.player.levelup neutral @a ~ ~ ~ 1 1.4',
+      'tellraw @a "できあがりました"',
+      'function voxel:slow/stop',
+    ].join('\n') + '\n'],
+    ['data/voxel/function/slow/stop.mcfunction', [
+      'scoreboard players set #on voxel 0',
+      'scoreboard players add #run voxel 1',
+      'execute as @e[type=minecraft:allay,tag=voxel_builder] at @s run function voxel:slow/bye',
+      'kill @e[type=minecraft:marker,tag=voxel_site]',
+    ].join('\n') + '\n'],
+    ['data/voxel/function/slow/bye.mcfunction', 'tp @s ~ -1000 ~\nkill @s\n']
+  );
+  for (let s = 0; s < S.N; s++) {
+    const [mx, my, mz] = S.mid[s], ax = mx + 2.5, ay = +(my + 1.2).toFixed(1), az = mz + 0.5;
+    files.push([`data/voxel/function/slow/s${s}.mcfunction`, [
+      ...stepCmds[s],
+      `tp @e[type=minecraft:allay,tag=voxel_builder,limit=1] ~${ax} ~${ay} ~${az}`,
+      `particle minecraft:end_rod ~${ax} ~${ay} ~${az} 0.2 0.2 0.2 0.02 1`,
+    ].join('\n') + '\n']);
+  }
   const a = document.createElement('a');
   a.href = URL.createObjectURL(zipStore(files)); a.download = 'voxel-koubou-datapack.zip';
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 10000);
-  toast(n > 1 ? `保存しました。/function voxel:build1 から build${n} まで順に実行します` : `保存しました（コマンド ${lines.length.toLocaleString()} 行）`);
+  toast(n > 1 ? `保存しました。/function voxel:build1〜${n}（または voxel:build_slow）で置けます` : `保存しました（/function voxel:build または voxel:build_slow で置けます）`);
 };
 
 /* start */

@@ -1,0 +1,57 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>3. 少しずつ置いてみた — マインクラフトで試してみた</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
+<style>
+/* このページだけの決まり。共通の決まりは index.html のものを tools/build_guide.py が前に足す */
+code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.88em; background:var(--surface); border:1px solid var(--line); padding:1px 6px; overflow-wrap:anywhere; }
+figure img { border-radius:0; border:1px solid var(--line); }
+.pager { display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; padding-top:8px; border-top:1px solid var(--line); font-size:15px; }
+.pager a { font-weight:700; text-decoration:none; background:var(--surface); border:1px solid var(--line); padding:8px 14px; }
+.pager a:hover { border-color:var(--accent); }
+</style>
+<div class="page">
+<header>
+  <p><a href="https://fu-yu.github.io/voxel-maker/tried/index.html">← マインクラフトで試してみた</a> (3 / 3)</p>
+  <h1>3. 少しずつ置いてみた (<code>voxel:build_slow</code>)</h1>
+  <p class="lede">いちばん大きい設定の風景 (山と湖・夏、横 128 マス・山の高さ 40 マス、約 32 万ブロック) を、<code>/function voxel:build_slow</code> で下の段から少しずつ置いた記録です。</p>
+</header>
+
+<section>
+  <h2>建てはじめ</h2>
+  <figure><img src="../images/mc-slow-low.jpg" width="1100" height="618" alt="下の数段だけが置かれた風景。石と砂の層のまんなかに水があり、右側の土の上に水色の小さなアレイがいる"></figure>
+  <p>下の段から 1 段ずつ、石・砂・土が広がり、その段の最後に水とまわりのガラスが置かれていきます。右側の茶色い土の上に見える水色の小さな点が、建てる係のアレイです。</p>
+</section>
+
+<section>
+  <h2>途中</h2>
+  <figure><img src="../images/mc-slow-mid.jpg" width="1100" height="618" alt="中腹まで積み上がった風景。手前の水はガラスの中におさまり、両側の斜面に木と草が並んでいる" loading="lazy"></figure>
+  <p>中腹まで積み上がり、斜面には草と木が並びはじめました。水もガラスの枠の中におさまっています。</p>
+</section>
+
+<section>
+  <h2>できあがり</h2>
+  <figure><img src="../images/mc-slow-done.jpg" width="1100" height="618" alt="山頂の雪までできあがった大きな風景。真ん中に湖があり、まわりを木と岩山が囲んでいる" loading="lazy"></figure>
+  <p>2 分ほどで山頂の雪まで積み上がり、「できあがりました」と出ました。最後のアレイがきらきらして消えたかどうかは、広くて追いきれず、画面では確かめられませんでした。</p>
+</section>
+
+<section>
+  <h2>空中で始めたときに起きたことと、直したあと</h2>
+  <figure><img src="../images/mc-slow-sand.jpg" width="1100" height="618" alt="空中に置かれた風景の底から、砂のブロックが地面に向かっていくつも落ちている" loading="lazy"></figure>
+  <figure><img src="../images/mc-slow-air.jpg" width="1100" height="618" alt="地面から浮いた高さに置かれた風景。左側のガラスの下から、地面に向かって水が流れ出している" loading="lazy"></figure>
+  <p>最初に空を飛んだまま <code>/function voxel:build_slow</code> を打ったところ、その高さから上に建ちはじめたため、風景が地面から浮きました。1 段目にあった砂が下へ落ちて底に穴があき、ふちのガラスの下にもブロックがなかったため、そこから地面へ水が流れ出しました。</p>
+  <p>そこで、1 段目の砂をすべて石に変え、ふちのガラスの下端にも石を置くように直しました。</p>
+  <figure><img src="../images/mc-slow-fixed.jpg" width="1100" height="618" alt="空中に浮いた風景を真下から見上げたところ。底がすべて石で埋まり、ふちのガラスの下にも石の縁がついている" loading="lazy"></figure>
+  <p>直したあとに、もう一度空中で置いて下から見上げた写真です。底がすべて石でふさがり、ガラスの下端も石で支えられて、砂も水も落ちなくなりました。また、試している途中で <code>datapacks</code> フォルダに古い zip ファイルの名前を変えて残していたところ、古いファイルの中身が読み込まれてしまうこともわかりました。入れ替えるときは、古い zip をフォルダの外に出す必要があります。</p>
+</section>
+
+<nav class="pager" aria-label="試した記録の移動">
+  <a href="https://fu-yu.github.io/voxel-maker/tried/text.html">← 前: 2. 文字を置いてみた</a>
+  <a href="https://fu-yu.github.io/voxel-maker/tried/index.html">試してみた一覧 →</a>
+</nav>
+
+<footer>
+  <span>このページの写真は、マインクラフトの画面を撮ったものです。</span>
+  <span>ボクセル工房は、Minecraft の公式の製品ではありません。Mojang や Microsoft とは関係ありません。</span>
+</footer>
+</div>
+

@@ -2,6 +2,8 @@
 
 最終更新: 2026-11-14
 
+**現在の作業ブランチ: なし (`main`)** (作業ブランチが変わったら、この行を書きかえる)
+
 ## これは何か
 文字や画像を、立方体 (ボクセル) を積んだ立体に変える、ブラウザだけで動く道具。番号から風景 (山・水・木) を自動で作ることもできる。本体は `index.html` の 1 ファイル。
 three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビルド) はない。
@@ -13,9 +15,9 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 | 「風景を作る」タブ | 動作確認済み (2026-11-13、ローカルで。地形 3 種・季節 3 種・最大と最小の設定・座標データの書き出し・375px 幅)。2026-11-13 に `main` に取り込んで公開。公開ページでも確認済み (結果は `docs/dev/sessions/2026-11-13-seo.md` の「前回の確認の追記」) |
 | 検索と共有のための設定 (題・説明文・`og:*`・共有用の画像) | 公開中 (2026-11-13)。公開ページでタグと画像を確認済み。共有したときのカードも確認済み (ユーザーのスクリーンショット。結果は `docs/dev/sessions/2026-11-14-json-ascii.md` の追記) |
 | 座標データ (JSON) の書き出し | 項目は `size`, `order`, `up`, `voxels` (英数字だけ)。2026-11-14 にローカルで確認し、同じ日に公開 |
-| マインクラフト (Java 版) 用の書き出し (`#saveMc`) | 公式のサーバー版 26.3 で全ブロックの配置を確認済み。ゲームの画面でも、ユーザーが文字と風景 (山と湖・夏) を置いて確認した (2026-11-14)。色の選び方を OKLab に直したあとの見た目は **未確認**。2026-11-14 に「試験中」として公開 |
-| マインクラフト用の説明ページ `minecraft.html` | ローカルで表示を確認済み (2026-11-14)。同じ日に `deploy.yml` に足して公開 (ユーザーが「すすめましょう」と言った) |
-| 試した記録のページ `tried.html` | ローカルで表示を確認済み。2026-11-14 に `deploy.yml` に足して公開 (ユーザーが「足して公開」と言った)。ユーザーが次に試したら、写真と結果を足していく |
+| マインクラフト (Java 版) 用の書き出し (`#saveMc`) | 公式のサーバー版 26.3 で全ブロックの配置を確認済み。ゲームの画面でも、ユーザーが文字と風景 (山と湖・夏) を置いて確認した (2026-11-14)。色の選び方を OKLab に直したあとの見た目は **未確認**。2026-11-14 に「試験中」として公開。「建てる係」つきで少しずつ置く `voxel:build_slow` もポートを使わない照合 (5 種類) とゲームの画面 (最大設定の風景、空中配置の水漏れ対策を含む) で確認し、同じ日に `main` に取り込んで公開 |
+| マインクラフト用の説明ページ `minecraft.html` | ローカルで表示を確認済み (2026-11-14)。同じ日に公開。後半に 3 つの SVG 図と `voxel:build_slow` の説明を足して更新 |
+| 試した記録のページ `tried/` (`index.html`, `scene.html`, `text.html`, `slow.html`) | ローカルで表示を確認済み。2026-11-14 に `tried/` フォルダに分割して公開 |
 | 範囲の選択、「下絵をコピー」 | **未確認** (コードを読んだだけ) |
 | スマホ幅 (375px) | 確認済み (2026-11-11、ブラウザの幅を 375px にして。配置が切り替わり、立体の全体が画面に入る)。実機の Android は **未確認** |
 | GitHub Pages での公開 | 公開中 (https://fu-yu.github.io/voxel-maker/)。2026-11-11 に本体と `guide.html` の表示を確認 (デスクトップ幅と 375px 幅、コンソールエラーなし)。公開元は `gh-pages` ブランチのルート |
@@ -23,13 +25,14 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 ## やりかけの作業 (2026-11-14 の時点)
 マインクラフト (Java 版) 用の書き出しと説明ページは、2026-11-14 に「試験中」として `main` に取り込んで公開した (ユーザーが「公開しても修正が続きそう」と言い、直しながら進めると決めた)。くわしくは `docs/dev/sessions/2026-11-14-minecraft-java.md`。続きの直しは、新しい作業ブランチで行う。
 
+-1. **「建てる係」つきで少しずつ置く (`voxel:build_slow`)**: 2026-11-14 に `main` に取り込んで公開。終わった瞬間にアレイが消える動き・`voxel:build_stop` のゲーム画面での見た目・サーバー版での本物の立体の照合は **未確認**。設計書は `docs/dev/builder-design.md`、記録は `docs/dev/sessions/2026-11-14-builder.md`。
 0. **歩いて楽しめる大きな地図**: ユーザーの希望。案 a〜d を出した (同じ記録にある)。どれを作るかは未定。
 1. **直した色を、ゲームの画面で見る**: 色の選び方を OKLab に変えたあとの文字を、ユーザーにもう一度置いてもらう。見本の画像の軸に入る `yellow_concrete` が浮かないかも見る。
-2. **ゲームの画面でまだ見ていないもの**: 秋・冬・島・丘の風景、見本の画像。
+2. **ゲームの画面でまだ見ていないもの**: 秋・冬・島・丘の風景、見本の画像、文字を置いたときに北を向いていたか (説明ページの「北を向くと読める」の確認)、パックの一覧の警告 (`max_format: 9999`)。
 3. **見た目の直しの候補** (ユーザーが気になると言ったら): 水をせき止めるガラスの枠の線が目立つ。風景の横の面が石の壁に見える。
 4. **提案しただけで未着手**: ボタンの名前に「(Java 版)」を入れる。保存のあとに手順を画面に残す。ボタン 2 つの強さをそろえる。
-5. **ユーザーに頼まれた確認**: 「マインクラフト用に保存」を実際に押して zip が保存されるか → ユーザーがゲームに置けたので、保存はできている。
-6. **片づけ** (頼まれたら): 作業ブランチ `work/minecraft-java` を消す (ユーザーが「消して」と言ってから)。この Mac に Homebrew の `openjdk@25` が残っている。
+5. **説明ページ `minecraft.html` の直し** (ゲームの画面で見つけた。まだ直していない): 「チートの許可」は、画面では「コマンドの許可」。足す候補は、2 つ目の立体を置くときの zip の入れ替え方、「構造物の生成」をオフにするとよいこと、飛んだあと `shift` で下がることや Mac の `fn` + `F3`。くわしくは `2026-11-14-minecraft-java.md` の「画面の操作でわかったこと」。
+6. **片づけ** (頼まれたら): この Mac に Homebrew の `openjdk@25` が残っている。(`work/minecraft-java` ブランチは削除済み)
 
 決まったこと: アクセスの制限の仕組みは足さない (GitHub Pages ではサイトの中に作れず、今の重さなら月 100GB の目安に届かない。ユーザーが 2026-11-14 に了承)。
 
@@ -40,9 +43,9 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 - `docs/public/index.html` — 説明ページの本文 (Artifact 用。`<!doctype>` や `<head>` を持たない形)
 - `docs/public/images/` — 挿絵 (AI が作った絵) と、共有用の画像 `og.jpg` (本体の画面を撮ったもの。作り方は `docs/dev/sessions/2026-11-13-seo.md`)
 - `minecraft.html` — マインクラフトに置く手順のページ (生成物。手で直さない)。元原稿は `docs/public/minecraft.md`、本文は `docs/public/minecraft.html`
-- `tried.html` — マインクラフトで試した記録のページ (生成物。手で直さない)。元原稿は `docs/public/tried.md`、本文は `docs/public/tried.html`。写真は `docs/public/images/mc-*.jpg`
-- `tools/build_guide.py` — `docs/public/index.html` から `guide.html` を作る。`SUB_PAGES` の一覧にあるページ (`minecraft.html`, `tried.html`) も作る。どのページにも、`SITE_PAGES` の一覧から「ページの一覧」を入れる
-- `.github/workflows/deploy.yml` — `main` への push で `index.html`, `guide.html`, `minecraft.html`, `tried.html`, `LICENSE`, `docs/public/images/` だけを `gh-pages` ブランチに強制 push する (`gh-pages` は毎回 1 コミットに作り直される。手で触らない)
+- `tried/index.html`, `tried/scene.html`, `tried/text.html`, `tried/slow.html` — マインクラフトで試した記録のページ (生成物。手で直さない)。元原稿は `docs/public/tried/*.md`、本文は `docs/public/tried/*.html`。写真は `docs/public/images/mc-*.jpg`
+- `tools/build_guide.py` — `docs/public/index.html` から `guide.html` を作る。`SUB_PAGES` の一覧にあるページ (`minecraft.html`, `tried/index.html`, `tried/scene.html`, `tried/text.html`, `tried/slow.html`) も作る。どのページにも、`SITE_PAGES` の一覧から「ページの一覧」を入れる
+- `.github/workflows/deploy.yml` — `main` への push で `index.html`, `guide.html`, `minecraft.html`, `tried/`, `LICENSE`, `docs/public/images/` だけを `gh-pages` ブランチに強制 push する (`gh-pages` は毎回 1 コミットに作り直される。手で触らない)
 
 ## 注意
 - **ページを足すときに直す所は 4 つ**: `tools/build_guide.py` の `SUB_PAGES` と `SITE_PAGES`、`.github/workflows/deploy.yml` の `cp` の行 (自動化の変更なので、ユーザーに確かめてから)、本体 `index.html` の「ページの一覧」の欄。
@@ -54,7 +57,8 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 - 自動化は「`main` → `gh-pages`」の 1 つだけ。これ以外の自動化を入れるときは先にユーザーに確認する。
 - 見本の絵や挿絵に、既存のゲーム・アニメなどのキャラクターを連想させる図柄を使わない (2026-11-11 に見本のきのこを差し替えた経緯がある)。
 - このリポジトリは公開。秘密情報、個人名、メールアドレス、ローカルのファイルパスを書かない。
+- ローカルのファイルパスの例外: 確認用のファイルの置き場所 `/tmp/voxel-mc/` だけは、`docs/dev/` に書いてよい (名前を含まない場所。引き継ぎで探す手数を減らすため、2026-11-14 にユーザーが希望)。`docs/public/` には書かない。
 - コミットのメールアドレスは GitHub の noreply アドレスを使う (リポジトリごとの設定に入れてある)。
 
 ## 最新のセッション
-`docs/dev/sessions/2026-11-14-site-index.md` (その前: `2026-11-14-tried-page.md`)
+`docs/dev/sessions/2026-11-14-builder.md` (その前: `2026-11-14-site-index.md`)
