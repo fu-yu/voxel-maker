@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="ボクセル工房で作った立体を、本物のマインクラフトに置いて確かめた記録です。うまくいったことも、見つけた問題も書いています。">
+<link rel="canonical" href="https://fu-yu.github.io/voxel-maker/tried.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ボクセル工房">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="マインクラフトで試してみた — ボクセル工房">
+<meta property="og:description" content="ボクセル工房で作った立体を、本物のマインクラフトに置いて確かめた記録です。うまくいったことも、見つけた問題も書いています。">
+<meta property="og:url" content="https://fu-yu.github.io/voxel-maker/tried.html">
+<meta property="og:image" content="https://fu-yu.github.io/voxel-maker/docs/public/images/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ブロックを積んで作った、山と湖と木のある小さな風景。左に「ボクセル工房」の文字">
+<meta name="twitter:card" content="summary_large_image">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>マインクラフトで試してみた</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
+<style>
+/* layout: 1 本の読みもの。挿絵が先、文章があと。図はブロック (正方形) の単位でそろえる */
+:root {
+  --bg:#fbf4e0; --surface:#fffaf0; --fg:#3d2f24; --muted:#7a6857; --line:#e6d9bd;
+  --orange:#f08a3c; --blue:#7fa9dc; --green:#8fbf5a; --stem:#f3e6c4; --cream-block:#fff6dc;
+  --block-edge:#c96a22; --grid:#d9caa8; --accent:#c25a12; --frame:#fbf4e0;
+  --display:"Dela Gothic One","Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif;
+  --body:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
+  --unit:18px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg:#2a211b; --surface:#35291f; --fg:#f5ead6; --muted:#c2b09a; --line:#4c3c2e;
+  --stem:#e9dab3; --cream-block:#fff6dc; --block-edge:#8a4513; --grid:#5e4c3a; --accent:#ffa862; --frame:#fbf4e0; color-scheme:dark } }
+:root[data-theme="dark"] {
+  --bg:#2a211b; --surface:#35291f; --fg:#f5ead6; --muted:#c2b09a; --line:#4c3c2e;
+  --stem:#e9dab3; --cream-block:#fff6dc; --block-edge:#8a4513; --grid:#5e4c3a; --accent:#ffa862; --frame:#fbf4e0; color-scheme:dark }
+body { background:var(--bg); color:var(--fg); font-family:var(--body); font-size:17px; line-height:1.85;
+  padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); padding-block:28px 56px; }
+.page { max-width:680px; margin:0 auto; display:flex; flex-direction:column; gap:44px; }
+header { display:flex; flex-direction:column; gap:14px; }
+h1 { font-family:var(--display); font-weight:400; font-size:clamp(34px,9vw,54px); line-height:1.15; margin:0; letter-spacing:.02em; text-wrap:balance; }
+.lede { font-size:19px; margin:0; font-weight:500; }
+figure { margin:0; }
+figure img { display:block; width:100%; height:auto; border-radius:calc(var(--unit)*1); background:var(--frame); }
+figcaption { font-size:13px; color:var(--muted); margin-top:6px; }
+section { display:flex; flex-direction:column; gap:14px; }
+h2 { font-size:22px; font-weight:700; margin:0; line-height:1.4; display:flex; align-items:center; gap:10px; text-wrap:balance; }
+h2::before { content:""; width:var(--unit); height:var(--unit); background:var(--orange); flex:none; }
+h3 { font-size:15px; font-weight:700; color:var(--accent); margin:6px 0 0; letter-spacing:.06em; }
+p { margin:0; }
+ul,ol { margin:0; padding-left:1.3em; display:flex; flex-direction:column; gap:6px; }
+.scenes { list-style:none; padding:0; gap:10px; }
+.scenes li { background:var(--surface); border:1px solid var(--line); padding:12px 16px; }
+.flow { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.flow div, .shapes div { display:flex; flex-direction:column; gap:6px; min-width:0; }
+.flow svg { width:100%; height:auto; background:var(--surface); border:1px solid var(--line); }
+.flow b, .shapes b { font-size:15px; }
+.flow span, .shapes span { font-size:14px; line-height:1.6; color:var(--muted); }
+.shapes { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.shapes svg { width:100%; height:auto; background:var(--surface); border:1px solid var(--line); padding:10px; box-sizing:border-box; }
+@media (max-width:520px) { .flow, .shapes { grid-template-columns:1fr; } .flow div, .shapes div { display:grid; grid-template-columns:120px 1fr; column-gap:14px; align-items:center; } .flow svg, .shapes svg { grid-row:span 2; } }
+ol.steps { list-style:none; padding:0; counter-reset:s; gap:10px; }
+ol.steps li { counter-increment:s; display:grid; grid-template-columns:32px 1fr; gap:12px; align-items:start; }
+ol.steps li::before { content:counter(s); font-family:var(--display); width:32px; height:32px; display:grid; place-items:center; background:var(--fg); color:var(--bg); font-size:15px; margin-top:1px; }
+.btn { font-weight:700; border:1px solid var(--line); background:var(--surface); padding:1px 8px; white-space:nowrap; }
+.caution li::marker { color:var(--accent); }
+a { color:var(--accent); overflow-wrap:anywhere; }
+dl { margin:0; display:flex; flex-direction:column; gap:10px; }
+dt { font-weight:700; } dd { margin:0; color:var(--muted); }
+footer { border-top:1px solid var(--line); padding-top:16px; font-size:13px; color:var(--muted); display:flex; flex-direction:column; gap:4px; }
+
+/* このページだけの決まり。共通の決まりは index.html のものを tools/build_guide.py が前に足す */
+code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.88em; background:var(--surface); border:1px solid var(--line); padding:1px 6px; overflow-wrap:anywhere; }
+.tablewrap { overflow-x:auto; }
+table { border-collapse:collapse; width:100%; font-size:15px; line-height:1.6; }
+th,td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid var(--line); }
+thead th { font-size:13px; color:var(--muted); font-weight:700; }
+.back { font-size:15px; margin:0; display:flex; gap:18px; flex-wrap:wrap; }
+.shot { display:flex; flex-direction:column; gap:10px; }
+.shot figure img { border-radius:0; border:1px solid var(--line); }
+</style>
+</head>
+<body>
+
+<div class="page">
+<header>
+  <p class="back"><a href="./">ボクセル工房を開く</a><a href="minecraft.html">置き方を読む</a></p>
+  <h1>マインクラフトで試してみた</h1>
+  <p class="lede">ボクセル工房で作った立体を、本物のマインクラフトに置いて確かめた記録です。うまくいったことも、見つけた問題も、そのまま書いています。</p>
+  <figure><img src="docs/public/images/mc-lake-top.jpg" width="1100" height="708" alt="山の上から見下ろした、湖と林のある風景。マインクラフトの画面"></figure>
+</header>
+
+<section>
+  <h2>試した環境</h2>
+  <ul>
+    <li>マインクラフト Java 版 26.3 の、ひとりで遊ぶモードです。</li>
+    <li>平らな地面だけのワールド (スーパーフラット) に置きました。</li>
+    <li>試した日は 2026-11-14 です。</li>
+    <li>置き方は「<a href="minecraft.html">マインクラフトに置く</a>」のページのとおりです。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>1. 風景を置いてみた</h2>
+  <p>地形は「山と湖」、季節は「夏」です。</p>
+  <div class="shot">
+    <h3>上から見る</h3>
+    <p>いちばん上の写真です。湖、岸の砂、草の斜面、林、雪ののった石の山が、ボクセル工房の画面と同じ並びで置かれました。水は湖の形におさまり、木の葉も残りました。</p>
+  </div>
+  <div class="shot">
+    <h3>横から見る</h3>
+    <figure><img src="docs/public/images/mc-lake-side.jpg" width="1100" height="708" alt="地面に立って横から見た風景。土と石の高い壁の上に、木が並んでいる" loading="lazy"></figure>
+    <p>風景は、地面の上に台のようにのります。地面に立って見ると、まわりが土と石の高い壁になりました。歩いては登れないので、空を飛んで中に入りました。</p>
+  </div>
+  <div class="shot">
+    <h3>角から見る</h3>
+    <figure><img src="docs/public/images/mc-lake-corner.jpg" width="1100" height="493" alt="風景の角。水のまわりを、ガラスの枠が囲んでいる" loading="lazy"></figure>
+    <p>水がふちにある所には、ガラスが立ちます。水は外に流れ出しませんでした。近くで見ると、ガラスの枠の線が見えます。</p>
+  </div>
+  <div class="shot">
+    <h3>夕方に見る</h3>
+    <figure><img src="docs/public/images/mc-lake-dusk.jpg" width="1100" height="708" alt="夕方に上から見た湖。全体が暗く写っている" loading="lazy"></figure>
+    <p>夕方や夜は、全体が暗く写ります。色を見比べたいときは、昼にします。チャットの欄に <code>/time set day</code> と打つと、昼になります。</p>
+  </div>
+</section>
+
+<section>
+  <h2>2. 文字を置いてみた</h2>
+  <figure><img src="docs/public/images/mc-text-before.jpg" width="1100" height="622" alt="ブロックでできた大きな文字。上が橙、まん中が黄、その下に灰色と黄緑の帯がある" loading="lazy"><figcaption>色の選び方を直す前の写真です。</figcaption></figure>
+  <ul>
+    <li>文字は、裏返しにならず、左から読める向きに置かれました。</li>
+    <li>色に問題がありました。上の橙から下の黄緑へ変わる色づけの途中に、灰色の帯が入りました。</li>
+    <li>同じ日に、色の選び方を直しました。直したあとの写真は、まだありません。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>見つけて直したこと</h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>見つけたこと</th><th>直し方</th></tr></thead>
+    <tbody>
+      <tr><td>木の幹の下の草が、時間がたつと土に変わった</td><td>はじめから土を置くようにした</td></tr>
+      <tr><td>文字の色分けに、灰色がまじった</td><td>近い色の選び方を、人の目の感じ方に近い方法に変えた</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>試すときのこつ</h2>
+  <ul>
+    <li>空を飛ぶと、上から全体を見られます。クリエイティブモードで、スペースのキーを 2 回すばやく押します。</li>
+    <li>写真は、マインクラフトのスクリーンショットの機能で撮りました。ノート型の Mac では、はじめのキー (F2) がそのままでは効きませんでした。マインクラフトの「キー割り当て」で、別のキーに変えると撮れました。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>これから試すこと</h2>
+  <ul>
+    <li>歩きやすい設定 (なだらかな丘、横 128 マス、山を低め) で置いて、歩いてみる。</li>
+    <li>風景を少し下にずらして置き、まわりの壁を低くする。</li>
+    <li>色の選び方を直したあとの文字を置く。</li>
+    <li>秋と冬の風景、島と丘の地形を置く。</li>
+  </ul>
+</section>
+
+<footer>
+  <span>このページの写真は、マインクラフトの画面を撮ったものです。</span>
+  <span>ボクセル工房は、Minecraft の公式の製品ではありません。Mojang や Microsoft とは関係ありません。</span>
+</footer>
+</div>
+</body>
+</html>

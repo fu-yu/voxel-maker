@@ -1,0 +1,100 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>マインクラフトで試してみた</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
+<style>
+/* このページだけの決まり。共通の決まりは index.html のものを tools/build_guide.py が前に足す */
+code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.88em; background:var(--surface); border:1px solid var(--line); padding:1px 6px; overflow-wrap:anywhere; }
+.tablewrap { overflow-x:auto; }
+table { border-collapse:collapse; width:100%; font-size:15px; line-height:1.6; }
+th,td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid var(--line); }
+thead th { font-size:13px; color:var(--muted); font-weight:700; }
+.back { font-size:15px; margin:0; display:flex; gap:18px; flex-wrap:wrap; }
+.shot { display:flex; flex-direction:column; gap:10px; }
+.shot figure img { border-radius:0; border:1px solid var(--line); }
+</style>
+<div class="page">
+<header>
+  <p class="back"><a href="https://fu-yu.github.io/voxel-maker/">ボクセル工房を開く</a><a href="https://fu-yu.github.io/voxel-maker/minecraft.html">置き方を読む</a></p>
+  <h1>マインクラフトで試してみた</h1>
+  <p class="lede">ボクセル工房で作った立体を、本物のマインクラフトに置いて確かめた記録です。うまくいったことも、見つけた問題も、そのまま書いています。</p>
+  <figure><img src="images/mc-lake-top.jpg" width="1100" height="708" alt="山の上から見下ろした、湖と林のある風景。マインクラフトの画面"></figure>
+</header>
+
+<section>
+  <h2>試した環境</h2>
+  <ul>
+    <li>マインクラフト Java 版 26.3 の、ひとりで遊ぶモードです。</li>
+    <li>平らな地面だけのワールド (スーパーフラット) に置きました。</li>
+    <li>試した日は 2026-11-14 です。</li>
+    <li>置き方は「<a href="https://fu-yu.github.io/voxel-maker/minecraft.html">マインクラフトに置く</a>」のページのとおりです。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>1. 風景を置いてみた</h2>
+  <p>地形は「山と湖」、季節は「夏」です。</p>
+  <div class="shot">
+    <h3>上から見る</h3>
+    <p>いちばん上の写真です。湖、岸の砂、草の斜面、林、雪ののった石の山が、ボクセル工房の画面と同じ並びで置かれました。水は湖の形におさまり、木の葉も残りました。</p>
+  </div>
+  <div class="shot">
+    <h3>横から見る</h3>
+    <figure><img src="images/mc-lake-side.jpg" width="1100" height="708" alt="地面に立って横から見た風景。土と石の高い壁の上に、木が並んでいる" loading="lazy"></figure>
+    <p>風景は、地面の上に台のようにのります。地面に立って見ると、まわりが土と石の高い壁になりました。歩いては登れないので、空を飛んで中に入りました。</p>
+  </div>
+  <div class="shot">
+    <h3>角から見る</h3>
+    <figure><img src="images/mc-lake-corner.jpg" width="1100" height="493" alt="風景の角。水のまわりを、ガラスの枠が囲んでいる" loading="lazy"></figure>
+    <p>水がふちにある所には、ガラスが立ちます。水は外に流れ出しませんでした。近くで見ると、ガラスの枠の線が見えます。</p>
+  </div>
+  <div class="shot">
+    <h3>夕方に見る</h3>
+    <figure><img src="images/mc-lake-dusk.jpg" width="1100" height="708" alt="夕方に上から見た湖。全体が暗く写っている" loading="lazy"></figure>
+    <p>夕方や夜は、全体が暗く写ります。色を見比べたいときは、昼にします。チャットの欄に <code>/time set day</code> と打つと、昼になります。</p>
+  </div>
+</section>
+
+<section>
+  <h2>2. 文字を置いてみた</h2>
+  <figure><img src="images/mc-text-before.jpg" width="1100" height="622" alt="ブロックでできた大きな文字。上が橙、まん中が黄、その下に灰色と黄緑の帯がある" loading="lazy"><figcaption>色の選び方を直す前の写真です。</figcaption></figure>
+  <ul>
+    <li>文字は、裏返しにならず、左から読める向きに置かれました。</li>
+    <li>色に問題がありました。上の橙から下の黄緑へ変わる色づけの途中に、灰色の帯が入りました。</li>
+    <li>同じ日に、色の選び方を直しました。直したあとの写真は、まだありません。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>見つけて直したこと</h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>見つけたこと</th><th>直し方</th></tr></thead>
+    <tbody>
+      <tr><td>木の幹の下の草が、時間がたつと土に変わった</td><td>はじめから土を置くようにした</td></tr>
+      <tr><td>文字の色分けに、灰色がまじった</td><td>近い色の選び方を、人の目の感じ方に近い方法に変えた</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>試すときのこつ</h2>
+  <ul>
+    <li>空を飛ぶと、上から全体を見られます。クリエイティブモードで、スペースのキーを 2 回すばやく押します。</li>
+    <li>写真は、マインクラフトのスクリーンショットの機能で撮りました。ノート型の Mac では、はじめのキー (F2) がそのままでは効きませんでした。マインクラフトの「キー割り当て」で、別のキーに変えると撮れました。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>これから試すこと</h2>
+  <ul>
+    <li>歩きやすい設定 (なだらかな丘、横 128 マス、山を低め) で置いて、歩いてみる。</li>
+    <li>風景を少し下にずらして置き、まわりの壁を低くする。</li>
+    <li>色の選び方を直したあとの文字を置く。</li>
+    <li>秋と冬の風景、島と丘の地形を置く。</li>
+  </ul>
+</section>
+
+<footer>
+  <span>このページの写真は、マインクラフトの画面を撮ったものです。</span>
+  <span>ボクセル工房は、Minecraft の公式の製品ではありません。Mojang や Microsoft とは関係ありません。</span>
+</footer>
+</div>

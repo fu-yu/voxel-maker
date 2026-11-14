@@ -22,6 +22,8 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 ## やりかけの作業 (2026-11-14 の時点)
 マインクラフト (Java 版) 用の書き出しと説明ページは、2026-11-14 に「試験中」として `main` に取り込んで公開した (ユーザーが「公開しても修正が続きそう」と言い、直しながら進めると決めた)。くわしくは `docs/dev/sessions/2026-11-14-minecraft-java.md`。続きの直しは、新しい作業ブランチで行う。
 
+0. **`tried.html` の公開** (作業ブランチ `work/tried-page`、push 済み): `.github/workflows/deploy.yml` の `cp` の行に `tried.html` を足す必要がある。ユーザーの返事待ち。足さずに取り込むと `minecraft.html` からのリンクが切れる。くわしくは `docs/dev/sessions/2026-11-14-tried-page.md`。
+0. **歩いて楽しめる大きな地図**: ユーザーの希望。案 a〜d を出した (同じ記録にある)。どれを作るかは未定。
 1. **直した色を、ゲームの画面で見る**: 色の選び方を OKLab に変えたあとの文字を、ユーザーにもう一度置いてもらう。見本の画像の軸に入る `yellow_concrete` が浮かないかも見る。
 2. **ゲームの画面でまだ見ていないもの**: 秋・冬・島・丘の風景、見本の画像。
 3. **見た目の直しの候補** (ユーザーが気になると言ったら): 水をせき止めるガラスの枠の線が目立つ。風景の横の面が石の壁に見える。
@@ -38,7 +40,8 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 - `docs/public/index.html` — 説明ページの本文 (Artifact 用。`<!doctype>` や `<head>` を持たない形)
 - `docs/public/images/` — 挿絵 (AI が作った絵) と、共有用の画像 `og.jpg` (本体の画面を撮ったもの。作り方は `docs/dev/sessions/2026-11-13-seo.md`)
 - `minecraft.html` — マインクラフトに置く手順のページ (生成物。手で直さない)。元原稿は `docs/public/minecraft.md`、本文は `docs/public/minecraft.html`
-- `tools/build_guide.py` — `docs/public/index.html` から `guide.html` を、`docs/public/minecraft.html` から `minecraft.html` を作る
+- `tried.html` — マインクラフトで試した記録のページ (生成物。手で直さない)。元原稿は `docs/public/tried.md`、本文は `docs/public/tried.html`。写真は `docs/public/images/mc-*.jpg`
+- `tools/build_guide.py` — `docs/public/index.html` から `guide.html` を作る。`SUB_PAGES` の一覧にあるページ (`minecraft.html`, `tried.html`) も作る
 - `.github/workflows/deploy.yml` — `main` への push で `index.html`, `guide.html`, `minecraft.html`, `LICENSE`, `docs/public/images/` だけを `gh-pages` ブランチに強制 push する (`gh-pages` は毎回 1 コミットに作り直される。手で触らない)
 
 ## 注意
@@ -53,4 +56,4 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 - コミットのメールアドレスは GitHub の noreply アドレスを使う (リポジトリごとの設定に入れてある)。
 
 ## 最新のセッション
-`docs/dev/sessions/2026-11-14-minecraft-java.md` (その前: `2026-11-14-json-ascii.md`)
+`docs/dev/sessions/2026-11-14-tried-page.md` (その前: `2026-11-14-minecraft-java.md`)
