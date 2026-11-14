@@ -819,12 +819,12 @@ function sceneModel(N) {
     if (shaded >= want) break;
     if (crown[i]) continue;                      // under another tree already
     const x = i % N, z = (i / N) | 0;
-    for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
+    const y0 = gh[i], r = hashN(x, z, seed + 901), t = (y0 - 1) / (H - 1);
+    const pine = t > 0.45 + 0.2 * r, cap = S.cap ? MAT.snow : -1, reach = pine ? 1 : 2;
+    for (let dz = -reach; dz <= reach; dz++) for (let dx = -reach; dx <= reach; dx++) {
       const nx = x + dx, nz = z + dz; if (nx < 0 || nz < 0 || nx >= N || nz >= N) continue;
       const j = nz * N + nx; if (!crown[j]) { crown[j] = 1; if (top[j] === MAT.grass) shaded++; }
     }
-    const y0 = gh[i], r = hashN(x, z, seed + 901), t = (y0 - 1) / (H - 1);
-    const pine = t > 0.45 + 0.2 * r, cap = S.cap ? MAT.snow : -1;
     if (pine) {
       const th = 1 + (r > 0.5), m = MAT.pine;
       for (let y = 0; y < th + 2; y++) put(x, y0 + y, z, MAT.trunk);
@@ -834,13 +834,16 @@ function sceneModel(N) {
       }
       leafAt(x, y0 + th + 2, z, m); leafAt(x, y0 + th + 3, z, cap >= 0 ? cap : m);
     } else {
-      const th = 2 + (r > 0.6), m = MAT.leaf + Math.floor(hashN(x, z, seed + 902) * 3);
+      /* the same shape as an oak (or birch) grown in the game: a trunk of 4–6 (birch 5–7), two 5×5 layers
+         and one 3×3 layer around its top, and a plus sign above it. Corners are left out about half the time */
+      const m = MAT.leaf + Math.floor(hashN(x, z, seed + 902) * 3), th = (m === MAT.leaf + 1 ? 5 : 4) + Math.floor(hashN(x, z, seed + 904) * 3);
       for (let y = 0; y < th; y++) put(x, y0 + y, z, MAT.trunk);
-      for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
-        const corner = dx && dz;
-        if ((dx || dz) && !(corner && hashN(x + dx, z + dz, seed + 903) < 0.5)) leafAt(x + dx, y0 + th - 1, z + dz, m);
-        leafAt(x + dx, y0 + th, z + dz, m);
-        if (!corner) leafAt(x + dx, y0 + th + 1, z + dz, cap >= 0 ? cap : m);
+      for (let dy = -3; dy <= 0; dy++) {
+        const rad = dy <= -2 ? 2 : 1, y = y0 + th + dy;
+        for (let dz = -rad; dz <= rad; dz++) for (let dx = -rad; dx <= rad; dx++) {
+          if (Math.abs(dx) === rad && Math.abs(dz) === rad && (dy === 0 || hashN(x + dx * 5, z + dz * 5 + y * 31, seed + 903) < 0.5)) continue;
+          leafAt(x + dx, y, z + dz, dy === 0 && cap >= 0 ? cap : m);
+        }
       }
     }
   }
