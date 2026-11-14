@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2026-11-15
+- 全 8 ページ (`index.html`, `guide.html`, `minecraft.html`, `tried/*.html`) に Google Analytics (GA4) の計測タグを追加した (`tools/build_guide.py` の `HEAD` と `index.html`)
+- 利用規約に沿って「アクセス解析とクッキーについて」の案内を `guide.html` (`docs/public/index.md` / `index.html`) に追加し、全ページの「ページの一覧」の下に案内とリンクを入れた (詳細: sessions/2026-11-15-analytics.md)
+
 ## 2026-11-14
 - すべてのページに共通の「ページの一覧」を入れた (上に短い一覧、下に説明つきの一覧。`tools/build_guide.py` の `SITE_PAGES` から作る)。本体にも一覧の欄を足した (詳細: sessions/2026-11-14-site-index.md)
 - 「マインクラフトで試してみた」ページ `tried.html` を追加 (ゲームの写真 5 枚つきの記録。元原稿は `docs/public/tried.md`)。同じ日に公開の設定に足して公開 (詳細: sessions/2026-11-14-tried-page.md)
