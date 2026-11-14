@@ -105,6 +105,11 @@ Microsoft の障害で、ユーザーがサインインの確認コードを受�
   - 直したあと (ローカルで書き出しを調べた): 文字は `orange_wool` 387・`yellow_terracotta` 1,972・`lime_wool` 1,171 で灰色なし。見本の画像は `orange_wool`・`orange_concrete`・`white_wool`・`white_terracotta`・`yellow_concrete`。秋の葉は `orange_concrete`・`pink_terracotta`・`yellow_concrete`・`yellow_terracotta`。
 - 直したあとの見た目は、ゲームの画面では **未確認**。見本の画像の軸に `yellow_concrete` (あざやかな黄) が 70 個入るので、浮いて見えるかもしれない。
 
+## 公開 (同じ日の続き)
+- ユーザーが「公開しても修正が続きそう」と言い、「試験中」のまま公開して直しながら進めると決めた (「すすめましょう」)。
+- `.github/workflows/deploy.yml`: 公開するファイルに `minecraft.html` を足した (`cp index.html guide.html minecraft.html LICENSE _site/`)。ユーザーの了承を得た自動化の変更。ほかの動きは変えていない。
+- `main` に取り込んだ。公開ページでの確認の結果は、次の作業のときにここへ書き足す。
+
 ## 試してうまくいかなかったこと
 - minecraft.net のページは、取得用の道具では時間切れになった。ブラウザペインで開くと読めた。
 
