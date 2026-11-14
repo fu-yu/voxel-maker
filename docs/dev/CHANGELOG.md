@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## 2026-11-15
+- 「風景を作る」に道を追加 (`roadPath()`、材料 `MAT.road` / `MAT.plank`、「道を入れる」のチェック `#road`)。山をよけ、水の上は板の橋。チェックを外すと今までと同じ風景。ブランチ `work/roads`、未公開 (詳細: sessions/2026-11-15-roads.md)
 - 全 8 ページ (`index.html`, `guide.html`, `minecraft.html`, `tried/*.html`) に Google Analytics (GA4) の計測タグを追加した (`tools/build_guide.py` の `HEAD` と `index.html`)
 - 利用規約に沿って「アクセス解析とクッキーについて」の案内を `guide.html` (`docs/public/index.md` / `index.html`) に追加し、全ページの「ページの一覧」の下に案内とリンクを入れた (詳細: sessions/2026-11-15-analytics.md)
 
