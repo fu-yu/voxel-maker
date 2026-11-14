@@ -66,6 +66,7 @@ NAV_CSS = (
     ".siteindex ul{list-style:none;padding:0;gap:10px}"
     ".siteindex li{background:var(--surface);border:1px solid var(--line);padding:12px 16px;display:flex;flex-direction:column;gap:2px}"
     ".siteindex li a{font-weight:700}.siteindex li span{font-size:14px;color:var(--muted)}"
+    ".siteindex .note{font-size:14px;color:var(--muted);margin:10px 0 0}"
 )
 
 
@@ -79,7 +80,9 @@ def add_site_nav(body: str, current: str) -> str:
         f'<a href="{link(href)}"' + (' aria-current="page"' if href == active else "") + f">{name}</a>" for href, name, _ in SITE_PAGES
     ) + "</nav>"
     items = "\n".join(f'    <li><a href="{link(href)}">{name}</a><span>{desc}</span></li>' for href, name, desc in SITE_PAGES if href != current)
-    bottom = f'<section class="siteindex">\n  <h2>ページの一覧</h2>\n  <ul>\n{items}\n  </ul>\n</section>\n\n'
+    analytics_href = "#analytics" if current == "guide.html" else link("guide.html#analytics")
+    notice = f'  <p class="note">このサイトではアクセス解析に Google アナリティクスとクッキーを使っています (<a href="{analytics_href}">くわしく</a>)。</p>\n'
+    bottom = f'<section class="siteindex">\n  <h2>ページの一覧</h2>\n  <ul>\n{items}\n  </ul>\n{notice}</section>\n\n'
     for marker in ('<div class="page">\n', "<footer>", "</style>"):
         assert body.count(marker) == 1, marker
     body = body.replace('<div class="page">\n', '<div class="page">\n' + top + "\n", 1)
