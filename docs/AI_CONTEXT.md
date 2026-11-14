@@ -49,6 +49,7 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 
 ## 注意
 - **ページを足すときに直す所は 4 つ**: `tools/build_guide.py` の `SUB_PAGES` と `SITE_PAGES`、`.github/workflows/deploy.yml` の `cp` の行 (自動化の変更なので、ユーザーに確かめてから)、本体 `index.html` の「ページの一覧」の欄。
+  `tried/` の中にページを足すときは、`SUB_PAGES` に 1 行足し、`tried/index.html` の元原稿からリンクするだけでよい (`deploy.yml` は `tried` フォルダごと公開するので、変えなくてよい)。
 - 説明を直すときは `docs/public/index.md` と `docs/public/index.html` の両方を直し、`python3 tools/build_guide.py` で `guide.html` を作り直す。
 - `docs/public/index.html` は Artifact として公開するための形なので、`<!doctype>`・`<html>`・`<head>`・`<body>` を書かない。
 - **ブランチの決まり** (ユーザーが 2026-11-11 に決めた): `main` は常に公開してよい状態。`main` に直接コミットしない。
