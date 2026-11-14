@@ -41,10 +41,11 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 - `docs/public/images/` — 挿絵 (AI が作った絵) と、共有用の画像 `og.jpg` (本体の画面を撮ったもの。作り方は `docs/dev/sessions/2026-11-13-seo.md`)
 - `minecraft.html` — マインクラフトに置く手順のページ (生成物。手で直さない)。元原稿は `docs/public/minecraft.md`、本文は `docs/public/minecraft.html`
 - `tried.html` — マインクラフトで試した記録のページ (生成物。手で直さない)。元原稿は `docs/public/tried.md`、本文は `docs/public/tried.html`。写真は `docs/public/images/mc-*.jpg`
-- `tools/build_guide.py` — `docs/public/index.html` から `guide.html` を作る。`SUB_PAGES` の一覧にあるページ (`minecraft.html`, `tried.html`) も作る
+- `tools/build_guide.py` — `docs/public/index.html` から `guide.html` を作る。`SUB_PAGES` の一覧にあるページ (`minecraft.html`, `tried.html`) も作る。どのページにも、`SITE_PAGES` の一覧から「ページの一覧」を入れる
 - `.github/workflows/deploy.yml` — `main` への push で `index.html`, `guide.html`, `minecraft.html`, `tried.html`, `LICENSE`, `docs/public/images/` だけを `gh-pages` ブランチに強制 push する (`gh-pages` は毎回 1 コミットに作り直される。手で触らない)
 
 ## 注意
+- **ページを足すときに直す所は 4 つ**: `tools/build_guide.py` の `SUB_PAGES` と `SITE_PAGES`、`.github/workflows/deploy.yml` の `cp` の行 (自動化の変更なので、ユーザーに確かめてから)、本体 `index.html` の「ページの一覧」の欄。
 - 説明を直すときは `docs/public/index.md` と `docs/public/index.html` の両方を直し、`python3 tools/build_guide.py` で `guide.html` を作り直す。
 - `docs/public/index.html` は Artifact として公開するための形なので、`<!doctype>`・`<html>`・`<head>`・`<body>` を書かない。
 - **ブランチの決まり** (ユーザーが 2026-11-11 に決めた): `main` は常に公開してよい状態。`main` に直接コミットしない。
@@ -56,4 +57,4 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 - コミットのメールアドレスは GitHub の noreply アドレスを使う (リポジトリごとの設定に入れてある)。
 
 ## 最新のセッション
-`docs/dev/sessions/2026-11-14-tried-page.md` (その前: `2026-11-14-minecraft-java.md`)
+`docs/dev/sessions/2026-11-14-site-index.md` (その前: `2026-11-14-tried-page.md`)

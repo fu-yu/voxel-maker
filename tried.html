@@ -77,16 +77,16 @@ code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.88em;
 table { border-collapse:collapse; width:100%; font-size:15px; line-height:1.6; }
 th,td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid var(--line); }
 thead th { font-size:13px; color:var(--muted); font-weight:700; }
-.back { font-size:15px; margin:0; display:flex; gap:18px; flex-wrap:wrap; }
 .shot { display:flex; flex-direction:column; gap:10px; }
 .shot figure img { border-radius:0; border:1px solid var(--line); }
+.sitenav{display:flex;flex-wrap:wrap;gap:8px;font-size:14px;margin:0}.sitenav a{padding:3px 10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);text-decoration:none;font-weight:700}.sitenav a[aria-current]{background:var(--fg);border-color:var(--fg);color:var(--bg)}.sitenav a:focus-visible,.siteindex a:focus-visible{outline:3px solid var(--orange);outline-offset:2px}.siteindex ul{list-style:none;padding:0;gap:10px}.siteindex li{background:var(--surface);border:1px solid var(--line);padding:12px 16px;display:flex;flex-direction:column;gap:2px}.siteindex li a{font-weight:700}.siteindex li span{font-size:14px;color:var(--muted)}
 </style>
 </head>
 <body>
 
 <div class="page">
+<nav class="sitenav" aria-label="ページの一覧"><a href="./">ボクセル工房</a><a href="guide.html">てびき</a><a href="minecraft.html">マインクラフトに置く</a><a href="tried.html" aria-current="page">マインクラフトで試してみた</a></nav>
 <header>
-  <p class="back"><a href="./">ボクセル工房を開く</a><a href="minecraft.html">置き方を読む</a></p>
   <h1>マインクラフトで試してみた</h1>
   <p class="lede">ボクセル工房で作った立体を、本物のマインクラフトに置いて確かめた記録です。うまくいったことも、見つけた問題も、そのまま書いています。</p>
   <figure><img src="docs/public/images/mc-lake-top.jpg" width="1100" height="708" alt="山の上から見下ろした、湖と林のある風景。マインクラフトの画面"></figure>
@@ -162,6 +162,15 @@ thead th { font-size:13px; color:var(--muted); font-weight:700; }
     <li>風景を少し下にずらして置き、まわりの壁を低くする。</li>
     <li>色の選び方を直したあとの文字を置く。</li>
     <li>秋と冬の風景、島と丘の地形を置く。</li>
+  </ul>
+</section>
+
+<section class="siteindex">
+  <h2>ページの一覧</h2>
+  <ul>
+    <li><a href="./">ボクセル工房</a><span>文字・画像・風景を、ブロックの立体にする道具です。</span></li>
+    <li><a href="guide.html">てびき</a><span>使い方と、できること・できないことの説明です。</span></li>
+    <li><a href="minecraft.html">マインクラフトに置く</a><span>作った立体を、マインクラフトのワールドに置く手順です。</span></li>
   </ul>
 </section>
 

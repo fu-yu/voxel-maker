@@ -71,11 +71,13 @@ dl { margin:0; display:flex; flex-direction:column; gap:10px; }
 dt { font-weight:700; } dd { margin:0; color:var(--muted); }
 footer { border-top:1px solid var(--line); padding-top:16px; font-size:13px; color:var(--muted); display:flex; flex-direction:column; gap:4px; }
 .open a{display:inline-block;font-weight:700;color:var(--bg);background:var(--fg);padding:8px 18px;text-decoration:none}.open a:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.sitenav{display:flex;flex-wrap:wrap;gap:8px;font-size:14px;margin:0}.sitenav a{padding:3px 10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);text-decoration:none;font-weight:700}.sitenav a[aria-current]{background:var(--fg);border-color:var(--fg);color:var(--bg)}.sitenav a:focus-visible,.siteindex a:focus-visible{outline:3px solid var(--orange);outline-offset:2px}.siteindex ul{list-style:none;padding:0;gap:10px}.siteindex li{background:var(--surface);border:1px solid var(--line);padding:12px 16px;display:flex;flex-direction:column;gap:2px}.siteindex li a{font-weight:700}.siteindex li span{font-size:14px;color:var(--muted)}
 </style>
 </head>
 <body>
 
 <div class="page">
+<nav class="sitenav" aria-label="ページの一覧"><a href="./">ボクセル工房</a><a href="guide.html" aria-current="page">てびき</a><a href="minecraft.html">マインクラフトに置く</a><a href="tried.html">マインクラフトで試してみた</a></nav>
 <header>
   <h1>ボクセル工房</h1>
   <p class="lede">文字や画像を、積み木のような小さな立方体を積んだ立体に変える道具です。山や湖のある小さな風景を、自動で作ることもできます。できた立体は、画面の上でぐるぐる回して眺められます。</p>
@@ -181,6 +183,15 @@ footer { border-top:1px solid var(--line); padding-top:16px; font-size:13px; col
     <div><dt>ドット絵</dt><dd>四角い点を並べて描いた絵のこと。</dd></div>
     <div><dt>座標データ</dt><dd>ブロック 1 個ずつの位置 (横・高さ・奥行き) と色を書き並べた一覧のこと。</dd></div>
   </dl>
+</section>
+
+<section class="siteindex">
+  <h2>ページの一覧</h2>
+  <ul>
+    <li><a href="./">ボクセル工房</a><span>文字・画像・風景を、ブロックの立体にする道具です。</span></li>
+    <li><a href="minecraft.html">マインクラフトに置く</a><span>作った立体を、マインクラフトのワールドに置く手順です。</span></li>
+    <li><a href="tried.html">マインクラフトで試してみた</a><span>本物のマインクラフトに置いて確かめた、写真つきの記録です。</span></li>
+  </ul>
 </section>
 
 <footer>

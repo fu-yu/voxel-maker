@@ -40,6 +40,38 @@ SUB_PAGES = [
 ]
 
 
+# すべてのページの一覧。ここに足すと、どのページの「ページの一覧」にも出る: (ファイル名, 名前, ひとことの説明)
+SITE_PAGES = [
+    ("./", "ボクセル工房", "文字・画像・風景を、ブロックの立体にする道具です。"),
+    ("guide.html", "てびき", "使い方と、できること・できないことの説明です。"),
+    ("minecraft.html", "マインクラフトに置く", "作った立体を、マインクラフトのワールドに置く手順です。"),
+    ("tried.html", "マインクラフトで試してみた", "本物のマインクラフトに置いて確かめた、写真つきの記録です。"),
+]
+NAV_CSS = (
+    ".sitenav{display:flex;flex-wrap:wrap;gap:8px;font-size:14px;margin:0}"
+    ".sitenav a{padding:3px 10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);text-decoration:none;font-weight:700}"
+    ".sitenav a[aria-current]{background:var(--fg);border-color:var(--fg);color:var(--bg)}"
+    ".sitenav a:focus-visible,.siteindex a:focus-visible{outline:3px solid var(--orange);outline-offset:2px}"
+    ".siteindex ul{list-style:none;padding:0;gap:10px}"
+    ".siteindex li{background:var(--surface);border:1px solid var(--line);padding:12px 16px;display:flex;flex-direction:column;gap:2px}"
+    ".siteindex li a{font-weight:700}.siteindex li span{font-size:14px;color:var(--muted)}"
+)
+
+
+def add_site_nav(body: str, current: str) -> str:
+    """ページの上に短い一覧を、下に説明つきの一覧を入れる。current は今のページのファイル名。"""
+    top = '<nav class="sitenav" aria-label="ページの一覧">' + "".join(
+        f'<a href="{href}"' + (' aria-current="page"' if href == current else "") + f">{name}</a>" for href, name, _ in SITE_PAGES
+    ) + "</nav>"
+    items = "\n".join(f'    <li><a href="{href}">{name}</a><span>{desc}</span></li>' for href, name, desc in SITE_PAGES if href != current)
+    bottom = f'<section class="siteindex">\n  <h2>ページの一覧</h2>\n  <ul>\n{items}\n  </ul>\n</section>\n\n'
+    for marker in ('<div class="page">\n', "<footer>", "</style>"):
+        assert body.count(marker) == 1, marker
+    body = body.replace('<div class="page">\n', '<div class="page">\n' + top + "\n", 1)
+    body = body.replace("<footer>", bottom + "<footer>", 1)
+    return body.replace("</style>", NAV_CSS + "\n</style>", 1)
+
+
 def shared_style() -> str:
     """docs/public/index.html の <style> の中身 (説明ページ共通の見た目)。"""
     body = (ROOT / "docs/public/index.html").read_text(encoding="utf-8")
@@ -53,6 +85,7 @@ def build_guide() -> None:
     marker = '<figure><img src="docs/public/images/cover.jpg"'
     assert marker in body, "表紙の画像が見つかりません"
     body = body.replace(marker, OPEN_APP + "\n  " + marker, 1)
+    body = add_site_nav(body, "guide.html")
     style_end = body.index("</style>") + len("</style>")
     out = HEAD + body[:style_end] + "\n</head>\n<body>\n" + body[style_end:] + "</body>\n</html>\n"
     (ROOT / "guide.html").write_text(out, encoding="utf-8")
@@ -69,6 +102,7 @@ def build_sub(name: str, desc: str, title: str) -> None:
     body = body.replace('src="images/', 'src="docs/public/images/')
     # 公開ページの中では、同じ場所のページどうしを短いアドレスでつなぐ
     body = body.replace('href="https://fu-yu.github.io/voxel-maker/"', 'href="./"').replace('href="https://fu-yu.github.io/voxel-maker/', 'href="')
+    body = add_site_nav(body, name)
     style_end = body.index("</style>") + len("</style>")
     out = head + body[:style_end] + "\n</head>\n<body>\n" + body[style_end:] + "</body>\n</html>\n"
     (ROOT / name).write_text(out, encoding="utf-8")
