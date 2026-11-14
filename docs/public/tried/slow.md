@@ -39,5 +39,5 @@
 ---
 
 - 前: [2. 文字を置いてみた](https://fu-yu.github.io/voxel-maker/tried/text.html)
-- [試してみた一覧へ戻る](https://fu-yu.github.io/voxel-maker/tried/index.html)
+- 次: [4. 少しずつ壊してみた](https://fu-yu.github.io/voxel-maker/tried/break.html)
 

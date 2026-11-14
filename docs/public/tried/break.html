@@ -1,0 +1,47 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>4. 少しずつ壊してみた — マインクラフトで試してみた</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
+<style>
+/* このページだけの決まり。共通の決まりは index.html のものを tools/build_guide.py が前に足す */
+code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.88em; background:var(--surface); border:1px solid var(--line); padding:1px 6px; overflow-wrap:anywhere; }
+figure img { border-radius:0; border:1px solid var(--line); }
+.pager { display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; padding-top:8px; border-top:1px solid var(--line); font-size:15px; }
+.pager a { font-weight:700; text-decoration:none; background:var(--surface); border:1px solid var(--line); padding:8px 14px; }
+.pager a:hover { border-color:var(--accent); }
+</style>
+<div class="page">
+<header>
+  <p><a href="https://fu-yu.github.io/voxel-maker/tried/index.html">← マインクラフトで試してみた</a> (4 / 4)</p>
+  <h1>4. 少しずつ壊してみた (<code>voxel:break_slow</code>)</h1>
+  <p class="lede">置いた大きな風景 (横 128 マス・山の高さ 40 マス、約 32 万ブロック) を、<code>/function voxel:break_slow</code> で上の段から爆発させながら少しずつ消した記録です。</p>
+</header>
+
+<section>
+  <h2>最初に試したとき (動かずに固まった妖精)</h2>
+  <figure><img src="../images/mc-break-stuck.jpg" width="1100" height="618" alt="風景の山の上に、水色の小さなアレイがぽつんと止まっている"></figure>
+  <p>最初に <code>/function voxel:break_slow</code> を打ったときは、「壊す係が壊しはじめます」と出たあと、妖精が建物の前で動かず、ブロックも消えませんでした。ゲームの記録を調べたところ、爆発の音を鳴らす命令の書き方に誤り (<code>block</code> を <code>blocks</code> と書いていた) があり、壊す段階のファイルが読み込まれていませんでした。また、ワールドの難易度がピースフルだったため、ヴェックスではなくアレイが出ていました。</p>
+</section>
+
+<section>
+  <h2>直したあと (爆発しながら削る)</h2>
+  <figure><img src="../images/mc-break-mid.jpg" width="1100" height="618" alt="湖のそばを水色のアレイが飛び回り、白い爆発の煙と黒い煙と炎を出しながら、山の上の段を削っている" loading="lazy"></figure>
+  <p>音の指定を直してやり直したところ、壊す係が飛び回りながら、白い爆発の粒と黒い煙と炎を出して、上の段から順番にブロックを消していきました。水はまわりの枠より先に消えるため、外へあふれ出しませんでした。途中で <code>/function voxel:break_stop</code> を打って止める動きも確かめました。</p>
+  <p>また、チャット欄で <code>/function voxel:b</code> と打ったときに、内部用の段階ファイル (<code>b0</code>〜<code>b1005</code>) が候補に並んで <code>voxel:break_slow</code> が選びにくかったため、内部用のファイルを <code>voxel:slow/</code> の下に移しました。</p>
+</section>
+
+<section>
+  <h2>最後まで消えたあと</h2>
+  <figure><img src="../images/mc-break-done.jpg" width="1100" height="618" alt="雨が降る平らな地面。建物があった左側だけ草が茶色い土に変わり、右側の緑の草との境目がまっすぐ残っている" loading="lazy"></figure>
+  <p>「すべて壊しました」と出て、約 32 万ブロックの風景がすべて消え、平らな地面に戻りました。建物がのっていた場所だけ、地面の草ブロックに光が当たらず茶色い土に変わっており、四角い跡になっていました。マインクラフトの自然な仕組みによるもので、このまま時間がたつと、まわりの緑の草から少しずつ緑に戻ります。</p>
+</section>
+
+<nav class="pager" aria-label="試した記録の移動">
+  <a href="https://fu-yu.github.io/voxel-maker/tried/slow.html">← 前: 3. 少しずつ置いてみた</a>
+  <a href="https://fu-yu.github.io/voxel-maker/tried/index.html">試してみた一覧 →</a>
+</nav>
+
+<footer>
+  <span>このページの写真は、マインクラフトの画面を撮ったものです。</span>
+  <span>ボクセル工房は、Minecraft の公式の製品ではありません。Mojang や Microsoft とは関係ありません。</span>
+</footer>
+</div>
