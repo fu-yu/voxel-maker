@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## 2026-11-15
+- マインクラフト用の書き出しで、秋の丸い木の葉を `shroomlight`・`nether_wart_block`・`honeycomb_block` にした (前は近い色のコンクリートやテラコッタ)。`work/autumn-leaves` で作業中で、ゲームの画面では未確認 (詳細: sessions/2026-11-15-autumn-leaves.md)
 - 全 8 ページ (`index.html`, `guide.html`, `minecraft.html`, `tried/*.html`) に Google Analytics (GA4) の計測タグを追加した (`tools/build_guide.py` の `HEAD` と `index.html`)
 - 利用規約に沿って「アクセス解析とクッキーについて」の案内を `guide.html` (`docs/public/index.md` / `index.html`) に追加し、全ページの「ページの一覧」の下に案内とリンクを入れた (詳細: sessions/2026-11-15-analytics.md)
 
