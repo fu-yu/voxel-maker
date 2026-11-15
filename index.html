@@ -1125,7 +1125,14 @@ const MC_PALETTE = [
   ['concrete', 'cfd5d6 e06101 a9309f 2489c7 f1af15 5ea918 d6658f 373a3e 7d7d73 157788 64209c 2d2f8f 603c20 495b24 8e2121 080a0f'],
   ['wool', 'eaeced f17614 be45b4 3aafd9 f9c628 70b91a ee8dac 3f4448 8e8e87 158a91 7a2aad 35399d 724829 556e1c a12723 15151a'],
   ['terracotta', 'd2b2a1 a25426 96586d 716d8a ba8523 687635 a24e4f 3a2a24 876b62 575b5b 764656 4a3c5b 4d3324 4c532a 8f3d2f 251710'],
-].flatMap(([kind, list]) => list.split(' ').map((h, i) => [MC_DYES[i] + '_' + kind, ...hexRGB('#' + h)])).concat([['terracotta', 152, 94, 68]]);
+].flatMap(([kind, list]) => list.split(' ').map((h, i) => [MC_DYES[i] + '_' + kind, ...hexRGB('#' + h)])).concat([['terracotta', 152, 94, 68]])
+  /* more blocks whose faces look like one colour (average of the official textures in Mojang/bedrock-samples v1.26.60.5).
+     All exist in 1.21; blocks that fall (concrete powder) or change by themselves (unwaxed copper) are left out.
+     Wooden planks are left out too: birch planks took over the middle of the orange-to-green text gradient */
+  .concat(('andesite:888889 blue_ice:74a8fd calcite:dfe0dd clay:a1a6b3 end_stone:dcdf9e lapis_block:1f438c moss_block:596e2d mud:3c393d ' +
+    'nether_wart_block:730303 packed_ice:8eb4fa packed_mud:8e6b50 polished_blackstone:353139 polished_tuff:626864 quartz_block:ece6df ' +
+    'smooth_basalt:49484e smooth_red_sandstone:b5621f smooth_sandstone:e0d6aa snow_block:f9fefe stone:7e7e7e warped_wart_block:177879 ' +
+    'waxed_copper_block:c06c50 waxed_exposed_copper:a17e68 waxed_weathered_copper:6c996e').split(' ').map(s => { const [n, h] = s.split(':'); return [n, ...hexRGB('#' + h)]; }));
 /* colours are compared in OKLab, where equal distances look about equally different to the eye.
    Plain RGB distance put a grey block in the middle of an orange-to-green gradient */
 const okLab = (r, g, b) => {
