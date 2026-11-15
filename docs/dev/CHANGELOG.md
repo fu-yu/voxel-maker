@@ -1,7 +1,7 @@
 # CHANGELOG
 
 ## 2026-11-15
-- マインクラフト用のデータパックに、立体を一気に消す `voxel:break` を足した。壊している途中で `voxel:build` を打つと「いま壊しているところです」で止まったままになる不具合を直した (`voxel:build` が先に係を止める)。サーバー版で確認、ゲームの画面では未確認。`work/instant-break` (詳細: sessions/2026-11-15-instant-break.md)
+- マインクラフト用のデータパックに、立体を一気に消す `voxel:break` を足した。壊している途中で `voxel:build` を打つと「いま壊しているところです」で止まったままになる不具合を直した (`voxel:build` が先に係を止める)。サーバー版とゲームの画面で確認し、同じ日に公開 (詳細: sessions/2026-11-15-instant-break.md)
 - マインクラフト用の書き出しで、秋の丸い木の葉を 26.3 のポプラの葉 (`orange_` / `red_` / `yellow_poplar_leaves`) にした (前は近い色のコンクリートやテラコッタ。途中で `shroomlight` などの色ブロックも試した)。秋の風景は 26.3 以降でだけ置ける。ゲームの画面で確認し、同じ日に公開 (詳細: sessions/2026-11-15-autumn-leaves.md)
 - 全 8 ページ (`index.html`, `guide.html`, `minecraft.html`, `tried/*.html`) に Google Analytics (GA4) の計測タグを追加した (`tools/build_guide.py` の `HEAD` と `index.html`)
 - 利用規約に沿って「アクセス解析とクッキーについて」の案内を `guide.html` (`docs/public/index.md` / `index.html`) に追加し、全ページの「ページの一覧」の下に案内とリンクを入れた (詳細: sessions/2026-11-15-analytics.md)
