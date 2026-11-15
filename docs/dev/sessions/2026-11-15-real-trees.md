@@ -1,0 +1,48 @@
+# 風景の木を、ゲームの木と同じ形・大きさにする (作業途中)
+
+日付: 2026-11-15 / ブランチ: `work/real-trees`
+
+## 目的
+ユーザーは Minecraft Wiki の「木」のページを見て、「ゲームの中の木の形状と合わせたいと思った」と言った。大きさについて「本物と同じ大きさ」と「形だけ合わせる」を聞くと、「本物と同じ大きさ」を選んだ。
+1 種類ずつ進める。今回は丸い木 (オーク・シラカバの形)。
+
+## ゲームの木の決まり (サーバー版 26.3 から読み出した)
+- データ生成 (`java -DbundlerMainClass=net.minecraft.data.Main -jar server.jar --server --output <dir>`) の `data/minecraft/worldgen/feature/*.json` を読んだ。
+  - `oak`: `straight_trunk_placer` (`base_height` 4, `height_rand_a` 2) と `blob_foliage_placer` (`radius` 2, `height` 3)。
+  - `birch`: 同じ形で `base_height` 5。
+  - `spruce`: `spruce_foliage_placer` (`radius` 2〜3、`offset` 0〜2、`trunk_height` 1〜2)。幹は `base_height` 5, `rand_a` 2, `rand_b` 1。
+  - `pine`: `pine_foliage_placer` (`radius` 1、`height` 3〜4)。幹は `base_height` 6, `rand_a` 4。
+  - `orange_poplar` などのポプラ: `poplar_trunk_placer` (`base_height` 7, `rand_a` 4, 枝 1〜4 本, 枝より上の幹 4) と `poplar_foliage_placer` (`height` 5〜6, `radius` 5〜8 の重みつき、`side_hole_chance` 0.15)。ポプラの葉の並べ方は JSON からはわからない (コードの中)。
+- 本物のオークの葉の並びは、サーバーで `place feature minecraft:oak` を 4 本生やして、`execute if block` (`#minecraft:logs` / `#minecraft:leaves`) で 1 マスずつ読みとった (道具: 作業用の一時フォルダの `probe.py`)。結果は次のとおり。
+  - 幹は 4〜6 段。
+  - 幹のいちばん上の 1 つ上に十字。
+  - 幹の上から 1 段目に 3×3、2〜3 段目に 5×5。
+  - 3×3 と 5×5 の四すみは、半分くらいの確率で欠ける。十字の段は、四すみがいつも欠ける。
+
+## やったこと
+- `index.html` の `sceneModel()` の木の部分を変えた。
+  - 丸い木の幹を 4〜6 段 (シラカバの葉の木 `MAT.leaf + 1` は 5〜7 段) にした。
+  - 葉は、幹の高さ `th` に対して `y0 + th - 3`〜`y0 + th` の 4 段にした。半径は下 2 段が 2、上 2 段が 1。四すみは、いちばん上の段ではいつも欠き、ほかの段は `hashN(..., seed + 903) < 0.5` で欠く。
+  - 冬は、いちばん上の段 (十字) が雪になる (前と同じ考え)。
+  - 木の場所取り (`crown`) を、丸い木は 5×5、針葉樹は今までどおり 3×3 にした。そのため、`pine` の判定を場所取りの前に移した。
+  - 葉の色を選ぶ `hashN(x, z, seed + 902)` は前と同じ。前と同じ場所の木は、同じ色の葉になる。
+- 針葉樹とポプラの形、幹の種類 (`spruce_log` / `birch_log` / `poplar_log`) は、まだ変えていない。
+- 途中で `work/instant-break` と `work/build-message` の作業が入った。`main` を取り込んで (`git merge origin/main`) から続けた。
+
+## 確認したこと / していないこと
+| 項目 | 状態 |
+| --- | --- |
+| 書き出しの丸い木の形 | 確認済み。夏・山と湖・番号 12・48 マス・木の量 40% の zip を作り、`build.mcfunction` を解いて (道具: 一時フォルダの `treecheck.py`) 幹ごとに段を数えた。オークの葉の木は幹 4〜6、シラカバの葉の木は 5〜7。葉の段の並びはサーバーの本物のオークと同じ |
+| 画面の表示 | 確認済み (ローカル、デスクトップ幅と 375px 幅。コンソールのエラーなし) |
+| ゲームの画面 | **未確認** |
+| 針葉樹との大きさのつり合い | 気になる点。いまの針葉樹 (高さ 6〜7) が、丸い木 (7〜9) より低い |
+
+## 決まったこと (ユーザー、同じ日)
+- 「立体ごとに目印を残す」案 (案 A) は、いまはやらない。
+- 「目印を目に見える形にする」案 (案 C) は、やらない (ユーザー:「目印はなるべくやりたくないな」「目印を目に見える形にすること」)。
+
+## 残っている課題・次にやること
+- 針葉樹をトウヒ・マツの形と大きさにする。
+- 秋の木をポプラの形にする (ポプラの葉の並べ方は、サーバーで `place feature minecraft:orange_poplar` を生やして読みとる)。
+- 幹を木の種類ごとに分ける。画面の色と `mcBlocks()` の `real` の表の両方が要る。`work/roads` と同じ所なので、番号のぶつかりに注意。
+- 木が高くなったので、山の高さが低い設定で木が目立ちすぎないか、ユーザーに見てもらう。
