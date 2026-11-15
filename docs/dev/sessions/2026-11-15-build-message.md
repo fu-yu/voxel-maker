@@ -46,3 +46,29 @@
 | 目印があるときの break_slow | 確認済み (最後まで壊して `#on` = 0、すべて空気) |
 | ゲームの画面 | **未確認** |
 | 説明ページ | ローカルで表示を確認 (375px 幅で横にはみ出さない) |
+
+## 続き: 「できあがりました」に座標と [消す] を付けた (同じ日)
+ユーザーがゲームで試した感想は「voxel:break_here がむずかしいな」。ログでは、置き直さずに `break_here` を打っていた。また 09:13 の `break_slow` は直す前の版だったので、目印がない状態で立っていた場所から約 10 分壊していた。
+
+案を 3 つ出した。
+- 案 1: 座標と [消す] リンクを出す
+- 案 2: 目に見える印を立てる
+- 案 3: 立体ごとに目印を残す
+
+ユーザーは案 1 を選んだ。
+- 新しい関数 `slow/placed`: いちばん近い目印の `Pos` を `voxel:pos` の x y z に入れて、`slow/placed_msg` をマクロで呼ぶ。
+- 新しい関数 `slow/placed_msg`: `$tellraw $(who) [...]` で文を出す。
+  - 文は「できあがりました (置いた場所: x y z) [消す]」。
+  - [消す] は `click_event` の `suggest_command` で、`/execute positioned x y z run function voxel:break_here` をチャット欄に入れる。立体が大きくて分かれるときは `break_here1`。
+  - `hover_event` で説明も出す。
+- `voxel:build` の最後: `who` を `"@s"` にして `slow/placed`。
+- `slow/done` (build_slow の終わり): `who` を `"@a"` にして `slow/placed`。どちらも「できあがりました」の文はこの関数から出る。
+- 説明ページの手順 7 と「目印がなくなった立体を消す」「うまくいかないとき」を、[消す] を押す方法を先に書く形に直した。
+
+| 項目 | 状態 |
+| --- | --- |
+| 座標が正しく入る | 確認済み (サーバー版 26.3)。`execute positioned 12000.6 -60 12000.4 run function voxel:build` のあと、`voxel:pos` が `{x: 12000, y: -60, z: 12000}` |
+| 文の書き方 (テキスト部品) が通る | 確認済み。同じ形の `tellraw @a` は「No player was found」だけで、形の誤りは出ない。わざと `action:"bogus"` にすると「Invalid chat component」と出るので、形はサーバーが調べている |
+| その座標で break_here | 確認済み。目印を消したあと `execute positioned 12000 -60 12000 run function voxel:break_here` で 26 段すべて空気 |
+| ゲームの画面で文が出て、[消す] を押せる | **未確認** |
+| 分かれる場合 (`break_here1`〜`N`) | **未確認**。途中の「続けて /function voxel:break_here2」は座標が付かないので、立っている場所で消してしまう。大きな立体で使うなら直す必要がある |

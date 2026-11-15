@@ -1269,7 +1269,7 @@ $('saveMc').onclick = () => {
     /* a builder or breaker still running would remove the new place mark (it has no score), so stop them first */
     (i === 0 ? 'execute if score #on voxel matches 1 run function voxel:slow/stop\nexecute if score #on voxel matches 2 run function voxel:slow/bstop\nkill @e[type=minecraft:marker,tag=voxel_site]\nexecute align xyz run summon minecraft:marker ~ ~ ~ {Tags:["voxel_site"]}\n' : '') +
     lines.slice(i * PER, (i + 1) * PER).join('\n') + '\n' +
-    (i === n - 1 ? 'tellraw @s "できあがりました"\n' : `tellraw @s "${i + 1}/${n} を置きました。続けて /function voxel:build${i + 2}"\n`)]);
+    (i === n - 1 ? 'data modify storage voxel:pos who set value "@s"\nfunction voxel:slow/placed\n' : `tellraw @s "${i + 1}/${n} を置きました。続けて /function voxel:build${i + 2}"\n`)]);
   /* voxel:break clears the whole model at once, around the place mark left by voxel:build. It also stops a builder
      or breaker that is still running, so it doubles as the way out when one of them got stuck */
   const noMark = '消す立体の目印が見つかりません。目印がなくなった立体は、置いたときと同じ場所に立って /function voxel:break_here で消せます';
@@ -1295,6 +1295,16 @@ $('saveMc').onclick = () => {
       ...(i === nc - 1 ? ['execute align xyz run kill @e[type=minecraft:marker,tag=voxel_site,distance=..0.1]', 'tellraw @s "立っている場所を基準に消しました"'] : [`tellraw @s "${i + 1}/${nc} を消しました。続けて /function voxel:break_here${i + 2}"`]),
     ].join('\n') + '\n']);
   }
+  /* "done" message, run near the place mark: it shows where the model stands and a [消す] link that types
+     the voxel:break_here command for that spot into the chat box, so it can be cleared even after the mark is lost */
+  const hereCmd = `/execute positioned $(x) $(y) $(z) run function voxel:break_here${nc > 1 ? 1 : ''}`;
+  files.push(
+    ['data/voxel/function/slow/placed.mcfunction', ['x', 'y', 'z'].map((k, j) => `execute store result storage voxel:pos ${k} int 1 run data get entity @e[type=minecraft:marker,tag=voxel_site,limit=1,sort=nearest] Pos[${j}]`).concat('function voxel:slow/placed_msg with storage voxel:pos').join('\n') + '\n'],
+    ['data/voxel/function/slow/placed_msg.mcfunction', '$tellraw $(who) ' + JSON.stringify([
+      'できあがりました (置いた場所: $(x) $(y) $(z)) ',
+      { text: '[消す]', color: 'aqua', underlined: true, click_event: { action: 'suggest_command', command: hereCmd }, hover_event: { action: 'show_text', value: 'クリックすると、この立体を消すコマンドがチャット欄に入ります' } },
+    ]) + '\n'],
+  );
   /* step-by-step builder (voxel:build_slow) with an Allay helper, and breaker (voxel:break_slow) with a Vex helper */
   const S = mcSteps(B), stepCmds = mcCommands(B, S.stepOf), breakCmds = mcCommands(B, S.stepOf, true), packId = 1 + Math.floor(Math.random() * 0x7fffffff), OX = 2;
   const gridPts = len => { const a = []; for (let v = 0; v < len; v += 16) a.push(v); if (a[a.length - 1] !== len - 1) a.push(len - 1); return a; };
@@ -1380,7 +1390,8 @@ $('saveMc').onclick = () => {
     ['data/voxel/function/slow/done.mcfunction', [
       'execute at @e[type=minecraft:allay,tag=voxel_builder] run particle minecraft:firework ~ ~0.5 ~ 0.6 0.6 0.6 0.1 60',
       'execute at @e[type=minecraft:allay,tag=voxel_builder] run playsound minecraft:entity.player.levelup neutral @a ~ ~ ~ 1 1.4',
-      'tellraw @a "できあがりました"',
+      'data modify storage voxel:pos who set value "@a"',
+      'function voxel:slow/placed',
       'function voxel:slow/stop',
     ].join('\n') + '\n'],
     ['data/voxel/function/slow/stop.mcfunction', [
