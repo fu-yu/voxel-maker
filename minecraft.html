@@ -149,7 +149,7 @@ tbody th { font-weight:700; white-space:nowrap; }
   <h2>少しずつ壊す (<code>voxel:break_slow</code>、試験中)</h2>
   <p>置いた立体を消したいときは、<code>/function voxel:break_slow</code> と打ちます。小さな生き物 (ヴェックス、難易度ピースフルのときはアレイ) が壊す係として飛び回りながら、爆発の粒と音を出して、上の段から 1 段ずつブロックを消していきます。</p>
   <ul>
-    <li>最後に <code>/function voxel:build</code> または <code>/function voxel:build_slow</code> で置いた場所を覚えているので、離れた場所から打ってもその立体を壊します (記録がないときは、いま立っている場所を基準にします)。</li>
+    <li>最後に <code>/function voxel:build</code> または <code>/function voxel:build_slow</code> で置いた場所を覚えているので、離れた場所から打ってもその立体を壊します。目印がないときは「消す立体の目印が見つかりません」と出て、何もしません。</li>
     <li>上の段から順に、水はまわりの枠より先に消すので、途中で砂が落ちたり水があふれたりしません。</li>
     <li>途中で止めたいときは、<code>/function voxel:break_stop</code> と打ちます。残ったブロックはそのまま残ります。</li>
     <li>壊している途中で <code>/function voxel:build</code> を打つと、壊す係は止まり、立体が置き直されます。</li>
@@ -164,10 +164,22 @@ tbody th { font-weight:700; white-space:nowrap; }
   <ul>
     <li><code>/function voxel:break_slow</code> と同じく、最後に置いた場所を覚えているので、離れた場所から打ってもその立体を消します。</li>
     <li>建てる係や壊す係が動いていたら、先に止めてから消します。「いま壊しているところです」と出て先に進めなくなったときにも使えます。</li>
-    <li>消したあとに、もう一度打つと「消す立体の目印が見つかりません」と出ます。</li>
+    <li>消したあとに、もう一度打つと「消す立体の目印が見つかりません」と出ます。目印がなくなった立体は、下の <code>voxel:break_here</code> で消せます。</li>
     <li>立体の下の地面には手をつけません。</li>
   </ul>
   <p class="source">この消し方は、画面のないサーバー用のマインクラフト 26.3 で、秋の風景を置いて消し、置いた場所のブロックがすべて空気になること、落ちる砂や落とし物が出ないことを確かめました (2026-11-15)。同じ日に、ゲームの画面でも消えることを確かめました。</p>
+</section>
+
+<section>
+  <h2>目印がなくなった立体を消す (<code>voxel:break_here</code>、試験中)</h2>
+  <p><code>voxel:break</code> と <code>voxel:break_slow</code> は、置いたときの目印を基準に消します。目印がなくなると、「消す立体の目印が見つかりません」と出て、何もしません。そのときは、<code>/function voxel:break_here</code> を使います。</p>
+  <ul>
+    <li>立体を置いたとき (<code>voxel:build</code> を打ったとき) と同じマスに立って打ちます。そこを基準に、一気に消します。</li>
+    <li>立つ場所が 1 マスでもずれると、立体の一部が残り、まわりの地面や建物も削ってしまいます。</li>
+    <li>いま <code>datapacks</code> に入っているファイルの形で消します。別のファイルで置いた立体は、正しく消せません。</li>
+    <li>ふだんは <code>voxel:break</code> を使い、目印がなくなったときだけ使ってください。</li>
+  </ul>
+  <p class="source">この消し方は、画面のないサーバー用のマインクラフト 26.3 で、目印を消した風景を、置いたのと同じマスから消せることを確かめました (2026-11-15)。ゲームの画面ではまだ見ていません。</p>
 </section>
 
 <section>
@@ -223,6 +235,7 @@ tbody th { font-weight:700; white-space:nowrap; }
     <li><b>コマンドが使えない</b><span>ワールドの「チートの許可」がオフになっています。</span></li>
     <li><b>立体の一部が置かれない</b><span>遠くの土地がまだ読み込まれていないと、そこには置かれません。大きな立体で起きやすくなります。マスの数を減らして、作り直してみてください。</span></li>
     <li><b>「いま壊しているところです」(または「いま建てているところです」) と出て、何も始まらない</b><span>前の係の記録が残っています。<code>/function voxel:break_stop</code> (または <code>/function voxel:build_stop</code>) と打つか、<code>/function voxel:break</code> で立体ごと消してから、やり直してください。</span></li>
+    <li><b>「消す立体の目印が見つかりません」と出る</b><span>立体がまだ残っているなら、置いたときと同じマスに立って <code>/function voxel:break_here</code> と打ってください。</span></li>
     <li><b>新しいファイルに入れ替えたのに、前の立体が置かれる</b><span><code>datapacks</code> フォルダに前の zip ファイルが残っていると、ファイルの名前を変えていても前のほうが読み込まれることがあります。前の zip ファイルは <code>datapacks</code> フォルダの外に出すか消してから、<code>/reload</code> と打ってください。</span></li>
   </ul>
 </section>

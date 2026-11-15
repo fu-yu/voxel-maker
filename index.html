@@ -1272,6 +1272,7 @@ $('saveMc').onclick = () => {
     (i === n - 1 ? 'tellraw @s "できあがりました"\n' : `tellraw @s "${i + 1}/${n} を置きました。続けて /function voxel:build${i + 2}"\n`)]);
   /* voxel:break clears the whole model at once, around the place mark left by voxel:build. It also stops a builder
      or breaker that is still running, so it doubles as the way out when one of them got stuck */
+  const noMark = '消す立体の目印が見つかりません。目印がなくなった立体は、置いたときと同じ場所に立って /function voxel:break_here で消せます';
   const clearLines = mcCommands(B, null, true), nc = Math.ceil(clearLines.length / PER), site = '@e[type=minecraft:marker,tag=voxel_site,limit=1,sort=nearest]';
   for (let i = 0; i < nc; i++) {
     const tag = nc > 1 ? i + 1 : '';
@@ -1280,9 +1281,18 @@ $('saveMc').onclick = () => {
       `# Voxel Koubou: clear at once${nc > 1 ? ` (${i + 1}/${nc})` : ''}`,
       'execute if score #on voxel matches 1 run function voxel:slow/stop',
       'execute if score #on voxel matches 2 run function voxel:slow/bstop',
-      'execute unless entity @e[type=minecraft:marker,tag=voxel_site] run return run tellraw @s "消す立体の目印が見つかりません。すでに消したか、まだ置いていません"',
+      `execute unless entity @e[type=minecraft:marker,tag=voxel_site] run return run tellraw @s "${noMark}"`,
       `execute at ${site} run function voxel:clear/c${i}`,
       ...(i === nc - 1 ? ['kill @e[type=minecraft:marker,tag=voxel_site]', 'tellraw @s "消しました"'] : [`tellraw @s "${i + 1}/${nc} を消しました。続けて /function voxel:break${i + 2}"`]),
+    ].join('\n') + '\n']);
+    /* voxel:break_here is for a model whose place mark is gone: it clears the same shape around where the player stands,
+       so it only works when they stand on the spot where they placed it */
+    files.push([`data/voxel/function/break_here${tag}.mcfunction`, [
+      `# Voxel Koubou: clear at once around the player${nc > 1 ? ` (${i + 1}/${nc})` : ''}`,
+      'execute if score #on voxel matches 1 run function voxel:slow/stop',
+      'execute if score #on voxel matches 2 run function voxel:slow/bstop',
+      `execute align xyz run function voxel:clear/c${i}`,
+      ...(i === nc - 1 ? ['execute align xyz run kill @e[type=minecraft:marker,tag=voxel_site,distance=..0.1]', 'tellraw @s "立っている場所を基準に消しました"'] : [`tellraw @s "${i + 1}/${nc} を消しました。続けて /function voxel:break_here${i + 2}"`]),
     ].join('\n') + '\n']);
   }
   /* step-by-step builder (voxel:build_slow) with an Allay helper, and breaker (voxel:break_slow) with a Vex helper */
@@ -1329,8 +1339,8 @@ $('saveMc').onclick = () => {
     ['data/voxel/function/break_slow.mcfunction', [
       'execute if score #on voxel matches 1 run return run tellraw @s "いま建てているところです。やめるときは /function voxel:build_stop"',
       'execute if score #on voxel matches 2 run return run tellraw @s "いま壊しているところです。やめるときは /function voxel:break_stop"',
+      `execute unless entity @e[type=minecraft:marker,tag=voxel_site] run return run tellraw @s "${noMark}"`,
       'scoreboard players add #run voxel 1',
-      'execute unless entity @e[type=minecraft:marker,tag=voxel_site] align xyz run summon minecraft:marker ~ ~ ~ {Tags:["voxel_site"]}',
       'scoreboard players operation @e[type=minecraft:marker,tag=voxel_site] voxel = #run voxel',
       'execute at @e[type=minecraft:marker,tag=voxel_site,limit=1,sort=nearest] align xyz run summon minecraft:vex ~2.5 ~1 ~0.5 {NoAI:1b,Invulnerable:1b,PersistenceRequired:1b,Silent:1b,NoGravity:1b,Charging:1b,Tags:["voxel_breaker","voxel_new"]}',
       'execute unless entity @e[tag=voxel_breaker] at @e[type=minecraft:marker,tag=voxel_site,limit=1,sort=nearest] align xyz run summon minecraft:allay ~2.5 ~1 ~0.5 {NoAI:1b,Invulnerable:1b,PersistenceRequired:1b,Silent:1b,NoGravity:1b,Tags:["voxel_breaker","voxel_new"]}',
