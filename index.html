@@ -272,8 +272,10 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
         <button class="btn primary" id="copyJson">座標データをコピー</button>
         <button class="btn" id="saveMc">マインクラフト用に保存</button>
       </div>
+      <label class="row" id="mcViewRow"><input type="checkbox" id="mcView"> マインクラフトのブロックの色で見る</label>
       <p class="note">「座標データをコピー」は、各ブロックの位置と色を JSON でコピーします。ほかのツールやサービスで使うには、それぞれの形式に直す作業が要ります。</p>
       <p class="note">「マインクラフト用に保存」は、Java 版 1.21 以降のマインクラフトに置くためのファイル（zip）を保存します。ワールドへの入れ方と置き方は、「<a href="minecraft.html" target="_blank" rel="noopener">マインクラフトに置く</a>」のページにあります。</p>
+      <p class="note" id="mcViewNote">「マインクラフトのブロックの色で見る」をオンにすると、保存したときに置かれるブロックの色で表示します。色はブロックの絵の平均なので、ゲームの中の模様や光の当たり方までは表しません。</p>
     </section>
 
     <section class="group">
@@ -711,17 +713,21 @@ function buildMesh(g, v) {
   mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(s, s, s), material, count);
   const m = new THREE.Matrix4(), c = new THREE.Color();
   const cx = (g.w - 1) / 2, cy = (g.h - 1) / 2, cz = (v.lo + v.hi) / 2;
+  /* "show in Minecraft colours": text and pictures are drawn in the colour of the block the data pack will place
+     (the same mcNearest() as the export). Landscapes already use one colour per material, so they are left as they are */
+  const mcView = $('mcView').checked && state.mode !== 'scene';
   for (let k = 0; k < count; k++) {
     const x = v.vis[k * 4], y = v.vis[k * 4 + 1], z = v.vis[k * 4 + 2], i = v.vis[k * 4 + 3];
     m.makeTranslation(x - cx, cy - y, z - cz);
     mesh.setMatrixAt(k, m);
-    c.setRGB(g.col[i * 3] / 255, g.col[i * 3 + 1] / 255, g.col[i * 3 + 2] / 255);
+    const rgb = mcView ? MC_RGB.get(mcNearest(g.col[i * 3], g.col[i * 3 + 1], g.col[i * 3 + 2])) : [g.col[i * 3], g.col[i * 3 + 1], g.col[i * 3 + 2]];
+    c.setRGB(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255);
     mesh.setColorAt(k, c);
   }
   mesh.instanceMatrix.needsUpdate = true;
   scene.add(mesh);
   const depth = v.hi - v.lo + 1;
-  $('stat').textContent = `${g.w}×${g.h}×${depth} ・ ${v.total.toLocaleString()} ブロック`;
+  $('stat').textContent = `${g.w}×${g.h}×${depth} ・ ${v.total.toLocaleString()} ブロック` + (mcView ? ' ・ マインクラフトの色' : '');
   const size = { w: g.w, h: g.h, d: depth };
   const prev = state.lastSize;
   if (!prev || Math.abs(Math.hypot(size.w, size.h, size.d) / Math.hypot(prev.w, prev.h, prev.d) - 1) > 0.2) fitCamera(size);
@@ -896,6 +902,7 @@ function setMode(mode) {
   $('panelImage').hidden = mode !== 'image';
   $('panelScene').hidden = mode !== 'scene';
   $('shapeBtns').hidden = $('thickField').hidden = mode === 'scene';   // 風景は高さを自分で決めるので、形と厚みは使わない
+  $('mcViewRow').hidden = $('mcViewNote').hidden = mode === 'scene';    // 風景は、もともと材料ごとのブロックの色で表示している
   $('res').value = state.res[mode]; syncOutputs();
   state.lastSize = null; schedule(); drawCrop();
 }
@@ -910,7 +917,7 @@ document.querySelectorAll('.shape button').forEach(b => b.onclick = () => {
   document.querySelectorAll('.shape button').forEach(o => o.setAttribute('aria-pressed', o === b));
   state.lastSize = null; schedule();
 });
-['txt', 'font', 'c1', 'c2', 'grad', 'gap', 'lineMode', 'autoBg', 'biggest'].forEach(id => $(id).addEventListener('input', schedule));
+['txt', 'font', 'c1', 'c2', 'grad', 'gap', 'mcView', 'lineMode', 'autoBg', 'biggest'].forEach(id => $(id).addEventListener('input', schedule));
 ['res', 'thick', 'k', 'smooth', 'sat', 'tol', 'illus'].forEach(id => $(id).addEventListener('input', () => { syncOutputs(); schedule(); }));
 $('preview').addEventListener('click', e => {
   const P = cache.proc, bg = cache.bg; if (!P || !bg) return;
@@ -1118,7 +1125,14 @@ const MC_PALETTE = [
   ['concrete', 'cfd5d6 e06101 a9309f 2489c7 f1af15 5ea918 d6658f 373a3e 7d7d73 157788 64209c 2d2f8f 603c20 495b24 8e2121 080a0f'],
   ['wool', 'eaeced f17614 be45b4 3aafd9 f9c628 70b91a ee8dac 3f4448 8e8e87 158a91 7a2aad 35399d 724829 556e1c a12723 15151a'],
   ['terracotta', 'd2b2a1 a25426 96586d 716d8a ba8523 687635 a24e4f 3a2a24 876b62 575b5b 764656 4a3c5b 4d3324 4c532a 8f3d2f 251710'],
-].flatMap(([kind, list]) => list.split(' ').map((h, i) => [MC_DYES[i] + '_' + kind, ...hexRGB('#' + h)])).concat([['terracotta', 152, 94, 68]]);
+].flatMap(([kind, list]) => list.split(' ').map((h, i) => [MC_DYES[i] + '_' + kind, ...hexRGB('#' + h)])).concat([['terracotta', 152, 94, 68]])
+  /* more blocks whose faces look like one colour (average of the official textures in Mojang/bedrock-samples v1.26.60.5).
+     All exist in 1.21; blocks that fall (concrete powder) or change by themselves (unwaxed copper) are left out.
+     Wooden planks are left out too: birch planks took over the middle of the orange-to-green text gradient */
+  .concat(('andesite:888889 blue_ice:74a8fd calcite:dfe0dd clay:a1a6b3 end_stone:dcdf9e lapis_block:1f438c moss_block:596e2d mud:3c393d ' +
+    'nether_wart_block:730303 packed_ice:8eb4fa packed_mud:8e6b50 polished_blackstone:353139 polished_tuff:626864 quartz_block:ece6df ' +
+    'smooth_basalt:49484e smooth_red_sandstone:b5621f smooth_sandstone:e0d6aa snow_block:f9fefe stone:7e7e7e warped_wart_block:177879 ' +
+    'waxed_copper_block:c06c50 waxed_exposed_copper:a17e68 waxed_weathered_copper:6c996e').split(' ').map(s => { const [n, h] = s.split(':'); return [n, ...hexRGB('#' + h)]; }));
 /* colours are compared in OKLab, where equal distances look about equally different to the eye.
    Plain RGB distance put a grey block in the middle of an orange-to-green gradient */
 const okLab = (r, g, b) => {
@@ -1128,6 +1142,7 @@ const okLab = (r, g, b) => {
   return [0.2104542553 * l + 0.793617785 * m - 0.0040720468 * q, 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * q, 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * q];
 };
 const MC_LAB = MC_PALETTE.map(([n, r, g, b]) => [n, ...okLab(r, g, b)]);
+const MC_RGB = new Map(MC_PALETTE.map(([n, r, g, b]) => [n, [r, g, b]]));
 const mcCache = new Map();
 function mcNearest(r, g, b) {
   const key = (r << 16) | (g << 8) | b;
