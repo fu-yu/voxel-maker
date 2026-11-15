@@ -1268,7 +1268,8 @@ $('saveMc').onclick = () => {
     `# Voxel Koubou ${B.w}x${B.h}x${B.d}${n > 1 ? ` (${i + 1}/${n})` : ''}\n` +
     /* a builder or breaker still running would remove the new place mark (it has no score), so stop them first */
     (i === 0 ? 'execute if score #on voxel matches 1 run function voxel:slow/stop\nexecute if score #on voxel matches 2 run function voxel:slow/bstop\nkill @e[type=minecraft:marker,tag=voxel_site]\nexecute align xyz run summon minecraft:marker ~ ~ ~ {Tags:["voxel_site"]}\n' : '') +
-    lines.slice(i * PER, (i + 1) * PER).join('\n') + '\n']);
+    lines.slice(i * PER, (i + 1) * PER).join('\n') + '\n' +
+    (i === n - 1 ? 'tellraw @s "できあがりました"\n' : `tellraw @s "${i + 1}/${n} を置きました。続けて /function voxel:build${i + 2}"\n`)]);
   /* voxel:break clears the whole model at once, around the place mark left by voxel:build. It also stops a builder
      or breaker that is still running, so it doubles as the way out when one of them got stuck */
   const clearLines = mcCommands(B, null, true), nc = Math.ceil(clearLines.length / PER), site = '@e[type=minecraft:marker,tag=voxel_site,limit=1,sort=nearest]';

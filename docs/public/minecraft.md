@@ -21,7 +21,7 @@
 4. 開いたフォルダの中の `datapacks` フォルダに、保存したファイルを入れます。ファイルは開かずに、そのまま入れます。
 5. ワールドに入り、立体を置きたい場所に立ちます。
 6. チャットの欄に `/reload` と打ちます。
-7. 続けて `/function voxel:build` と打ちます。少しずつ置きたいときは、代わりに `/function voxel:build_slow` と打ちます。置いた立体を壊して消したいときは、`/function voxel:break_slow` (少しずつ) か `/function voxel:break` (一気に) と打ちます。
+7. 続けて `/function voxel:build` と打ちます。置き終わると、チャットに「できあがりました」と出ます。少しずつ置きたいときは、代わりに `/function voxel:build_slow` と打ちます。置いた立体を壊して消したいときは、`/function voxel:break_slow` (少しずつ) か `/function voxel:break` (一気に) と打ちます。
 
 手順 3 と 4 は、Minecraft Wiki の「[データパックの読み込み](https://ja.minecraft.wiki/w/チュートリアル:データパックの読み込み)」の説明によります。Minecraft Wiki は、公式のサイトではありません。
 
