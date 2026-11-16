@@ -737,7 +737,7 @@ function buildMesh(g, v) {
 /* ---------- scene: a landscape grown from a number ---------- */
 const SEASONS = {
   summer: { grass: '#6f9a4e', dirt: '#8a6a48', stone: '#8d8b86', sand: '#d9c690', water: '#4f86a8', snow: '#eef0ee', trunk: '#6b4a32', pine: '#33603f', leaf: ['#4c7a3c', '#5d8a44', '#447038'] },
-  autumn: { grass: '#a39a52', dirt: '#8a6a48', stone: '#8d8b86', sand: '#d9c690', water: '#4a7d9c', snow: '#eef0ee', trunk: '#6b4a32', pine: '#3a5f3c', leaf: ['#c9692c', '#b8433a', '#d6a53a'] },
+  autumn: { poplar: true, grass: '#a39a52', dirt: '#8a6a48', stone: '#8d8b86', sand: '#d9c690', water: '#4a7d9c', snow: '#eef0ee', trunk: '#6b4a32', pine: '#3a5f3c', leaf: ['#c9692c', '#b8433a', '#d6a53a'] },
   winter: { grass: '#e4e8ea', dirt: '#857060', stone: '#8d8b86', sand: '#cdc7b4', water: '#a9c6d6', snow: '#f4f6f6', trunk: '#5e4534', pine: '#35584a', leaf: ['#5d7a55', '#536f4f', '#66805a'], cap: true },
 };
 const MAT = { grass: 0, dirt: 1, stone: 2, sand: 3, water: 4, snow: 5, trunk: 6, pine: 7, leaf: 8 };   // leaf takes 8, 9, 10
@@ -826,7 +826,7 @@ function sceneModel(N) {
     if (crown[i]) continue;                      // under another tree already
     const x = i % N, z = (i / N) | 0;
     const y0 = gh[i], r = hashN(x, z, seed + 901), t = (y0 - 1) / (H - 1);
-    const pine = t > 0.45 + 0.2 * r, cap = S.cap ? MAT.snow : -1, reach = 2;
+    const pine = t > 0.45 + 0.2 * r, cap = S.cap ? MAT.snow : -1, poplar = !pine && S.poplar, reach = poplar ? 3 : 2;
     for (let dz = -reach; dz <= reach; dz++) for (let dx = -reach; dx <= reach; dx++) {
       const nx = x + dx, nz = z + dz; if (nx < 0 || nz < 0 || nx >= N || nz >= N) continue;
       const j = nz * N + nx; if (!crown[j]) { crown[j] = 1; if (top[j] === MAT.grass) shaded++; }
@@ -857,6 +857,21 @@ function sceneModel(N) {
           if (rad >= lim) { rad = back; back = 1; lim = Math.min(lim + 1, rmax); } else rad++;
         }
       }
+    } else if (poplar) {
+      /* autumn: a poplar as grown in the game (read from 26.3). A trunk of 7–11 wrapped in a round ball of
+         leaves over its upper half: from the bottom, layers of radius 2, 3, 4, (4), 3, 2, 1, the top one
+         0–1 above the trunk. The ball is a little ragged at its edge (about 15% of the edge left out) */
+      const m = MAT.leaf + Math.floor(hashN(x, z, seed + 902) * 3), th = 7 + Math.floor(hashN(x, z, seed + 904) * 5);
+      const radii = hashN(x, z, seed + 912) < 0.5 ? [2, 3, 4, 4, 3, 2, 1] : [2, 3, 4, 3, 2, 1], top = y0 + th + (hashN(x, z, seed + 913) < 0.6 ? 1 : 0);
+      for (let y = 0; y < th; y++) put(x, y0 + y, z, MAT.trunk);
+      radii.forEach((rad, k) => {
+        const y = top - (radii.length - 1 - k), lim = rad * rad;
+        for (let dz = -rad; dz <= rad; dz++) for (let dx = -rad; dx <= rad; dx++) {
+          const d = dx * dx + dz * dz;
+          if (d > lim || (d > (rad - 1) * (rad - 1) && rad > 1 && hashN(x + dx * 7, z + dz * 7 + y * 31, seed + 914) < 0.15)) continue;
+          leafAt(x + dx, y, z + dz, k === radii.length - 1 && cap >= 0 ? cap : m);
+        }
+      });
     } else {
       /* the same shape as an oak (or birch) grown in the game: a trunk of 4–6 (birch 5–7), two 5×5 layers
          and one 3×3 layer around its top, and a plus sign above it. Corners are left out about half the time */
