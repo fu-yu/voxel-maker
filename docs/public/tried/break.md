@@ -29,3 +29,4 @@
 
 - 前: [3. 少しずつ置いてみた](https://fu-yu.github.io/voxel-maker/tried/slow.html)
 - [試してみた一覧へ戻る](https://fu-yu.github.io/voxel-maker/tried/index.html)
+- 次: [5. 秋の風景を置いてみた](https://fu-yu.github.io/voxel-maker/tried/autumn.html)
