@@ -898,17 +898,17 @@ function sceneModel(N) {
       const ends = (three ? [-(2 + Math.floor(hashN(x, z, seed + 918) * 3)), 0, 2 + Math.floor(hashN(x, z, seed + 919) * 3)]
                           : [-(2 + Math.floor(hashN(x, z, seed + 918) * 3)), 2 + Math.floor(hashN(x, z, seed + 919) * 3)]);
       const at = (d, y) => along ? [x + d, y, z] : [x, y, z + d];
-      /* a log lies on its side (like the game's) where the limb has just stepped outward */
+      /* a log lies on its side (like the game's) where the limb has just stepped sideways */
       const log = (d, y, side) => { const [px, py, pz] = at(d, y); if (px >= 0 && pz >= 0 && px < N && pz < N) put(px, py, pz, side ? (along ? MAT.cherryLogX : MAT.cherryLogZ) : MAT.cherryLog); };
       for (let y = y0; y <= split; y++) log(0, y);
       ends.forEach((d, b) => {
         const ye = y0 + 6 + (d === 0 || hashN(x + b, z, seed + 920) < 0.5);
-        /* a limb: from the split, step out one cell and up one cell at a time until it reaches its end */
-        for (let k = 1, cd = 0, cy = split; cd !== d || cy < ye; k++) {
-          const out = cd !== d;
-          if (out) cd += Math.sign(d);
-          if (cy < ye && (cd === d || k % 2 === 0 || d === 0)) cy++;
-          log(cd, cy, out);
+        /* a limb climbs like a staircase, as in the game: each log either steps out sideways (lying on its side)
+           or steps up (standing), never both. The first step from the split is sideways */
+        for (let k = 0, cd = 0, cy = split; cd !== d || cy < ye; k++) {
+          const side = cd !== d && (k === 0 || cy >= ye || hashN(x + b * 3 + k, z + k * 7, seed + 924) < 0.5);
+          if (side) cd += Math.sign(d); else cy++;
+          log(cd, cy, side);
         }
         const [bx, , bz] = at(d, 0), ring = [[ye + 3, 1, 0], [ye + 2, 2, 0], [ye + 1, 3, 0], [ye, 3.6, 0.25], [ye - 1, 3, 0.25]];
         for (const [y, rad, hole] of ring) for (let dz = -4; dz <= 4; dz++) for (let dx = -4; dx <= 4; dx++) {
