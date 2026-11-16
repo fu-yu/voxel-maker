@@ -249,7 +249,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
           <option value="mc">マインクラフトの木</option>
         </select>
       </div>
-      <p class="note">水の量は、全体の広さのうち水になる割合です。木の量は、草の生えた土地のうち木におおわれる割合です。「マインクラフトの木」は、ゲームの木と同じ形と大きさです。</p>
+      <p class="note">水の量は、全体の広さのうち水になる割合です。木の量は、草の生えた土地のうち木におおわれる割合です。「マインクラフトの木」は、ゲームの木と同じ形と大きさです。切りかえると、横のマス数と山の高さが 2 倍になり (もとに戻すと半分)、小さな木のときと同じくらいの広さに見えます。</p>
     </section>
 
     <section class="group">
@@ -974,7 +974,14 @@ function setMode(mode) {
 $('tabText').onclick = () => setMode('text');
 $('tabImage').onclick = () => setMode('image');
 $('tabScene').onclick = () => setMode('scene');
-['terrain', 'season', 'treeStyle', 'seed'].forEach(id => $(id).addEventListener('input', schedule));
+['terrain', 'season', 'seed'].forEach(id => $(id).addEventListener('input', schedule));
+/* the game's trees are about twice as big as the small ones, so switching to them doubles the width in cells and the
+   height of the hills (and switching back halves them), to keep the same feel of space */
+$('treeStyle').addEventListener('input', () => {
+  const f = $('treeStyle').value === 'mc' ? 2 : 0.5, fit = (el, v) => { el.value = Math.max(+el.min, Math.min(+el.max, Math.round(v))); };
+  fit($('res'), +$('res').value * f); fit($('peak'), +$('peak').value * f);
+  syncOutputs(); state.lastSize = null; schedule();
+});
 ['peak', 'water', 'trees'].forEach(id => $(id).addEventListener('input', () => { syncOutputs(); state.lastSize = null; schedule(); }));
 $('reroll').onclick = () => { let n; do n = 1 + Math.floor(Math.random() * 9999); while (n === +$('seed').value); $('seed').value = n; schedule(); };
 document.querySelectorAll('.shape button').forEach(b => b.onclick = () => {
