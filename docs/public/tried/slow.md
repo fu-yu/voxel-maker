@@ -1,6 +1,6 @@
 # 3. 少しずつ置いてみた (`voxel:build_slow`)
 
-[マインクラフトで試してみた](https://fu-yu.github.io/voxel-maker/tried/index.html) の 3 つ目の記録です。
+[マインクラフトで試してみた](https://fu-yu.github.io/voxel-maker/tried/) の 3 つ目の記録です。
 いちばん大きい設定の風景 (山と湖・夏、横 128 マス・山の高さ 40 マス、約 32 万ブロック) を、`/function voxel:build_slow` で下の段から少しずつ置きました。
 
 ## 建てはじめ

@@ -1,6 +1,6 @@
 # 5. 秋の風景を置いてみた
 
-[マインクラフトで試してみた](https://fu-yu.github.io/voxel-maker/tried/index.html) の 5 つ目の記録です。
+[マインクラフトで試してみた](https://fu-yu.github.io/voxel-maker/tried/) の 5 つ目の記録です。
 2026-11-15 に「山と湖・秋」の風景を置き、秋の木の葉がどう見えるかを確かめました。葉らしく見えるように、2 回直しました。
 
 ## 最初に置いたとき (石の山のように見えた葉)
@@ -35,4 +35,4 @@
 ---
 
 - 前: [4. 少しずつ壊してみた](https://fu-yu.github.io/voxel-maker/tried/break.html)
-- [試してみた一覧へ戻る](https://fu-yu.github.io/voxel-maker/tried/index.html)
+- [試してみた一覧へ戻る](https://fu-yu.github.io/voxel-maker/tried/)

@@ -60,6 +60,8 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 - `.github/workflows/deploy.yml` — `main` への push で `index.html`, `guide.html`, `minecraft.html`, `sitemap.xml`, `tried/`, `LICENSE`, `docs/public/images/` だけを `gh-pages` ブランチに強制 push する (`gh-pages` は毎回 1 コミットに作り直される。手で触らない)
 
 ## 注意
+- **`python3 tools/build_guide.py` のあとは `docs/dev/sitemap-dates.json` もコミットする**: サイトマップの更新日を、ページの中身の指紋で決めている。入れ忘れると、公開の自動処理で日付が「その日」になる (害は小さい)。
+- フォルダの入口 (`tried/index.html`) の正式なアドレスは `tried/`。リンクも `tried/` で書く。
 - **ページを足すときに直す所は 4 つ**: `tools/build_guide.py` の `SUB_PAGES` と `SITE_PAGES`、`.github/workflows/deploy.yml` の `cp` の行 (自動化の変更なので、ユーザーに確かめてから)、本体 `index.html` の「ページの一覧」の欄。
   `tried/` の中にページを足すときは、各ページの見出しの上の「(n / 全体の数)」と、前のページの「次:」のリンクも直す。`SUB_PAGES` に 1 行足し、`tried/index.html` の元原稿からリンクするだけでよい (`deploy.yml` は `tried` フォルダごと公開するので、変えなくてよい)。
 - 説明を直すときは `docs/public/index.md` と `docs/public/index.html` の両方を直し、`python3 tools/build_guide.py` で `guide.html` を作り直す。
@@ -74,4 +76,4 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 - コミットのメールアドレスは GitHub の noreply アドレスを使う (リポジトリごとの設定に入れてある)。
 
 ## 最新のセッション
-`docs/dev/sessions/2026-11-17-tried-autumn.md` (その前: `2026-11-15-mc-preview.md`)
+`docs/dev/sessions/2026-11-17-sitemap-tidy.md` (その前: `2026-11-15-mc-preview.md`)
