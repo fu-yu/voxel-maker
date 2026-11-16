@@ -1,6 +1,6 @@
 # 4. 少しずつ壊してみた (`voxel:break_slow`)
 
-[マインクラフトで試してみた](https://fu-yu.github.io/voxel-maker/tried/index.html) の 4 つ目の記録です。
+[マインクラフトで試してみた](https://fu-yu.github.io/voxel-maker/tried/) の 4 つ目の記録です。
 置いた大きな風景 (横 128 マス・山の高さ 40 マス、約 32 万ブロック) を、`/function voxel:break_slow` で上の段から少しずつ壊して消しました。
 
 ## 最初に試したとき (動かずに固まった妖精)
@@ -28,5 +28,5 @@
 ---
 
 - 前: [3. 少しずつ置いてみた](https://fu-yu.github.io/voxel-maker/tried/slow.html)
-- [試してみた一覧へ戻る](https://fu-yu.github.io/voxel-maker/tried/index.html)
+- [試してみた一覧へ戻る](https://fu-yu.github.io/voxel-maker/tried/)
 - 次: [5. 秋の風景を置いてみた](https://fu-yu.github.io/voxel-maker/tried/autumn.html)

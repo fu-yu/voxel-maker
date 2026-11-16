@@ -3,6 +3,10 @@
 
 使い方: python3 tools/build_guide.py
 """
+import datetime
+import hashlib
+import json
+import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -37,7 +41,15 @@ OPEN_APP = '<p class="open"><a href="./">ボクセル工房を開く</a></p>'
 OPEN_CSS = ".open a{display:inline-block;font-weight:700;color:var(--bg);background:var(--fg);padding:8px 18px;text-decoration:none}.open a:focus-visible{outline:3px solid var(--orange);outline-offset:2px}"
 
 
-GUIDE_URL = "https://fu-yu.github.io/voxel-maker/guide.html"
+BASE_URL = "https://fu-yu.github.io/voxel-maker/"
+GUIDE_URL = BASE_URL + "guide.html"
+
+
+def public_path(name: str) -> str:
+    """ページの正式なアドレス (BASE_URL から先)。フォルダの入口の index.html は、フォルダ名で終わる形にそろえる。"""
+    return name[: -len("index.html")] if name == "index.html" or name.endswith("/index.html") else name
+
+
 GUIDE_DESC = "ボクセル工房の使い方の説明です。文字・画像・風景をブロックの立体にする手順と、できること・できないことをまとめています。"
 GUIDE_TITLE = "ボクセル工房のてびき — 使い方とできること"
 # 本文だけのページ: (ファイル名, 説明文, 共有したときの題)
@@ -57,7 +69,7 @@ SITE_PAGES = [
     ("./", "ボクセル工房", "文字・画像・風景を、ブロックの立体にする道具です。"),
     ("guide.html", "てびき", "使い方と、できること・できないことの説明です。"),
     ("minecraft.html", "マインクラフトに置く", "作った立体を、マインクラフトのワールドに置く手順です。"),
-    ("tried/index.html", "マインクラフトで試してみた", "本物のマインクラフトに置いて確かめた、写真つきの記録です。"),
+    ("tried/", "マインクラフトで試してみた", "本物のマインクラフトに置いて確かめた、写真つきの記録です。"),
 ]
 NAV_CSS = (
     ".sitenav{display:flex;flex-wrap:wrap;gap:8px;font-size:14px;margin:0}"
@@ -75,12 +87,13 @@ def add_site_nav(body: str, current: str) -> str:
     """ページの上に短い一覧を、下に説明つきの一覧を入れる。current は今のページのファイル名。"""
     depth = current.count("/")
     prefix = "../" * depth
-    active = "tried/index.html" if current.startswith("tried/") else current
+    here = public_path(current)
+    active = "tried/" if here.startswith("tried/") else here
     link = lambda href: ("../" * depth if href == "./" else prefix + href) if depth else href
     top = '<nav class="sitenav" aria-label="ページの一覧">' + "".join(
         f'<a href="{link(href)}"' + (' aria-current="page"' if href == active else "") + f">{name}</a>" for href, name, _ in SITE_PAGES
     ) + "</nav>"
-    items = "\n".join(f'    <li><a href="{link(href)}">{name}</a><span>{desc}</span></li>' for href, name, desc in SITE_PAGES if href != current)
+    items = "\n".join(f'    <li><a href="{link(href)}">{name}</a><span>{desc}</span></li>' for href, name, desc in SITE_PAGES if href != here)
     analytics_href = "#analytics" if current == "guide.html" else link("guide.html#analytics")
     notice = f'  <p class="note">このサイトではアクセス解析に Google アナリティクスとクッキーを使っています (<a href="{analytics_href}">くわしく</a>)。</p>\n'
     bottom = f'<section class="siteindex">\n  <h2>ページの一覧</h2>\n  <ul>\n{items}\n  </ul>\n{notice}</section>\n\n'
@@ -117,7 +130,7 @@ def build_sub(name: str, desc: str, title: str) -> None:
         assert part in HEAD, part
     depth = name.count("/")
     prefix = "../" * depth
-    head = HEAD.replace(GUIDE_URL, "https://fu-yu.github.io/voxel-maker/" + name).replace(GUIDE_DESC, desc).replace(GUIDE_TITLE, title)
+    head = HEAD.replace(GUIDE_URL, BASE_URL + public_path(name)).replace(GUIDE_DESC, desc).replace(GUIDE_TITLE, title)
     body = (ROOT / "docs/public" / name).read_text(encoding="utf-8")
     body = body.replace("<style>", "<style>" + shared_style(), 1)
     if depth:
@@ -127,6 +140,10 @@ def build_sub(name: str, desc: str, title: str) -> None:
     # 公開ページの中では、同じ場所のページどうしを短いアドレスでつなぐ
     root_rel = prefix if depth else "./"
     body = body.replace('href="https://fu-yu.github.io/voxel-maker/"', f'href="{root_rel}"').replace('href="https://fu-yu.github.io/voxel-maker/', f'href="{prefix}')
+    if depth:
+        # 同じフォルダの入口は、正式なアドレスと同じく「フォルダ名/」で指す
+        folder = name.split("/")[0] + "/"
+        body = body.replace(f'href="{prefix}{folder}"', 'href="./"')
     body = add_site_nav(body, name)
     style_end = body.index("</style>") + len("</style>")
     out = head + body[:style_end] + "\n</head>\n<body>\n" + body[style_end:] + "</body>\n</html>\n"
@@ -136,11 +153,46 @@ def build_sub(name: str, desc: str, title: str) -> None:
     print(name + " を書き出しました")
 
 
+DATES_FILE = ROOT / "docs/dev/sitemap-dates.json"
+
+
+def updated_dates(files: list[str]) -> dict[str, str]:
+    """ページごとの更新日 (YYYY-MM-DD)。中身が前と変わったページだけ、今日の日付にする。
+
+    公開の自動処理は履歴を 1 つしか取らない (git log では日付がわからない) ので、
+    中身の指紋と日付を docs/dev/sitemap-dates.json に残し、リポジトリに入れておく。
+    初めて出てくるページは、手元の git の履歴から日付をとる (なければ今日)。
+    """
+    try:
+        saved = json.loads(DATES_FILE.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        saved = {}
+    today = datetime.date.today().isoformat()
+    dates, changed = {}, False
+    for f in files:
+        digest = hashlib.sha256((ROOT / f).read_bytes()).hexdigest()[:16]
+        old = saved.get(f)
+        if old and old["hash"] == digest:
+            dates[f] = old["date"]
+            continue
+        if old:
+            date = today
+        else:
+            log = subprocess.run(["git", "log", "-1", "--format=%cs", "--", f], cwd=ROOT, capture_output=True, text=True)
+            date = log.stdout.strip() or today
+        saved[f] = {"hash": digest, "date": date}
+        dates[f] = date
+        changed = True
+    if changed:
+        DATES_FILE.write_text(json.dumps(saved, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return dates
+
+
 def build_sitemap() -> None:
-    """公開するすべてのページのアドレスを並べた sitemap.xml を作る。"""
-    base = "https://fu-yu.github.io/voxel-maker/"
-    urls = [base, GUIDE_URL, *(base + name for name, _, _ in SUB_PAGES)]
-    items = "\n".join(f"  <url><loc>{u}</loc></url>" for u in urls)
+    """公開するすべてのページのアドレスと更新日を並べた sitemap.xml を作る。"""
+    files = ["index.html", "guide.html", *(name for name, _, _ in SUB_PAGES)]
+    dates = updated_dates(files)
+    items = "\n".join(f"  <url><loc>{BASE_URL + public_path(f)}</loc><lastmod>{dates[f]}</lastmod></url>" for f in files)
     out = f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{items}\n</urlset>\n'
     (ROOT / "sitemap.xml").write_text(out, encoding="utf-8")
     print("sitemap.xml を書き出しました")

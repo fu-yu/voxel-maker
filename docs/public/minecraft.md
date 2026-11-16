@@ -134,7 +134,7 @@
 
 ## 実際に置いてみた記録
 
-写真つきの記録を「[マインクラフトで試してみた](https://fu-yu.github.io/voxel-maker/tried/index.html)」のページにまとめています。
+写真つきの記録を「[マインクラフトで試してみた](https://fu-yu.github.io/voxel-maker/tried/)」のページにまとめています。
 
 ## ことばの説明
 
