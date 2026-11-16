@@ -795,7 +795,7 @@ function sceneModel(N) {
     const g = 1 + Math.round(el[i] * (H - 1));
     gh[i] = !wlv ? g : wet[i] ? Math.min(g, wlv) : Math.max(g, wlv + 1);
   }
-  const HY0 = H + 8, vol = new Uint8Array(N * N * HY0);
+  const HY0 = H + 16, vol = new Uint8Array(N * N * HY0);
   const put = (x, y, z, m) => { vol[(y * N + z) * N + x] = 1 + m * 3 + Math.floor(hashN(x * 7 + y, z * 13 + y, seed) * 3); };
   const at = (x, z) => gh[Math.max(0, Math.min(N - 1, z)) * N + Math.max(0, Math.min(N - 1, x))];
   const top = new Int8Array(N * N);              // material on the surface of each cell
@@ -826,19 +826,37 @@ function sceneModel(N) {
     if (crown[i]) continue;                      // under another tree already
     const x = i % N, z = (i / N) | 0;
     const y0 = gh[i], r = hashN(x, z, seed + 901), t = (y0 - 1) / (H - 1);
-    const pine = t > 0.45 + 0.2 * r, cap = S.cap ? MAT.snow : -1, reach = pine ? 1 : 2;
+    const pine = t > 0.45 + 0.2 * r, cap = S.cap ? MAT.snow : -1, reach = 2;
     for (let dz = -reach; dz <= reach; dz++) for (let dx = -reach; dx <= reach; dx++) {
       const nx = x + dx, nz = z + dz; if (nx < 0 || nz < 0 || nx >= N || nz >= N) continue;
       const j = nz * N + nx; if (!crown[j]) { crown[j] = 1; if (top[j] === MAT.grass) shaded++; }
     }
     if (pine) {
-      const th = 1 + (r > 0.5), m = MAT.pine;
-      for (let y = 0; y < th + 2; y++) put(x, y0 + y, z, MAT.trunk);
-      for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) if (dx || dz) {
-        leafAt(x + dx, y0 + th, z + dz, m);
-        if (!dx || !dz) leafAt(x + dx, y0 + th + 1, z + dz, m);
+      /* conifers as grown in the game (read from 26.3): mostly spruces, sometimes a tall thin pine.
+         Each leaf layer is a square of the given radius without its corners (radius 0 is one block) */
+      const h1 = hashN(x, z, seed + 905), h2 = hashN(x, z, seed + 906), h3 = hashN(x, z, seed + 907), m = MAT.pine;
+      const layer = (y, rad, top) => { for (let dz = -rad; dz <= rad; dz++) for (let dx = -rad; dx <= rad; dx++) if (!rad || Math.abs(dx) < rad || Math.abs(dz) < rad) leafAt(x + dx, y, z + dz, top && cap >= 0 ? cap : m); };
+      if (h1 < 0.25) {
+        /* pine: a trunk of 6–10 with a narrow cone of 4–5 layers near its top, widening by one each layer
+           down to 1–3 and stepping back in by one on the last layer */
+        const th = 6 + Math.floor(h2 * 5), rows = 4 + (h3 < 0.5), rmax = 1 + Math.floor(hashN(x, z, seed + 908) * 3);
+        for (let y = 0; y < th; y++) put(x, y0 + y, z, MAT.trunk);
+        for (let k = 0, rad = 0; k < rows; k++) {
+          layer(y0 + th + 1 - k, rad, k === 0);
+          if (rad >= 1 && k === rows - 2) rad--; else if (rad < rmax) rad++;
+        }
+      } else {
+        /* spruce: a trunk of 5–8; leaves from 1–3 above the trunk down to 1–2 above the ground, in layers
+           whose radius goes 0 or 1, then back and forth between growing sizes up to 2 or 3 */
+        const th = 5 + Math.floor(h2 * 3) + (h3 < 0.5), top = y0 + th + Math.floor(hashN(x, z, seed + 908) * 3), bottom = y0 + 1 + (hashN(x, z, seed + 909) < 0.5);
+        const rmax = 2 + (hashN(x, z, seed + 910) < 0.5);
+        for (let y = 0; y < th; y++) put(x, y0 + y, z, MAT.trunk);
+        let rad = hashN(x, z, seed + 911) < 0.5 ? 0 : 1, lim = 1, back = 0;
+        for (let y = top; y >= bottom; y--) {
+          layer(y, rad, y === top);
+          if (rad >= lim) { rad = back; back = 1; lim = Math.min(lim + 1, rmax); } else rad++;
+        }
       }
-      leafAt(x, y0 + th + 2, z, m); leafAt(x, y0 + th + 3, z, cap >= 0 ? cap : m);
     } else {
       /* the same shape as an oak (or birch) grown in the game: a trunk of 4–6 (birch 5–7), two 5×5 layers
          and one 3×3 layer around its top, and a plus sign above it. Corners are left out about half the time */
