@@ -242,7 +242,14 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
           <option value="winter">冬</option>
         </select>
       </div>
-      <p class="note">水の量は、全体の広さのうち水になる割合です。木の量は、草の生えた土地のうち木におおわれる割合です。</p>
+      <div class="field">
+        <label for="treeStyle">木の形</label>
+        <select id="treeStyle" style="width:auto">
+          <option value="small">小さな緑の木</option>
+          <option value="mc">マインクラフトの木</option>
+        </select>
+      </div>
+      <p class="note">水の量は、全体の広さのうち水になる割合です。木の量は、草の生えた土地のうち木におおわれる割合です。「マインクラフトの木」は、ゲームの木と同じ形と大きさです。</p>
     </section>
 
     <section class="group">
@@ -737,10 +744,12 @@ function buildMesh(g, v) {
 /* ---------- scene: a landscape grown from a number ---------- */
 const SEASONS = {
   summer: { grass: '#6f9a4e', dirt: '#8a6a48', stone: '#8d8b86', sand: '#d9c690', water: '#4f86a8', snow: '#eef0ee', trunk: '#6b4a32', pine: '#33603f', leaf: ['#4c7a3c', '#5d8a44', '#447038'] },
-  autumn: { grass: '#a39a52', dirt: '#8a6a48', stone: '#8d8b86', sand: '#d9c690', water: '#4a7d9c', snow: '#eef0ee', trunk: '#6b4a32', pine: '#3a5f3c', leaf: ['#c9692c', '#b8433a', '#d6a53a'] },
+  autumn: { poplar: true, grass: '#a39a52', dirt: '#8a6a48', stone: '#8d8b86', sand: '#d9c690', water: '#4a7d9c', snow: '#eef0ee', trunk: '#6b4a32', pine: '#3a5f3c', leaf: ['#c9692c', '#b8433a', '#d6a53a'] },
   winter: { grass: '#e4e8ea', dirt: '#857060', stone: '#8d8b86', sand: '#cdc7b4', water: '#a9c6d6', snow: '#f4f6f6', trunk: '#5e4534', pine: '#35584a', leaf: ['#5d7a55', '#536f4f', '#66805a'], cap: true },
 };
-const MAT = { grass: 0, dirt: 1, stone: 2, sand: 3, water: 4, snow: 5, trunk: 6, pine: 7, leaf: 8 };   // leaf takes 8, 9, 10
+const MAT = { grass: 0, dirt: 1, stone: 2, sand: 3, water: 4, snow: 5, trunk: 6, pine: 7, leaf: 8, birchLog: 11, spruceLog: 12, poplarLog: 13 };   // leaf takes 8, 9, 10; trunk is the oak log
+/* the other logs keep their colour in every season: the average colour of each log's side in the game (26.3) */
+const LOGS = ['#d9d7d2', '#3b2611', '#4f3d2b'];
 const SHADES = [0.94, 1, 1.06];
 const hashN = (x, y, s) => {
   let h = (Math.imul(x, 374761393) + Math.imul(y, 668265263) + Math.imul(s, 1274126177)) | 0;
@@ -763,10 +772,10 @@ const clamp01 = v => Math.max(0, Math.min(1, v));
 function sceneModel(N) {
   const seed = Math.max(1, Math.min(9999, Math.round(+$('seed').value) || 1));
   const kind = $('terrain').value, S = SEASONS[$('season').value];
-  const H = +$('peak').value, wl = +$('water').value / 100, dens = +$('trees').value / 100;
+  const H = +$('peak').value, wl = +$('water').value / 100, dens = +$('trees').value / 100, mcTrees = $('treeStyle').value === 'mc';
 
   /* palette: slot 0 is "empty"; every material comes in three slightly different shades */
-  const mats = [S.grass, S.dirt, S.stone, S.sand, S.water, S.snow, S.trunk, S.pine, ...S.leaf].map(hexRGB);
+  const mats = [S.grass, S.dirt, S.stone, S.sand, S.water, S.snow, S.trunk, S.pine, ...S.leaf, ...LOGS].map(hexRGB);
   const col = new Uint8Array((1 + mats.length * 3) * 3);
   mats.forEach((rgb, m) => SHADES.forEach((f, k) => col.set(rgb.map(v => Math.min(255, Math.round(v * (m === MAT.water ? 1 : f)))), (1 + m * 3 + k) * 3)));
 
@@ -795,7 +804,7 @@ function sceneModel(N) {
     const g = 1 + Math.round(el[i] * (H - 1));
     gh[i] = !wlv ? g : wet[i] ? Math.min(g, wlv) : Math.max(g, wlv + 1);
   }
-  const HY0 = H + 8, vol = new Uint8Array(N * N * HY0);
+  const HY0 = H + 16, vol = new Uint8Array(N * N * HY0);
   const put = (x, y, z, m) => { vol[(y * N + z) * N + x] = 1 + m * 3 + Math.floor(hashN(x * 7 + y, z * 13 + y, seed) * 3); };
   const at = (x, z) => gh[Math.max(0, Math.min(N - 1, z)) * N + Math.max(0, Math.min(N - 1, x))];
   const top = new Int8Array(N * N);              // material on the surface of each cell
@@ -825,28 +834,84 @@ function sceneModel(N) {
     if (shaded >= want) break;
     if (crown[i]) continue;                      // under another tree already
     const x = i % N, z = (i / N) | 0;
-    for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
+    const y0 = gh[i], r = hashN(x, z, seed + 901), t = (y0 - 1) / (H - 1);
+    const pine = t > 0.45 + 0.2 * r, cap = S.cap ? MAT.snow : -1, poplar = mcTrees && !pine && S.poplar, reach = !mcTrees ? 1 : poplar ? 3 : 2;
+    for (let dz = -reach; dz <= reach; dz++) for (let dx = -reach; dx <= reach; dx++) {
       const nx = x + dx, nz = z + dz; if (nx < 0 || nz < 0 || nx >= N || nz >= N) continue;
       const j = nz * N + nx; if (!crown[j]) { crown[j] = 1; if (top[j] === MAT.grass) shaded++; }
     }
-    const y0 = gh[i], r = hashN(x, z, seed + 901), t = (y0 - 1) / (H - 1);
-    const pine = t > 0.45 + 0.2 * r, cap = S.cap ? MAT.snow : -1;
-    if (pine) {
-      const th = 1 + (r > 0.5), m = MAT.pine;
-      for (let y = 0; y < th + 2; y++) put(x, y0 + y, z, MAT.trunk);
-      for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) if (dx || dz) {
-        leafAt(x + dx, y0 + th, z + dz, m);
-        if (!dx || !dz) leafAt(x + dx, y0 + th + 1, z + dz, m);
+    if (!mcTrees) {
+      /* "small green trees": the small trees this tool first had, about half the game's size, all with an oak trunk */
+      if (pine) {
+        const th = 1 + (r > 0.5), m = MAT.pine;
+        for (let y = 0; y < th + 2; y++) put(x, y0 + y, z, MAT.trunk);
+        for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) if (dx || dz) {
+          leafAt(x + dx, y0 + th, z + dz, m);
+          if (!dx || !dz) leafAt(x + dx, y0 + th + 1, z + dz, m);
+        }
+        leafAt(x, y0 + th + 2, z, m); leafAt(x, y0 + th + 3, z, cap >= 0 ? cap : m);
+      } else {
+        const th = 2 + (r > 0.6), m = MAT.leaf + Math.floor(hashN(x, z, seed + 902) * 3);
+        for (let y = 0; y < th; y++) put(x, y0 + y, z, MAT.trunk);
+        for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
+          const corner = dx && dz;
+          if ((dx || dz) && !(corner && hashN(x + dx, z + dz, seed + 903) < 0.5)) leafAt(x + dx, y0 + th - 1, z + dz, m);
+          leafAt(x + dx, y0 + th, z + dz, m);
+          if (!corner) leafAt(x + dx, y0 + th + 1, z + dz, cap >= 0 ? cap : m);
+        }
       }
-      leafAt(x, y0 + th + 2, z, m); leafAt(x, y0 + th + 3, z, cap >= 0 ? cap : m);
+    } else if (pine) {
+      /* conifers as grown in the game (read from 26.3): mostly spruces, sometimes a tall thin pine.
+         Each leaf layer is a square of the given radius without its corners (radius 0 is one block) */
+      const h1 = hashN(x, z, seed + 905), h2 = hashN(x, z, seed + 906), h3 = hashN(x, z, seed + 907), m = MAT.pine;
+      const layer = (y, rad, top) => { for (let dz = -rad; dz <= rad; dz++) for (let dx = -rad; dx <= rad; dx++) if (!rad || Math.abs(dx) < rad || Math.abs(dz) < rad) leafAt(x + dx, y, z + dz, top && cap >= 0 ? cap : m); };
+      if (h1 < 0.25) {
+        /* pine: a trunk of 6–10 with a narrow cone of 4–5 layers near its top, widening by one each layer
+           down to 1–3 and stepping back in by one on the last layer */
+        const th = 6 + Math.floor(h2 * 5), rows = 4 + (h3 < 0.5), rmax = 1 + Math.floor(hashN(x, z, seed + 908) * 3);
+        for (let y = 0; y < th; y++) put(x, y0 + y, z, MAT.spruceLog);
+        for (let k = 0, rad = 0; k < rows; k++) {
+          layer(y0 + th + 1 - k, rad, k === 0);
+          if (rad >= 1 && k === rows - 2) rad--; else if (rad < rmax) rad++;
+        }
+      } else {
+        /* spruce: a trunk of 5–8; leaves from 1–3 above the trunk down to 1–2 above the ground, in layers
+           whose radius goes 0 or 1, then back and forth between growing sizes up to 2 or 3 */
+        const th = 5 + Math.floor(h2 * 3) + (h3 < 0.5), top = y0 + th + Math.floor(hashN(x, z, seed + 908) * 3), bottom = y0 + 1 + (hashN(x, z, seed + 909) < 0.5);
+        const rmax = 2 + (hashN(x, z, seed + 910) < 0.5);
+        for (let y = 0; y < th; y++) put(x, y0 + y, z, MAT.spruceLog);
+        let rad = hashN(x, z, seed + 911) < 0.5 ? 0 : 1, lim = 1, back = 0;
+        for (let y = top; y >= bottom; y--) {
+          layer(y, rad, y === top);
+          if (rad >= lim) { rad = back; back = 1; lim = Math.min(lim + 1, rmax); } else rad++;
+        }
+      }
+    } else if (poplar) {
+      /* autumn: a poplar as grown in the game (read from 26.3). A trunk of 7–11 wrapped in a round ball of
+         leaves over its upper half: from the bottom, layers of radius 2, 3, 4, (4), 3, 2, 1, the top one
+         0–1 above the trunk. The ball is a little ragged at its edge (about 15% of the edge left out) */
+      const m = MAT.leaf + Math.floor(hashN(x, z, seed + 902) * 3), th = 7 + Math.floor(hashN(x, z, seed + 904) * 5);
+      const radii = hashN(x, z, seed + 912) < 0.5 ? [2, 3, 4, 4, 3, 2, 1] : [2, 3, 4, 3, 2, 1], top = y0 + th + (hashN(x, z, seed + 913) < 0.6 ? 1 : 0);
+      for (let y = 0; y < th; y++) put(x, y0 + y, z, MAT.poplarLog);
+      radii.forEach((rad, k) => {
+        const y = top - (radii.length - 1 - k), lim = rad * rad;
+        for (let dz = -rad; dz <= rad; dz++) for (let dx = -rad; dx <= rad; dx++) {
+          const d = dx * dx + dz * dz;
+          if (d > lim || (d > (rad - 1) * (rad - 1) && rad > 1 && hashN(x + dx * 7, z + dz * 7 + y * 31, seed + 914) < 0.15)) continue;
+          leafAt(x + dx, y, z + dz, k === radii.length - 1 && cap >= 0 ? cap : m);
+        }
+      });
     } else {
-      const th = 2 + (r > 0.6), m = MAT.leaf + Math.floor(hashN(x, z, seed + 902) * 3);
-      for (let y = 0; y < th; y++) put(x, y0 + y, z, MAT.trunk);
-      for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
-        const corner = dx && dz;
-        if ((dx || dz) && !(corner && hashN(x + dx, z + dz, seed + 903) < 0.5)) leafAt(x + dx, y0 + th - 1, z + dz, m);
-        leafAt(x + dx, y0 + th, z + dz, m);
-        if (!corner) leafAt(x + dx, y0 + th + 1, z + dz, cap >= 0 ? cap : m);
+      /* the same shape as an oak (or birch) grown in the game: a trunk of 4–6 (birch 5–7), two 5×5 layers
+         and one 3×3 layer around its top, and a plus sign above it. Corners are left out about half the time */
+      const m = MAT.leaf + Math.floor(hashN(x, z, seed + 902) * 3), th = (m === MAT.leaf + 1 ? 5 : 4) + Math.floor(hashN(x, z, seed + 904) * 3);
+      for (let y = 0; y < th; y++) put(x, y0 + y, z, (m === MAT.leaf + 1 ? MAT.birchLog : MAT.trunk));
+      for (let dy = -3; dy <= 0; dy++) {
+        const rad = dy <= -2 ? 2 : 1, y = y0 + th + dy;
+        for (let dz = -rad; dz <= rad; dz++) for (let dx = -rad; dx <= rad; dx++) {
+          if (Math.abs(dx) === rad && Math.abs(dz) === rad && (dy === 0 || hashN(x + dx * 5, z + dz * 5 + y * 31, seed + 903) < 0.5)) continue;
+          leafAt(x + dx, y, z + dz, dy === 0 && cap >= 0 ? cap : m);
+        }
       }
     }
   }
@@ -909,7 +974,7 @@ function setMode(mode) {
 $('tabText').onclick = () => setMode('text');
 $('tabImage').onclick = () => setMode('image');
 $('tabScene').onclick = () => setMode('scene');
-['terrain', 'season', 'seed'].forEach(id => $(id).addEventListener('input', schedule));
+['terrain', 'season', 'treeStyle', 'seed'].forEach(id => $(id).addEventListener('input', schedule));
 ['peak', 'water', 'trees'].forEach(id => $(id).addEventListener('input', () => { syncOutputs(); state.lastSize = null; schedule(); }));
 $('reroll').onclick = () => { let n; do n = 1 + Math.floor(Math.random() * 9999); while (n === +$('seed').value); $('seed').value = n; schedule(); };
 document.querySelectorAll('.shape button').forEach(b => b.onclick = () => {
@@ -1165,7 +1230,7 @@ function mcBlocks() {
   if (scene) {
     const { vol, N, HY, season } = scene, w = N + 2, ids = new Uint16Array(w * w * HY);    // one extra cell all round, for the glass that holds the water in
     const winter = season === 'winter', autumn = season === 'autumn';
-    const real = ['grass_block', 'dirt', 'stone', 'sand', 'water', 'snow_block', 'oak_log', 'spruce_leaves[persistent=true]', 'oak_leaves[persistent=true]', 'birch_leaves[persistent=true]', 'oak_leaves[persistent=true]'];
+    const real = ['grass_block', 'dirt', 'stone', 'sand', 'water', 'snow_block', 'oak_log', 'spruce_leaves[persistent=true]', 'oak_leaves[persistent=true]', 'birch_leaves[persistent=true]', 'oak_leaves[persistent=true]', 'birch_log', 'spruce_log', 'poplar_log'];
     if (winter) { real[0] = 'snow_block'; real[4] = 'ice'; }
     /* autumn crowns use the poplar leaves added in 26.3, which keep their colour in every biome (orange, red, yellow as in SEASONS.autumn.leaf) */
     if (autumn) real.splice(8, 3, 'orange_poplar_leaves[persistent=true]', 'red_poplar_leaves[persistent=true]', 'yellow_poplar_leaves[persistent=true]');
