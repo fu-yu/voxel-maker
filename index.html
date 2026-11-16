@@ -237,7 +237,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
       <div class="field">
         <label for="season">季節</label>
         <select id="season" style="width:auto">
-          <option value="summer">夏</option>
+          <option value="spring">春</option>
+          <option value="summer" selected>夏</option>
           <option value="autumn">秋</option>
           <option value="winter">冬</option>
         </select>
@@ -743,13 +744,15 @@ function buildMesh(g, v) {
 
 /* ---------- scene: a landscape grown from a number ---------- */
 const SEASONS = {
+  /* spring: fresh greens, and one round tree in three is a cherry (its pink is the average of cherry_leaves in 26.3) */
+  spring: { cherry: true, grass: '#7aa651', dirt: '#8a6a48', stone: '#8d8b86', sand: '#d9c690', water: '#4f86a8', snow: '#eef0ee', trunk: '#6b4a32', pine: '#3a6943', leaf: ['#5f9443', '#78a64e', '#e5adc2'] },
   summer: { grass: '#6f9a4e', dirt: '#8a6a48', stone: '#8d8b86', sand: '#d9c690', water: '#4f86a8', snow: '#eef0ee', trunk: '#6b4a32', pine: '#33603f', leaf: ['#4c7a3c', '#5d8a44', '#447038'] },
   autumn: { poplar: true, grass: '#a39a52', dirt: '#8a6a48', stone: '#8d8b86', sand: '#d9c690', water: '#4a7d9c', snow: '#eef0ee', trunk: '#6b4a32', pine: '#3a5f3c', leaf: ['#c9692c', '#b8433a', '#d6a53a'] },
   winter: { grass: '#e4e8ea', dirt: '#857060', stone: '#8d8b86', sand: '#cdc7b4', water: '#a9c6d6', snow: '#f4f6f6', trunk: '#5e4534', pine: '#35584a', leaf: ['#5d7a55', '#536f4f', '#66805a'], cap: true },
 };
-const MAT = { grass: 0, dirt: 1, stone: 2, sand: 3, water: 4, snow: 5, trunk: 6, pine: 7, leaf: 8, birchLog: 11, spruceLog: 12, poplarLog: 13 };   // leaf takes 8, 9, 10; trunk is the oak log
+const MAT = { grass: 0, dirt: 1, stone: 2, sand: 3, water: 4, snow: 5, trunk: 6, pine: 7, leaf: 8, birchLog: 11, spruceLog: 12, poplarLog: 13, cherryLog: 14 };   // leaf takes 8, 9, 10; trunk is the oak log
 /* the other logs keep their colour in every season: the average colour of each log's side in the game (26.3) */
-const LOGS = ['#d9d7d2', '#3b2611', '#4f3d2b'];
+const LOGS = ['#d9d7d2', '#3b2611', '#4f3d2b', '#37212c'];
 const SHADES = [0.94, 1, 1.06];
 const hashN = (x, y, s) => {
   let h = (Math.imul(x, 374761393) + Math.imul(y, 668265263) + Math.imul(s, 1274126177)) | 0;
@@ -835,7 +838,8 @@ function sceneModel(N) {
     if (crown[i]) continue;                      // under another tree already
     const x = i % N, z = (i / N) | 0;
     const y0 = gh[i], r = hashN(x, z, seed + 901), t = (y0 - 1) / (H - 1);
-    const pine = t > 0.45 + 0.2 * r, cap = S.cap ? MAT.snow : -1, poplar = mcTrees && !pine && S.poplar, reach = !mcTrees ? 1 : poplar ? 3 : 2;
+    const pine = t > 0.45 + 0.2 * r, cap = S.cap ? MAT.snow : -1, poplar = mcTrees && !pine && S.poplar,
+      cherry = mcTrees && !pine && S.cherry && MAT.leaf + Math.floor(hashN(x, z, seed + 902) * 3) === MAT.leaf + 2, reach = !mcTrees ? 1 : poplar || cherry ? 3 : 2;
     for (let dz = -reach; dz <= reach; dz++) for (let dx = -reach; dx <= reach; dx++) {
       const nx = x + dx, nz = z + dz; if (nx < 0 || nz < 0 || nx >= N || nz >= N) continue;
       const j = nz * N + nx; if (!crown[j]) { crown[j] = 1; if (top[j] === MAT.grass) shaded++; }
@@ -886,6 +890,35 @@ function sceneModel(N) {
           if (rad >= lim) { rad = back; back = 1; lim = Math.min(lim + 1, rmax); } else rad++;
         }
       }
+    } else if (cherry) {
+      /* spring: a cherry as grown in the game (read from 26.3). The trunk splits about 3 up into 2–3 limbs that lean out
+         2–4 along one direction and end 6–7 up; each limb carries a flat umbrella of leaves (from the top: radius 1, 2, 3,
+         a wide ragged layer, a ragged layer of 3), with a few leaves hanging below its rim */
+      const m = MAT.leaf + 2, along = hashN(x, z, seed + 915) < 0.5, three = hashN(x, z, seed + 916) < 0.5, split = y0 + 2 + (hashN(x, z, seed + 917) < 0.5);
+      const ends = (three ? [-(2 + Math.floor(hashN(x, z, seed + 918) * 3)), 0, 2 + Math.floor(hashN(x, z, seed + 919) * 3)]
+                          : [-(2 + Math.floor(hashN(x, z, seed + 918) * 3)), 2 + Math.floor(hashN(x, z, seed + 919) * 3)]);
+      const at = (d, y) => along ? [x + d, y, z] : [x, y, z + d];
+      const log = (d, y) => { const [px, py, pz] = at(d, y); if (px >= 0 && pz >= 0 && px < N && pz < N) put(px, py, pz, MAT.cherryLog); };
+      for (let y = y0; y <= split; y++) log(0, y);
+      ends.forEach((d, b) => {
+        const ye = y0 + 6 + (d === 0 || hashN(x + b, z, seed + 920) < 0.5);
+        /* a limb: from the split, step out one cell and up one cell at a time until it reaches its end */
+        for (let k = 1, cd = 0, cy = split; cd !== d || cy < ye; k++) {
+          if (cd !== d) cd += Math.sign(d);
+          if (cy < ye && (cd === d || k % 2 === 0 || d === 0)) cy++;
+          log(cd, cy);
+        }
+        const [bx, , bz] = at(d, 0), ring = [[ye + 3, 1, 0], [ye + 2, 2, 0], [ye + 1, 3, 0], [ye, 3.6, 0.25], [ye - 1, 3, 0.25]];
+        for (const [y, rad, hole] of ring) for (let dz = -4; dz <= 4; dz++) for (let dx = -4; dx <= 4; dx++) {
+          const dd = dx * dx + dz * dz, edge = dd > (rad - 1) * (rad - 1);
+          if (dd > rad * rad + (rad < 2 ? 1 : 0) || (hole && edge && hashN(bx + dx * 7, bz + dz * 7 + y * 31, seed + 921) < hole)) continue;
+          leafAt(bx + dx, y, bz + dz, m);
+          if (y === ye - 1 && edge && hashN(bx + dx * 3, bz + dz * 3, seed + 922) < 1 / 6) {
+            leafAt(bx + dx, y - 1, bz + dz, m);
+            if (hashN(bx + dx * 5, bz + dz * 5, seed + 923) < 1 / 3) leafAt(bx + dx, y - 2, bz + dz, m);
+          }
+        }
+      });
     } else if (poplar) {
       /* autumn: a poplar as grown in the game (read from 26.3). A trunk of 7–11 wrapped in a round ball of
          leaves over its upper half: from the bottom, layers of radius 2, 3, 4, (4), 3, 2, 1, the top one
@@ -1229,10 +1262,11 @@ function mcBlocks() {
   const id = n => { let i = idx.get(n); if (!i) { i = names.length; names.push(n); idx.set(n, i); } return i; };
   if (scene) {
     const { vol, N, HY, season } = scene, w = N + 2, ids = new Uint16Array(w * w * HY);    // one extra cell all round, for the glass that holds the water in
-    const winter = season === 'winter', autumn = season === 'autumn';
-    const real = ['grass_block', 'dirt', 'stone', 'sand', 'water', 'snow_block', 'oak_log', 'spruce_leaves[persistent=true]', 'oak_leaves[persistent=true]', 'birch_leaves[persistent=true]', 'oak_leaves[persistent=true]', 'birch_log', 'spruce_log', 'poplar_log'];
+    const winter = season === 'winter', autumn = season === 'autumn', spring = season === 'spring';
+    const real = ['grass_block', 'dirt', 'stone', 'sand', 'water', 'snow_block', 'oak_log', 'spruce_leaves[persistent=true]', 'oak_leaves[persistent=true]', 'birch_leaves[persistent=true]', 'oak_leaves[persistent=true]', 'birch_log', 'spruce_log', 'poplar_log', 'cherry_log'];
     if (winter) { real[0] = 'snow_block'; real[4] = 'ice'; }
     /* autumn crowns use the poplar leaves added in 26.3, which keep their colour in every biome (orange, red, yellow as in SEASONS.autumn.leaf) */
+    if (spring) real[10] = 'cherry_leaves[persistent=true]';   // the third leaf colour is the cherry in spring
     if (autumn) real.splice(8, 3, 'orange_poplar_leaves[persistent=true]', 'red_poplar_leaves[persistent=true]', 'yellow_poplar_leaves[persistent=true]');
     const set = (x, y, z, n) => { ids[(y * w + z + 1) * w + x + 1] = id(n); };
     const nameOf = p => real[Math.floor((p - 1) / 3)];
