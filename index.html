@@ -242,7 +242,14 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
           <option value="winter">冬</option>
         </select>
       </div>
-      <p class="note">水の量は、全体の広さのうち水になる割合です。木の量は、草の生えた土地のうち木におおわれる割合です。</p>
+      <div class="field">
+        <label for="treeStyle">木の形</label>
+        <select id="treeStyle" style="width:auto">
+          <option value="small">小さな緑の木</option>
+          <option value="mc">マインクラフトの木</option>
+        </select>
+      </div>
+      <p class="note">水の量は、全体の広さのうち水になる割合です。木の量は、草の生えた土地のうち木におおわれる割合です。「マインクラフトの木」は、ゲームの木と同じ形と大きさです。</p>
     </section>
 
     <section class="group">
@@ -765,7 +772,7 @@ const clamp01 = v => Math.max(0, Math.min(1, v));
 function sceneModel(N) {
   const seed = Math.max(1, Math.min(9999, Math.round(+$('seed').value) || 1));
   const kind = $('terrain').value, S = SEASONS[$('season').value];
-  const H = +$('peak').value, wl = +$('water').value / 100, dens = +$('trees').value / 100;
+  const H = +$('peak').value, wl = +$('water').value / 100, dens = +$('trees').value / 100, mcTrees = $('treeStyle').value === 'mc';
 
   /* palette: slot 0 is "empty"; every material comes in three slightly different shades */
   const mats = [S.grass, S.dirt, S.stone, S.sand, S.water, S.snow, S.trunk, S.pine, ...S.leaf, ...LOGS].map(hexRGB);
@@ -828,12 +835,32 @@ function sceneModel(N) {
     if (crown[i]) continue;                      // under another tree already
     const x = i % N, z = (i / N) | 0;
     const y0 = gh[i], r = hashN(x, z, seed + 901), t = (y0 - 1) / (H - 1);
-    const pine = t > 0.45 + 0.2 * r, cap = S.cap ? MAT.snow : -1, poplar = !pine && S.poplar, reach = poplar ? 3 : 2;
+    const pine = t > 0.45 + 0.2 * r, cap = S.cap ? MAT.snow : -1, poplar = mcTrees && !pine && S.poplar, reach = !mcTrees ? 1 : poplar ? 3 : 2;
     for (let dz = -reach; dz <= reach; dz++) for (let dx = -reach; dx <= reach; dx++) {
       const nx = x + dx, nz = z + dz; if (nx < 0 || nz < 0 || nx >= N || nz >= N) continue;
       const j = nz * N + nx; if (!crown[j]) { crown[j] = 1; if (top[j] === MAT.grass) shaded++; }
     }
-    if (pine) {
+    if (!mcTrees) {
+      /* "small green trees": the small trees this tool first had, about half the game's size, all with an oak trunk */
+      if (pine) {
+        const th = 1 + (r > 0.5), m = MAT.pine;
+        for (let y = 0; y < th + 2; y++) put(x, y0 + y, z, MAT.trunk);
+        for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) if (dx || dz) {
+          leafAt(x + dx, y0 + th, z + dz, m);
+          if (!dx || !dz) leafAt(x + dx, y0 + th + 1, z + dz, m);
+        }
+        leafAt(x, y0 + th + 2, z, m); leafAt(x, y0 + th + 3, z, cap >= 0 ? cap : m);
+      } else {
+        const th = 2 + (r > 0.6), m = MAT.leaf + Math.floor(hashN(x, z, seed + 902) * 3);
+        for (let y = 0; y < th; y++) put(x, y0 + y, z, MAT.trunk);
+        for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
+          const corner = dx && dz;
+          if ((dx || dz) && !(corner && hashN(x + dx, z + dz, seed + 903) < 0.5)) leafAt(x + dx, y0 + th - 1, z + dz, m);
+          leafAt(x + dx, y0 + th, z + dz, m);
+          if (!corner) leafAt(x + dx, y0 + th + 1, z + dz, cap >= 0 ? cap : m);
+        }
+      }
+    } else if (pine) {
       /* conifers as grown in the game (read from 26.3): mostly spruces, sometimes a tall thin pine.
          Each leaf layer is a square of the given radius without its corners (radius 0 is one block) */
       const h1 = hashN(x, z, seed + 905), h2 = hashN(x, z, seed + 906), h3 = hashN(x, z, seed + 907), m = MAT.pine;
@@ -947,7 +974,7 @@ function setMode(mode) {
 $('tabText').onclick = () => setMode('text');
 $('tabImage').onclick = () => setMode('image');
 $('tabScene').onclick = () => setMode('scene');
-['terrain', 'season', 'seed'].forEach(id => $(id).addEventListener('input', schedule));
+['terrain', 'season', 'treeStyle', 'seed'].forEach(id => $(id).addEventListener('input', schedule));
 ['peak', 'water', 'trees'].forEach(id => $(id).addEventListener('input', () => { syncOutputs(); state.lastSize = null; schedule(); }));
 $('reroll').onclick = () => { let n; do n = 1 + Math.floor(Math.random() * 9999); while (n === +$('seed').value); $('seed').value = n; schedule(); };
 document.querySelectorAll('.shape button').forEach(b => b.onclick = () => {
