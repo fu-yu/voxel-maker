@@ -1,7 +1,7 @@
 # CHANGELOG
 
 ## 2026-11-18
-- 全ページにアイコン (favicon) をつけた。立方体を小さなブロック 8 個に分けた形の SVG と、iPhone 用の PNG (`docs/public/images/favicon.svg`, `apple-touch-icon.png`)。`deploy.yml` は変えていない (詳細: sessions/2026-11-18-favicon.md)
+- 全ページにアイコン (favicon) をつけた。立方体を小さなブロック 8 個に分けた形の SVG と、iPhone 用の PNG (`docs/public/images/favicon.svg`, `apple-touch-icon.png`)。`deploy.yml` は変えていない。同じ日に公開 (詳細: sessions/2026-11-18-favicon.md)
 
 ## 2026-11-17
 - 「試してみた」の正式なアドレスを `tried/` にそろえ、サイトマップに更新日 (`<lastmod>`) を入れた。日付は `docs/dev/sitemap-dates.json` の中身の指紋で決める (詳細: sessions/2026-11-17-sitemap-tidy.md)
