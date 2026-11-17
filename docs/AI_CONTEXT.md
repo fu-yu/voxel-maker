@@ -1,8 +1,8 @@
 # AI_CONTEXT: voxel-maker (ボクセル工房)
 
-最終更新: 2026-11-17
+最終更新: 2026-11-18
 
-**現在の作業ブランチ: なし (`main`)** (作業ブランチが変わったら、この行を書きかえる)
+**現在の作業ブランチ: `work/favicon` (アイコン。公開待ち)** (作業ブランチが変わったら、この行を書きかえる)
 
 ## これは何か
 文字や画像を、立方体 (ボクセル) を積んだ立体に変える、ブラウザだけで動く道具。番号から風景 (山・水・木) を自動で作ることもできる。本体は `index.html` の 1 ファイル。
@@ -20,6 +20,7 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 | プレビューの「マインクラフトのブロックの色で見る」(`#mcView`) | `work/mc-preview` で追加 (2026-11-15)。ローカルで文字・画像・風景 (隠れる)・375px 幅を確認。同じブランチで色の選び方のブロックを 72 種類に増やした (ゲームの画面では未確認)。2026-11-15 に `main` に取り込んで公開 (`docs/dev/sessions/2026-11-15-mc-preview.md`) |
 | マインクラフト用の説明ページ `minecraft.html` | ローカルで表示を確認済み (2026-11-14)。同じ日に公開。後半に 3 つの SVG 図と `voxel:build_slow`、`voxel:break_slow` の説明を足して更新 |
 | 試した記録のページ `tried/` (`index.html`, `scene.html`, `text.html`, `slow.html`, `break.html`, `autumn.html`) | ローカルで表示を確認済み。2026-11-14 に `tried/` フォルダに分割して公開し、`break.html` を追加。2026-11-17 に `work/tried-update` で `autumn.html` (秋の葉) を追加 (ローカルでデスクトップ幅と 375px 幅を確認し、同じ日に公開。公開ページもデスクトップ幅で確認) |
+| アイコン (favicon) | `work/favicon` で全 9 ページに追加 (2026-11-18)。ローカルでファイルの読み込みを確認。タブでの見た目・公開ページは **未確認**。記録は `docs/dev/sessions/2026-11-18-favicon.md` |
 | 範囲の選択、「下絵をコピー」 | **未確認** (コードを読んだだけ) |
 | スマホ幅 (375px) | 確認済み (2026-11-11、ブラウザの幅を 375px にして。配置が切り替わり、立体の全体が画面に入る)。実機の Android は **未確認** |
 | GitHub Pages での公開 | 公開中 (https://fu-yu.github.io/voxel-maker/)。2026-11-11 に本体と `guide.html` の表示を確認 (デスクトップ幅と 375px 幅、コンソールエラーなし)。公開元は `gh-pages` ブランチのルート |
@@ -53,6 +54,7 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 - `guide.html` — 使い方の説明ページ (生成物。手で直さない)
 - `docs/public/index.md` — 説明の元原稿 (これが正)
 - `docs/public/index.html` — 説明ページの本文 (Artifact 用。`<!doctype>` や `<head>` を持たない形)
+- `docs/public/images/favicon.svg`, `apple-touch-icon.png` — アイコン。どのページの `<head>` からも指す (`build_guide.py` の `HEAD` と本体 `index.html`)
 - `docs/public/images/` — 挿絵 (AI が作った絵) と、共有用の画像 `og.jpg` (本体の画面を撮ったもの。作り方は `docs/dev/sessions/2026-11-13-seo.md`)
 - `minecraft.html` — マインクラフトに置く手順のページ (生成物。手で直さない)。元原稿は `docs/public/minecraft.md`、本文は `docs/public/minecraft.html`
 - `tried/index.html`, `tried/scene.html`, `tried/text.html`, `tried/slow.html`, `tried/break.html`, `tried/autumn.html` — マインクラフトで試した記録のページ (生成物。手で直さない)。元原稿は `docs/public/tried/*.md`、本文は `docs/public/tried/*.html`。写真は `docs/public/images/mc-*.jpg`
@@ -76,4 +78,4 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 - コミットのメールアドレスは GitHub の noreply アドレスを使う (リポジトリごとの設定に入れてある)。
 
 ## 最新のセッション
-`docs/dev/sessions/2026-11-17-sitemap-tidy.md` (その前: `2026-11-15-mc-preview.md`)
+`docs/dev/sessions/2026-11-18-favicon.md` (その前: `2026-11-17-sitemap-tidy.md`)

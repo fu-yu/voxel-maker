@@ -17,6 +17,8 @@ HEAD = """<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="ボクセル工房の使い方の説明です。文字・画像・風景をブロックの立体にする手順と、できること・できないことをまとめています。">
 <link rel="canonical" href="https://fu-yu.github.io/voxel-maker/guide.html">
+<link rel="icon" href="docs/public/images/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="docs/public/images/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="ボクセル工房">
 <meta property="og:locale" content="ja_JP">
@@ -131,6 +133,8 @@ def build_sub(name: str, desc: str, title: str) -> None:
     depth = name.count("/")
     prefix = "../" * depth
     head = HEAD.replace(GUIDE_URL, BASE_URL + public_path(name)).replace(GUIDE_DESC, desc).replace(GUIDE_TITLE, title)
+    # アイコンのファイルは、フォルダの中のページからはひとつ上をたどって指す
+    head = head.replace('href="docs/public/images/', f'href="{prefix}docs/public/images/')
     body = (ROOT / "docs/public" / name).read_text(encoding="utf-8")
     body = body.replace("<style>", "<style>" + shared_style(), 1)
     if depth:

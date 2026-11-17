@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 2026-11-18
+- 全ページにアイコン (favicon) をつけた。立方体を小さなブロック 8 個に分けた形の SVG と、iPhone 用の PNG (`docs/public/images/favicon.svg`, `apple-touch-icon.png`)。`deploy.yml` は変えていない (詳細: sessions/2026-11-18-favicon.md)
+
 ## 2026-11-17
 - 「試してみた」の正式なアドレスを `tried/` にそろえ、サイトマップに更新日 (`<lastmod>`) を入れた。日付は `docs/dev/sitemap-dates.json` の中身の指紋で決める (詳細: sessions/2026-11-17-sitemap-tidy.md)
 - 風景の季節に「春」を足した。丸い木の 3 本に 1 本がサクラ (`cherry_leaves`、マインクラフトの木では本物に近い形と `cherry_log`)。横枝は横向きの原木で、枝はゲームと同じ階段の形 (横か上の一方にだけ進む)。ゲームの画面で確認し、同じ日に公開 (詳細: sessions/2026-11-17-spring.md)
