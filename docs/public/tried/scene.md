@@ -1,6 +1,6 @@
 # 1. 風景を置いてみた
 
-[マインクラフトで試してみた](https://fu-yu.github.io/voxel-maker/tried/) の 1 つ目の記録です。
+[マインクラフトで試してみた](https://fu-yu.github.io/voxel-maker/tried/) の1つ目の記録です。
 地形は「山と湖」、季節は「夏」を選び、`/function voxel:build` で置きました。
 
 ## 上から見る
