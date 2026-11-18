@@ -2,7 +2,7 @@
 
 最終更新: 2026-11-18
 
-**現在の作業ブランチ: なし (`main`)** (作業ブランチが変わったら、この行を書きかえる)
+**現在の作業ブランチ: `work/tried-trees`** (「試してみた」に木のページを足した。2026-11-23 の午後に、ユーザーの「公開して」で取り込む予定) (作業ブランチが変わったら、この行を書きかえる)
 
 ## これは何か
 文字や画像を、立方体 (ボクセル) を積んだ立体に変える、ブラウザだけで動く道具。番号から風景 (山・水・木) を自動で作ることもできる。本体は `index.html` の 1 ファイル。
@@ -19,7 +19,7 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 | マインクラフト (Java 版) 用の書き出し (`#saveMc`) | 公式のサーバー版 26.3 で全ブロックの配置を確認済み。ゲームの画面でも、ユーザーが文字と風景 (山と湖・夏) を置いて確認した (2026-11-14)。色の選び方を OKLab に直したあとの見た目は **未確認**。2026-11-14 に「試験中」として公開。「建てる係」つきで少しずつ置く `voxel:build_slow` と「壊す係」つきで少しずつ壊す `voxel:break_slow` もポートを使わない照合 (5 種類) とゲームの画面 (最大設定の風景、空中配置の水漏れ対策、`voxel:break_stop` を含む) で確認し、同じ日に `main` に取り込んで公開 |
 | プレビューの「マインクラフトのブロックの色で見る」(`#mcView`) | `work/mc-preview` で追加 (2026-11-15)。ローカルで文字・画像・風景 (隠れる)・375px 幅を確認。同じブランチで色の選び方のブロックを 72 種類に増やした (ゲームの画面では未確認)。2026-11-15 に `main` に取り込んで公開 (`docs/dev/sessions/2026-11-15-mc-preview.md`) |
 | マインクラフト用の説明ページ `minecraft.html` | ローカルで表示を確認済み (2026-11-14)。同じ日に公開。後半に 3 つの SVG 図と `voxel:build_slow`、`voxel:break_slow` の説明を足して更新 |
-| 試した記録のページ `tried/` (`index.html`, `scene.html`, `text.html`, `slow.html`, `break.html`, `autumn.html`, `spring.html`) | ローカルで表示を確認済み。2026-11-14 に `tried/` フォルダに分割して公開し、`break.html` を追加。2026-11-17 に `work/tried-update` で `autumn.html` (秋の葉) を追加 (ローカルでデスクトップ幅と 375px 幅を確認し、同じ日に公開。公開ページもデスクトップ幅で確認)。2026-11-18 に `work/tried-spring` で `spring.html` (春のサクラ) を追加 (ローカルで 1280px 幅と 375px 幅を確認し、同じ日に公開。公開ページも両方の幅で確認) |
+| 試した記録のページ `tried/` (`index.html`, `scene.html`, `text.html`, `slow.html`, `break.html`, `autumn.html`, `spring.html`, `trees.html`) | ローカルで表示を確認済み。2026-11-14 に `tried/` フォルダに分割して公開し、`break.html` を追加。2026-11-17 に `work/tried-update` で `autumn.html` (秋の葉) を追加 (ローカルでデスクトップ幅と 375px 幅を確認し、同じ日に公開。公開ページもデスクトップ幅で確認)。2026-11-18 に `work/tried-spring` で `spring.html` (春のサクラ) を追加 (ローカルで 1280px 幅と 375px 幅を確認し、同じ日に公開。公開ページも両方の幅で確認)。2026-11-18 に `work/tried-trees` で `trees.html` (ゲームと同じ形の木) を追加 (ローカルで両方の幅を確認。公開は 2026-11-23 の予定) |
 | アイコン (favicon) | 全 9 ページに追加し、2026-11-18 に公開。公開ページでファイルの読み込みを確認。タブでの見た目は **未確認**。記録は `docs/dev/sessions/2026-11-18-favicon.md` |
 | 範囲の選択、「下絵をコピー」 | **未確認** (コードを読んだだけ) |
 | スマホ幅 (375px) | 確認済み (2026-11-11、ブラウザの幅を 375px にして。配置が切り替わり、立体の全体が画面に入る)。実機の Android は **未確認** |
@@ -57,8 +57,8 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 - `docs/public/images/favicon.svg`, `apple-touch-icon.png` — アイコン。どのページの `<head>` からも指す (`build_guide.py` の `HEAD` と本体 `index.html`)
 - `docs/public/images/` — 挿絵 (AI が作った絵) と、共有用の画像 `og.jpg` (本体の画面を撮ったもの。作り方は `docs/dev/sessions/2026-11-13-seo.md`)
 - `minecraft.html` — マインクラフトに置く手順のページ (生成物。手で直さない)。元原稿は `docs/public/minecraft.md`、本文は `docs/public/minecraft.html`
-- `tried/index.html`, `tried/scene.html`, `tried/text.html`, `tried/slow.html`, `tried/break.html`, `tried/autumn.html`, `tried/spring.html` — マインクラフトで試した記録のページ (生成物。手で直さない)。元原稿は `docs/public/tried/*.md`、本文は `docs/public/tried/*.html`。写真は `docs/public/images/mc-*.jpg`
-- `tools/build_guide.py` — `docs/public/index.html` から `guide.html` を作る。`SUB_PAGES` の一覧にあるページ (`minecraft.html`, `tried/index.html`, `tried/scene.html`, `tried/text.html`, `tried/slow.html`, `tried/break.html`, `tried/autumn.html`, `tried/spring.html`) と `sitemap.xml` も作る。どのページにも、`SITE_PAGES` の一覧から「ページの一覧」を入れる
+- `tried/index.html`, `tried/scene.html`, `tried/text.html`, `tried/slow.html`, `tried/break.html`, `tried/autumn.html`, `tried/spring.html`, `tried/trees.html` — マインクラフトで試した記録のページ (生成物。手で直さない)。元原稿は `docs/public/tried/*.md`、本文は `docs/public/tried/*.html`。写真は `docs/public/images/mc-*.jpg`
+- `tools/build_guide.py` — `docs/public/index.html` から `guide.html` を作る。`SUB_PAGES` の一覧にあるページ (`minecraft.html`, `tried/index.html`, `tried/scene.html`, `tried/text.html`, `tried/slow.html`, `tried/break.html`, `tried/autumn.html`, `tried/spring.html`, `tried/trees.html`) と `sitemap.xml` も作る。どのページにも、`SITE_PAGES` の一覧から「ページの一覧」を入れる
 - `.github/workflows/deploy.yml` — `main` への push で `index.html`, `guide.html`, `minecraft.html`, `sitemap.xml`, `tried/`, `LICENSE`, `docs/public/images/` だけを `gh-pages` ブランチに強制 push する (`gh-pages` は毎回 1 コミットに作り直される。手で触らない)
 
 ## 注意
@@ -78,4 +78,4 @@ three.js (r128) と Google Fonts を CDN から読み込む。組み立て (ビ�
 - コミットのメールアドレスは GitHub の noreply アドレスを使う (リポジトリごとの設定に入れてある)。
 
 ## 最新のセッション
-`docs/dev/sessions/2026-11-18-tried-spring.md` (その前: `2026-11-18-favicon.md`)
+`docs/dev/sessions/2026-11-18-tried-trees.md` (その前: `2026-11-18-tried-spring.md`)

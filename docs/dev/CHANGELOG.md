@@ -1,9 +1,8 @@
 # CHANGELOG
 
 ## 2026-11-18
+- 「マインクラフトで試してみた」に「7. ゲームと同じ形の木を置いてみた」(`tried/trees.html`、写真 4 枚) を足した。公開は 2026-11-23 の予定 (詳細: sessions/2026-11-18-tried-trees.md)
 - 「マインクラフトで試してみた」に「6. 春のサクラを置いてみた」(`tried/spring.html`、写真 4 枚) を足し、一覧ページと 5 のページからつないだ (詳細: sessions/2026-11-18-tried-spring.md)
-
-## 2026-11-18
 - 全ページにアイコン (favicon) をつけた。立方体を小さなブロック 8 個に分けた形の SVG と、iPhone 用の PNG (`docs/public/images/favicon.svg`, `apple-touch-icon.png`)。`deploy.yml` は変えていない。同じ日に公開 (詳細: sessions/2026-11-18-favicon.md)
 
 ## 2026-11-17
