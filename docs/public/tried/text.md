@@ -1,6 +1,6 @@
 # 2. 文字を置いてみた
 
-[マインクラフトで試してみた](https://fu-yu.github.io/voxel-maker/tried/) の 2 つ目の記録です。
+[マインクラフトで試してみた](https://fu-yu.github.io/voxel-maker/tried/) の2つ目の記録です。
 初期設定の「ボクセル」という文字を、`/function voxel:build` で置きました。
 
 ## 置いたところ
