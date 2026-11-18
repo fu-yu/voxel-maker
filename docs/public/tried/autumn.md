@@ -36,3 +36,4 @@
 
 - 前: [4. 少しずつ壊してみた](https://fu-yu.github.io/voxel-maker/tried/break.html)
 - [試してみた一覧へ戻る](https://fu-yu.github.io/voxel-maker/tried/)
+- 次: [6. 春のサクラを置いてみた](https://fu-yu.github.io/voxel-maker/tried/spring.html)

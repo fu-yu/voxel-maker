@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="ボクセル工房で作った「春」の風景をマインクラフトに置き、サクラの枝を、ゲームのサクラと同じ階段の形に直した記録です。">
+<link rel="canonical" href="https://fu-yu.github.io/voxel-maker/tried/spring.html">
+<link rel="icon" href="../docs/public/images/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../docs/public/images/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ボクセル工房">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="6. 春のサクラを置いてみた — ボクセル工房">
+<meta property="og:description" content="ボクセル工房で作った「春」の風景をマインクラフトに置き、サクラの枝を、ゲームのサクラと同じ階段の形に直した記録です。">
+<meta property="og:url" content="https://fu-yu.github.io/voxel-maker/tried/spring.html">
+<meta property="og:image" content="https://fu-yu.github.io/voxel-maker/docs/public/images/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ブロックを積んで作った、山と湖と木のある小さな風景。左に「ボクセル工房」の文字">
+<meta name="twitter:card" content="summary_large_image">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-95MYCKFBXJ"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-95MYCKFBXJ');
+</script>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>6. 春のサクラを置いてみた — マインクラフトで試してみた</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
+<style>
+/* layout: 1 本の読みもの。挿絵が先、文章があと。図はブロック (正方形) の単位でそろえる */
+:root {
+  --bg:#fbf4e0; --surface:#fffaf0; --fg:#3d2f24; --muted:#7a6857; --line:#e6d9bd;
+  --orange:#f08a3c; --blue:#7fa9dc; --green:#8fbf5a; --stem:#f3e6c4; --cream-block:#fff6dc;
+  --block-edge:#c96a22; --grid:#d9caa8; --accent:#c25a12; --frame:#fbf4e0;
+  --display:"Dela Gothic One","Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif;
+  --body:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
+  --unit:18px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg:#2a211b; --surface:#35291f; --fg:#f5ead6; --muted:#c2b09a; --line:#4c3c2e;
+  --stem:#e9dab3; --cream-block:#fff6dc; --block-edge:#8a4513; --grid:#5e4c3a; --accent:#ffa862; --frame:#fbf4e0; color-scheme:dark } }
+:root[data-theme="dark"] {
+  --bg:#2a211b; --surface:#35291f; --fg:#f5ead6; --muted:#c2b09a; --line:#4c3c2e;
+  --stem:#e9dab3; --cream-block:#fff6dc; --block-edge:#8a4513; --grid:#5e4c3a; --accent:#ffa862; --frame:#fbf4e0; color-scheme:dark }
+body { background:var(--bg); color:var(--fg); font-family:var(--body); font-size:17px; line-height:1.85;
+  padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); padding-block:28px 56px; }
+.page { max-width:680px; margin:0 auto; display:flex; flex-direction:column; gap:44px; }
+header { display:flex; flex-direction:column; gap:14px; }
+h1 { font-family:var(--display); font-weight:400; font-size:clamp(34px,9vw,54px); line-height:1.15; margin:0; letter-spacing:.02em; text-wrap:balance; }
+.lede { font-size:19px; margin:0; font-weight:500; }
+figure { margin:0; }
+figure img { display:block; width:100%; height:auto; border-radius:calc(var(--unit)*1); background:var(--frame); }
+figcaption { font-size:13px; color:var(--muted); margin-top:6px; }
+section { display:flex; flex-direction:column; gap:14px; }
+h2 { font-size:22px; font-weight:700; margin:0; line-height:1.4; display:flex; align-items:center; gap:10px; text-wrap:balance; }
+h2::before { content:""; width:var(--unit); height:var(--unit); background:var(--orange); flex:none; }
+h3 { font-size:15px; font-weight:700; color:var(--accent); margin:6px 0 0; letter-spacing:.06em; }
+p { margin:0; }
+ul,ol { margin:0; padding-left:1.3em; display:flex; flex-direction:column; gap:6px; }
+.scenes { list-style:none; padding:0; gap:10px; }
+.scenes li { background:var(--surface); border:1px solid var(--line); padding:12px 16px; }
+.flow { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.flow div, .shapes div { display:flex; flex-direction:column; gap:6px; min-width:0; }
+.flow svg { width:100%; height:auto; background:var(--surface); border:1px solid var(--line); }
+.flow b, .shapes b { font-size:15px; }
+.flow span, .shapes span { font-size:14px; line-height:1.6; color:var(--muted); }
+.shapes { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.shapes svg { width:100%; height:auto; background:var(--surface); border:1px solid var(--line); padding:10px; box-sizing:border-box; }
+@media (max-width:520px) { .flow, .shapes { grid-template-columns:1fr; } .flow div, .shapes div { display:grid; grid-template-columns:120px 1fr; column-gap:14px; align-items:center; } .flow svg, .shapes svg { grid-row:span 2; } }
+ol.steps { list-style:none; padding:0; counter-reset:s; gap:10px; }
+ol.steps li { counter-increment:s; display:grid; grid-template-columns:32px 1fr; gap:12px; align-items:start; }
+ol.steps li::before { content:counter(s); font-family:var(--display); width:32px; height:32px; display:grid; place-items:center; background:var(--fg); color:var(--bg); font-size:15px; margin-top:1px; }
+.btn { font-weight:700; border:1px solid var(--line); background:var(--surface); padding:1px 8px; white-space:nowrap; }
+.caution li::marker { color:var(--accent); }
+a { color:var(--accent); overflow-wrap:anywhere; }
+dl { margin:0; display:flex; flex-direction:column; gap:10px; }
+dt { font-weight:700; } dd { margin:0; color:var(--muted); }
+footer { border-top:1px solid var(--line); padding-top:16px; font-size:13px; color:var(--muted); display:flex; flex-direction:column; gap:4px; }
+
+/* このページだけの決まり。共通の決まりは index.html のものを tools/build_guide.py が前に足す */
+code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.88em; background:var(--surface); border:1px solid var(--line); padding:1px 6px; overflow-wrap:anywhere; }
+figure img { border-radius:0; border:1px solid var(--line); }
+.pager { display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; padding-top:8px; border-top:1px solid var(--line); font-size:15px; }
+.pager a { font-weight:700; text-decoration:none; background:var(--surface); border:1px solid var(--line); padding:8px 14px; }
+.pager a:hover { border-color:var(--accent); }
+.sitenav{display:flex;flex-wrap:wrap;gap:8px;font-size:14px;margin:0}.sitenav a{padding:3px 10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);text-decoration:none;font-weight:700}.sitenav a[aria-current]{background:var(--fg);border-color:var(--fg);color:var(--bg)}.sitenav a:focus-visible,.siteindex a:focus-visible{outline:3px solid var(--orange);outline-offset:2px}.siteindex ul{list-style:none;padding:0;gap:10px}.siteindex li{background:var(--surface);border:1px solid var(--line);padding:12px 16px;display:flex;flex-direction:column;gap:2px}.siteindex li a{font-weight:700}.siteindex li span{font-size:14px;color:var(--muted)}.siteindex .note{font-size:14px;color:var(--muted);margin:10px 0 0}
+</style>
+</head>
+<body>
+
+<div class="page">
+<nav class="sitenav" aria-label="ページの一覧"><a href="../">ボクセル工房</a><a href="../guide.html">てびき</a><a href="../minecraft.html">マインクラフトに置く</a><a href="../tried/" aria-current="page">マインクラフトで試してみた</a></nav>
+<header>
+  <p><a href="./">← マインクラフトで試してみた</a> (6 / 6)</p>
+  <h1>6. 春のサクラを置いてみた</h1>
+  <p class="lede">2026-11-17 に、新しく足した季節「春」の風景を、木の形「マインクラフトの木」で置きました。サクラの枝の形を、2 回直しました。</p>
+</header>
+
+<section>
+  <h2>最初に置いたとき</h2>
+  <figure><img src="../docs/public/images/mc-spring-first.jpg" width="1100" height="618" alt="草の斜面に、ピンクの平たい傘のようなサクラと、緑のトウヒ、白い幹のシラカバが並んでいる。サクラの枝は黒っぽい原木でできている"></figure>
+  <p>春の風景では、丸い木の 3 本に 1 本がサクラになり、残りは明るい緑のオークやシラカバになります。</p>
+  <p>置いてみると、サクラは平たい傘のような形で、トウヒ・シラカバ・オークとまざって並び、ピンクの花びらの粒も落ちていました。ただ、横に出た枝の原木も、縦に立てたときの木目のままでした。</p>
+</section>
+
+<section>
+  <h2>1 回目の直し (横の枝を横向きの原木に)</h2>
+  <figure><img src="../docs/public/images/mc-spring-rings.jpg" width="1100" height="618" alt="下から見上げたサクラ。まっすぐ立つ黒っぽい幹の途中の 2 か所に、うすい色の四角い年輪の面が見えている" loading="lazy"></figure>
+  <p>横に出る枝を、横向きに置いた原木にしました。切り口の年輪の面が、横を向くようになりました。</p>
+  <p>ただ、幹が外へ 1 マス進みながら上がる所も横向きにしていたため、まっすぐ立つ幹の途中に、年輪の面が見える所ができました。</p>
+</section>
+
+<section>
+  <h2>ゲームのサクラを見てみる</h2>
+  <figure><img src="../docs/public/images/mc-spring-game.jpg" width="1100" height="618" alt="ゲームが生やしたサクラ 2 本。黒っぽい枝が、横に何マスか進んでは上に何マスか上がる、階段のような形で伸びている" loading="lazy"></figure>
+  <p>ゲームのサクラがどう生えるかを確かめるため、<code>/place feature minecraft:cherry</code> で本物のサクラを 2 本生やして見ました。</p>
+  <p>枝は「横に何マスか (横向きの原木) → 上に何マスか (縦向きの原木) → また横」と、階段のように伸びていました。1 つの原木は、横か上のどちらか一方にだけ進み、ななめにはつながりません。</p>
+</section>
+
+<section>
+  <h2>2 回目の直し (階段の形の枝)</h2>
+  <figure><img src="../docs/public/images/mc-spring-steps.jpg" width="1100" height="618" alt="下から見上げたサクラ。黒っぽい幹から、枝が段になって横へ出ていて、その上にピンクの葉のかたまりがのっている" loading="lazy"></figure>
+  <p>枝を 1 マスずつ、「横に 1 マス (横向きの原木)」か「上に 1 マス (縦向きの原木)」のどちらかで伸ばすようにしました。</p>
+  <p>置き直すと、幹から枝が段になって横に出て、横向きの切り口は、横に進んだ所にだけ出るようになりました。</p>
+</section>
+
+<section>
+  <h2>気をつけること</h2>
+  <ul>
+    <li>地面に花びらのブロック (<code>pink_petals</code>) を置くことは、今回はしていません。</li>
+    <li>本物の枝は、もう少しななめに広がって見えます。ボクセル工房の枝は、横と上の段だけで作っています。</li>
+  </ul>
+</section>
+
+<nav class="pager" aria-label="試した記録の移動">
+  <a href="../tried/autumn.html">← 前: 5. 秋の風景を置いてみた</a>
+  <a href="./">試してみた一覧 →</a>
+</nav>
+
+<section class="siteindex">
+  <h2>ページの一覧</h2>
+  <ul>
+    <li><a href="../">ボクセル工房</a><span>文字・画像・風景を、ブロックの立体にする道具です。</span></li>
+    <li><a href="../guide.html">てびき</a><span>使い方と、できること・できないことの説明です。</span></li>
+    <li><a href="../minecraft.html">マインクラフトに置く</a><span>作った立体を、マインクラフトのワールドに置く手順です。</span></li>
+    <li><a href="../tried/">マインクラフトで試してみた</a><span>本物のマインクラフトに置いて確かめた、写真つきの記録です。</span></li>
+  </ul>
+  <p class="note">このサイトではアクセス解析に Google アナリティクスとクッキーを使っています (<a href="../guide.html#analytics">くわしく</a>)。</p>
+</section>
+
+<footer>
+  <span>このページの写真は、マインクラフトの画面を撮ったものです。</span>
+  <span>ボクセル工房は、Minecraft の公式の製品ではありません。Mojang や Microsoft とは関係ありません。</span>
+</footer>
+</div>
+</body>
+</html>
