@@ -283,15 +283,15 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
         <button class="btn" id="saveMc">マインクラフト用に保存</button>
       </div>
       <label class="row" id="mcViewRow"><input type="checkbox" id="mcView"> マインクラフトのブロックの色で見る</label>
-      <p class="note">「座標データをコピー」は、各ブロックの位置と色を JSON でコピーします。ほかのツールやサービスで使うには、それぞれの形式に直す作業が要ります。</p>
-      <p class="note">「マインクラフト用に保存」は、Java 版 1.21 以降のマインクラフトに置くためのファイル（zip）を保存します。ワールドへの入れ方と置き方は、「<a href="minecraft.html" target="_blank" rel="noopener">マインクラフトに置く</a>」のページにあります。</p>
+      <p class="note">「座標データをコピー」は、各ブロックの位置と色をJSONでコピーします。ほかのツールやサービスで使うには、それぞれの形式に直す作業が要ります。</p>
+      <p class="note">「マインクラフト用に保存」は、Java版1.21以降のマインクラフトに置くためのファイル（zip）を保存します。ワールドへの入れ方と置き方は、「<a href="minecraft.html" target="_blank" rel="noopener">マインクラフトに置く</a>」のページにあります。</p>
       <p class="note" id="mcViewNote">「マインクラフトのブロックの色で見る」をオンにすると、保存したときに置かれるブロックの色で表示します。色はブロックの絵の平均なので、ゲームの中の模様や光の当たり方までは表しません。</p>
     </section>
 
     <section class="group">
       <span class="label">ページの一覧</span>
       <p class="note pages"><a href="guide.html">てびき</a><a href="minecraft.html">マインクラフトに置く</a><a href="tried/">マインクラフトで試してみた</a></p>
-      <p class="note">このサイトではアクセス解析に Google アナリティクスとクッキーを使っています（<a href="guide.html#analytics">くわしく</a>）。</p>
+      <p class="note">このサイトではアクセス解析にGoogleアナリティクスとクッキーを使っています（<a href="guide.html#analytics">くわしく</a>）。</p>
     </section>
   </aside>
 
@@ -718,7 +718,7 @@ function buildMesh(g, v) {
   if (mesh) { scene.remove(mesh); mesh.geometry.dispose(); mesh.dispose?.(); mesh = null; }
   const count = v.vis.length / 4;
   $('empty').hidden = count > 0;
-  if (!count) { $('stat').textContent = '0 ブロック'; return; }
+  if (!count) { $('stat').textContent = '0ブロック'; return; }
   const s = $('gap').checked ? 0.9 : 1;
   mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(s, s, s), material, count);
   const m = new THREE.Matrix4(), c = new THREE.Color();
@@ -737,7 +737,7 @@ function buildMesh(g, v) {
   mesh.instanceMatrix.needsUpdate = true;
   scene.add(mesh);
   const depth = v.hi - v.lo + 1;
-  $('stat').textContent = `${g.w}×${g.h}×${depth} ・ ${v.total.toLocaleString()} ブロック` + (mcView ? ' ・ マインクラフトの色' : '');
+  $('stat').textContent = `${g.w}×${g.h}×${depth} ・ ${v.total.toLocaleString()}ブロック` + (mcView ? ' ・ マインクラフトの色' : '');
   const size = { w: g.w, h: g.h, d: depth };
   const prev = state.lastSize;
   if (!prev || Math.abs(Math.hypot(size.w, size.h, size.d) / Math.hypot(prev.w, prev.h, prev.d) - 1) > 0.2) fitCamera(size);
@@ -988,11 +988,11 @@ async function rebuild() {
 
 /* ---------- UI wiring ---------- */
 function syncOutputs() {
-  $('resOut').textContent = $('res').value + ' マス'; $('thickOut').textContent = $('thick').value + ' マス';
-  $('kOut').textContent = $('k').value + ' 色'; $('smoothOut').textContent = ['なし', '弱', 'やや弱', '中', 'やや強', '強'][$('smooth').value];
+  $('resOut').textContent = $('res').value + 'マス'; $('thickOut').textContent = $('thick').value + 'マス';
+  $('kOut').textContent = $('k').value + '色'; $('smoothOut').textContent = ['なし', '弱', 'やや弱', '中', 'やや強', '強'][$('smooth').value];
   $('satOut').textContent = $('sat').value + '%'; $('tolOut').textContent = $('tol').value;
   $('illusOpts').hidden = !$('illus').checked;
-  $('peakOut').textContent = $('peak').value + ' マス'; $('waterOut').textContent = $('water').value + '%'; $('treesOut').textContent = $('trees').value + '%';
+  $('peakOut').textContent = $('peak').value + 'マス'; $('waterOut').textContent = $('water').value + '%'; $('treesOut').textContent = $('trees').value + '%';
 }
 function setMode(mode) {
   state.res[state.mode] = +$('res').value;
@@ -1071,7 +1071,7 @@ function drawCrop() {
   }
   const nw = im.naturalWidth, nh = im.naturalHeight, zoom = Math.round(nw / v.w * 100);
   $('cropInfo').textContent = c
-    ? `選んだ範囲：${c.w}×${c.h} px（元の画像 ${nw}×${nh} px）・表示 ${zoom}%`
+    ? `選んだ範囲：${c.w}×${c.h} px（元の画像${nw}×${nh} px）・表示${zoom}%`
     : `ドラッグで範囲を選ぶと、その部分だけを細かくボクセルにします。ホイールで拡大できます。`;
 }
 function toImg(e) {
@@ -1154,7 +1154,7 @@ function loadImage(src, name, pixelArt) {
     state.res.image = n; syncOutputs();
     if (state.mode !== 'image') setMode('image'); else { $('res').value = n; syncOutputs(); state.lastSize = null; schedule(); }
   };
-  im.onerror = () => { $('dropTitle').textContent = 'この画像は読み込めませんでした'; $('dropSub').textContent = 'PNG・JPG・GIF・WebP を試してください'; };
+  im.onerror = () => { $('dropTitle').textContent = 'この画像は読み込めませんでした'; $('dropSub').textContent = 'PNG・JPG・GIF・WebPを試してください'; };
   im.src = src;
 }
 function loadFile(f) { if (f && f.type.startsWith('image/')) loadImage(URL.createObjectURL(f), f.name); }
@@ -1216,7 +1216,7 @@ $('copyJson').onclick = () => {
     for (let z = v.zmin[i]; z <= v.zmax[i]; z++) out.push([x, g.h - 1 - y, z - v.lo, hex(i)]);
   }
   const json = JSON.stringify({ size: [g.w, g.h, v.hi - v.lo + 1], order: ['x', 'y', 'z', 'color'], up: 'y', voxels: out });
-  navigator.clipboard.writeText(json).then(() => toast(`${out.length.toLocaleString()} ブロック分をコピーしました`))
+  navigator.clipboard.writeText(json).then(() => toast(`${out.length.toLocaleString()}ブロック分をコピーしました`))
     .catch(() => toast('コピーできませんでした。ブラウザの許可を確かめてください'));
 };
 
