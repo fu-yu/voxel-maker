@@ -8,6 +8,10 @@ figure img { border-radius:0; border:1px solid var(--line); }
 .pager { display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; padding-top:8px; border-top:1px solid var(--line); font-size:15px; }
 .pager a { font-weight:700; text-decoration:none; background:var(--surface); border:1px solid var(--line); padding:8px 14px; }
 .pager a:hover { border-color:var(--accent); }
+.tablewrap { overflow-x:auto; }
+table { border-collapse:collapse; width:100%; font-size:15px; line-height:1.6; }
+th,td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid var(--line); }
+thead th { font-size:13px; color:var(--muted); font-weight:700; }
 </style>
 <div class="page">
 <header>
@@ -47,6 +51,22 @@ figure img { border-radius:0; border:1px solid var(--line); }
   <figure><img src="../images/mc-trees-birch.jpg" width="1100" height="618" alt="森の中から見た夏の木。白い模様のシラカバの幹と、茶色いオークの幹が並び、奥に濃い緑のトウヒの葉が見える" loading="lazy"></figure>
   <p>最後に、幹を木の種類ごとに分けました。シラカバはシラカバの原木、トウヒとマツはトウヒの原木、ポプラはポプラの原木です。オークはオークの原木のままです。</p>
   <p>森の中から見ると、シラカバの白い幹とオークの幹が並んで見えました。</p>
+</section>
+
+<section>
+  <h2>木の大きさ</h2>
+  <p>作るときに「本物と同じ大きさ」を選んだので、木はゲームの木と同じ高さと広さになりました。「小さな緑の木」とくらべると、次のようになります (1 マスはブロック 1 つ分です)。</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>木</th><th>小さな緑の木</th><th>マインクラフトの木</th></tr></thead>
+    <tbody>
+      <tr><td>丸い木 (オーク)</td><td>幹 2〜3 段、葉は 3×3 の玉</td><td>幹 4〜6 段、葉は 5×5 まで広がる 4 段</td></tr>
+      <tr><td>シラカバ</td><td>(丸い木と同じ)</td><td>幹 5〜7 段</td></tr>
+      <tr><td>とがった木</td><td>幹 3〜4 段、小さな円すい</td><td>トウヒは幹 6〜8 段、マツは幹 6〜10 段</td></tr>
+      <tr><td>秋の丸い木</td><td>(丸い木と同じ)</td><td>ポプラの形で、幹 7〜11 段</td></tr>
+      <tr><td>1 本が使う広さ</td><td>3×3 マス</td><td>5×5 マス (ポプラとサクラは 7×7 マス)</td></tr>
+    </tbody>
+  </table></div>
+  <p>「小さな緑の木」は、「マインクラフトの木」の半分くらいの大きさです。マインクラフトの木は、ゲームが自然に生やす木と同じ高さと広さなので、ワールドにもともとある木と並べても、大きさがそろいます。</p>
 </section>
 
 <section>
