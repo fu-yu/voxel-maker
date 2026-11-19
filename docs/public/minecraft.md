@@ -37,6 +37,8 @@
 
 (この置き方は、ゲームの画面で大きな風景 (山と湖・夏、横128マス・山の高さ40マス) を下の段から最後まで置けることを確かめました。終わったときに建てる係がきらきらして消える動きと、途中で止める `/function voxel:build_stop` は、ゲームの画面ではまだ見ていません。)
 
+ゲームの画面で置いた様子は、「[3. 少しずつ置いてみた](https://fu-yu.github.io/voxel-maker/tried/slow.html)」に写真つきで書いています。
+
 ## 少しずつ壊す (`voxel:break_slow`、試験中)
 
 置いた立体を消したいときは、`/function voxel:break_slow` と打ちます。小さな生き物 (ヴェックス、難易度ピースフルのときはアレイ) が壊す係として飛び回りながら、爆発の粒と音を出して、上の段から1段ずつブロックを消していきます。
@@ -48,6 +50,8 @@
 - 終わると、壊す係は消えます。
 
 (この壊し方は、5種類のファイルで最後までたどると残るブロックが0になることを確かめ、ゲームの画面でも大きな風景を最後まで壊せることと `/function voxel:break_stop` で止められることを確かめました。)
+
+ゲームの画面で壊した様子は、「[4. 少しずつ壊してみた](https://fu-yu.github.io/voxel-maker/tried/break.html)」に写真つきで書いています。
 
 ## 一気に消す (`voxel:break`、試験中)
 
@@ -112,6 +116,8 @@
 - 本体の「木の形」で「マインクラフトの木」を選ぶと、木はマインクラフト26.3の木と同じ形と大きさになります。丸い木はオークとシラカバ (春はサクラもまじる)、とがった木はトウヒとマツ、秋の丸い木はポプラです。「小さな緑の木」は、これらの半分くらいの大きさです。
 - 秋の丸い木の葉は、26.3で加わったポプラの葉 (赤・オレンジ・黄色) です。この葉は、どこに置いても色が変わりません。
 
+ゲームの画面で見た木の様子は、「[5. 秋の風景を置いてみた](https://fu-yu.github.io/voxel-maker/tried/autumn.html)」「[6. 春のサクラを置いてみた](https://fu-yu.github.io/voxel-maker/tried/spring.html)」「[7. ゲームと同じ形の木を置いてみた](https://fu-yu.github.io/voxel-maker/tried/trees.html)」に写真つきで書いています。
+
 ## うまくいかないとき
 
 (図: datapacksフォルダの中に新しいzipを1つだけ入れ、古いzipは外に出す図)
@@ -135,6 +141,14 @@
 ## 実際に置いてみた記録
 
 写真つきの記録を「[マインクラフトで試してみた](https://fu-yu.github.io/voxel-maker/tried/)」のページにまとめています。
+
+- [1. 風景を置いてみた](https://fu-yu.github.io/voxel-maker/tried/scene.html)
+- [2. 文字を置いてみた](https://fu-yu.github.io/voxel-maker/tried/text.html)
+- [3. 少しずつ置いてみた](https://fu-yu.github.io/voxel-maker/tried/slow.html)
+- [4. 少しずつ壊してみた](https://fu-yu.github.io/voxel-maker/tried/break.html)
+- [5. 秋の風景を置いてみた](https://fu-yu.github.io/voxel-maker/tried/autumn.html)
+- [6. 春のサクラを置いてみた](https://fu-yu.github.io/voxel-maker/tried/spring.html)
+- [7. ゲームと同じ形の木を置いてみた](https://fu-yu.github.io/voxel-maker/tried/trees.html)
 
 ## ことばの説明
 
