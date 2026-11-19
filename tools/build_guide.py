@@ -56,7 +56,7 @@ GUIDE_DESC = "ボクセル工房の使い方の説明です。文字・画像・
 GUIDE_TITLE = "ボクセル工房のてびき — 使い方とできること"
 # 本文だけのページ: (ファイル名, 説明文, 共有したときの題)
 SUB_PAGES = [
-    ("minecraft.html", "ボクセル工房で作った立体を、マインクラフト (Java 版) のワールドに置く手順です。保存したファイルを入れて、コマンドを 1 つ打ちます。", "マインクラフトに置く — ボクセル工房"),
+    ("minecraft.html", "ボクセル工房で作った立体を、マインクラフト (Java版) のワールドに置く手順です。保存したファイルを入れて、コマンドを1つ打ちます。", "マインクラフトに置く — ボクセル工房"),
     ("tried/index.html", "ボクセル工房で作った立体を、本物のマインクラフトに置いて確かめた記録です。うまくいったことも、見つけた問題も書いています。", "マインクラフトで試してみた — ボクセル工房"),
     ("tried/scene.html", "ボクセル工房で作った「山と湖・夏」の風景を、マインクラフトに置いて上から・横から・角から・夕方の見え方を確かめた記録です。", "1. 風景を置いてみた — ボクセル工房"),
     ("tried/text.html", "ボクセル工房で作った文字の立体を、マインクラフトに置いて向きと色の出方を確かめた記録です。", "2. 文字を置いてみた — ボクセル工房"),
@@ -99,7 +99,7 @@ def add_site_nav(body: str, current: str) -> str:
     ) + "</nav>"
     items = "\n".join(f'    <li><a href="{link(href)}">{name}</a><span>{desc}</span></li>' for href, name, desc in SITE_PAGES if href != here)
     analytics_href = "#analytics" if current == "guide.html" else link("guide.html#analytics")
-    notice = f'  <p class="note">このサイトではアクセス解析に Google アナリティクスとクッキーを使っています (<a href="{analytics_href}">くわしく</a>)。</p>\n'
+    notice = f'  <p class="note">このサイトではアクセス解析にGoogleアナリティクスとクッキーを使っています (<a href="{analytics_href}">くわしく</a>)。</p>\n'
     bottom = f'<section class="siteindex">\n  <h2>ページの一覧</h2>\n  <ul>\n{items}\n  </ul>\n{notice}</section>\n\n'
     for marker in ('<div class="page">\n', "<footer>", "</style>"):
         assert body.count(marker) == 1, marker
