@@ -69,3 +69,4 @@
 - `index.html` の保存処理: モデルに `water` があるとき、`clear/c0.mcfunction` の先頭に、モデルの箱全体 (`~2 ~0 ~0` から `~w+1 ~h-1 ~d-1`) を `fill … minecraft:air replace minecraft:water` で空にする行を足した (1回の `/fill` が 32,768 マス以下になるよう、段ごとに分ける)。`voxel:break` と `voxel:break_here` の両方がこれを通る。`voxel:break_slow` は変えていない。
 - 確認済み (サーバー26.3): 山と湖12を `voxel:break` と `voxel:break_here` で、高い秋の64マスを `voxel:break` で消した。`tick freeze` で時間を止めたまま消して保存すると、水も他のブロックも0。30秒後も0。
 - 説明ページは「流れた水も一緒にすぐ消えます」に戻した。
+- ゲームでも確認 (2026-11-21): ユーザーがログの [消す] で消し、流れた水もすぐ消えたと報告。北の尾根の下の池はまだ見ていない。
