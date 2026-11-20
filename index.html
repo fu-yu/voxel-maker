@@ -282,9 +282,11 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
         <button class="btn primary" id="copyJson">座標データをコピー</button>
         <button class="btn" id="saveMc">マインクラフト用に保存</button>
       </div>
+      <label class="row" id="peakWaterRow" hidden><input type="checkbox" id="peakWater"> 山の上から水を流す（マインクラフト用）</label>
       <label class="row" id="mcViewRow"><input type="checkbox" id="mcView"> マインクラフトのブロックの色で見る</label>
       <p class="note">「座標データをコピー」は、各ブロックの位置と色をJSONでコピーします。ほかのツールやサービスで使うには、それぞれの形式に直す作業が要ります。</p>
       <p class="note">「マインクラフト用に保存」は、Java版1.21以降のマインクラフトに置くためのファイル（zip）を保存します。ワールドへの入れ方と置き方は、「<a href="minecraft.html" target="_blank" rel="noopener">マインクラフトに置く</a>」のページにあります。</p>
+      <p class="note" id="peakWaterNote" hidden>「山の上から水を流す」をオンにすると、マインクラフト用に保存したとき、高い山のいくつか（最大3か所）のてっぺんに水を置きます。置くのは、流れた水が風景の外にこぼれない山だけです。冬の風景では置きません。画面の立体には表示されません。</p>
       <p class="note" id="mcViewNote">「マインクラフトのブロックの色で見る」をオンにすると、保存したときに置かれるブロックの色で表示します。色はブロックの絵の平均なので、ゲームの中の模様や光の当たり方までは表しません。</p>
     </section>
 
@@ -1005,6 +1007,7 @@ function setMode(mode) {
   $('panelScene').hidden = mode !== 'scene';
   $('shapeBtns').hidden = $('thickField').hidden = mode === 'scene';   // 風景は高さを自分で決めるので、形と厚みは使わない
   $('mcViewRow').hidden = $('mcViewNote').hidden = mode === 'scene';    // 風景は、もともと材料ごとのブロックの色で表示している
+  $('peakWaterRow').hidden = $('peakWaterNote').hidden = mode !== 'scene';
   $('res').value = state.res[mode]; syncOutputs();
   state.lastSize = null; schedule(); drawCrop();
 }
@@ -1260,6 +1263,80 @@ function mcNearest(r, g, b) {
   }
   return name;
 }
+/* water sources for the tops of the mountains (the "山頂から水を流す" option). vol is the scene (N x HY x N, materials as in
+   mcBlocks: (p-1)/3 is 0 grass, 1 dirt, 2 stone, 3 sand, 4 water, 5 snow, 6 and up trees).
+   Each candidate peak is tried with a copy of the game's water rules: water falls straight down when it can, and on solid
+   ground it spreads one level weaker each step, up to 7 steps. A peak is kept only if the flow never leaves the scene,
+   so the water stays on the model and never runs onto the player's own land. (Checked against the 26.3 server, 2026-11-20.) */
+function peakWater(vol, N, HY, max = 3) {
+  const at = (x, y, z) => vol[(y * N + z) * N + x], mat = p => Math.floor((p - 1) / 3);
+  const top = new Int16Array(N * N).fill(-1), ground = new Int16Array(N * N).fill(-1);
+  for (let z = 0; z < N; z++) for (let x = 0; x < N; x++) for (let y = HY - 1; y >= 0; y--) {
+    const p = at(x, y, z); if (!p) continue;
+    if (top[z * N + x] < 0) top[z * N + x] = y;
+    if (mat(p) <= 5 && mat(p) !== 4) { ground[z * N + x] = y; break; }
+  }
+  /* the game's own rule (FlowingFluid in 26.3): on solid ground, water goes only toward the nearest drop within 4 steps;
+     if there is no drop that close, it spreads to all four sides. Outside the scene there is nothing, so that counts as a drop */
+  const D4 = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+  const out_ = (x, z) => x < 0 || z < 0 || x >= N || z >= N;
+  const open = (x, y, z) => out_(x, z) || !at(x, y, z);
+  const hole = (x, y, z) => out_(x, z) || y === 0 || !at(x, y - 1, z) || mat(at(x, y - 1, z)) === 4;
+  const slope = (x, y, z, depth, from) => {
+    let best = 1000;
+    for (let d = 0; d < 4; d++) {
+      if (d === from) continue;
+      const nx = x + D4[d][0], nz = z + D4[d][1];
+      if (!open(nx, y, nz)) continue;
+      if (hole(nx, y, nz)) return depth;
+      if (depth < 4 && !out_(nx, nz)) best = Math.min(best, slope(nx, y, nz, depth + 1, d ^ 1));
+    }
+    return best;
+  };
+  const flow = (sx, sy, sz) => {
+    const best = new Map(), q = [[sx, sy, sz, 0]]; let low = sy;
+    while (q.length) {
+      const [x, y, z, l] = q.pop();
+      if (out_(x, z)) return null;                                   // it ran off the edge of the scene
+      const k = (y * N + z) * N + x;
+      if (best.has(k) && best.get(k) <= l) continue;
+      best.set(k, l); if (y < low) low = y;
+      const under = y > 0 ? at(x, y - 1, z) : 1;
+      if (!under) { q.push([x, y - 1, z, 0]); continue; }            // falling water reaches the ground at full strength
+      if (mat(under) === 4 || l >= 7) continue;                        // it joins the lake, or it is too weak to spread
+      let min = 1000; const dirs = [];
+      for (let d = 0; d < 4; d++) {
+        const nx = x + D4[d][0], nz = z + D4[d][1];
+        if (!open(nx, y, nz)) continue;
+        const dist = hole(nx, y, nz) ? 0 : out_(nx, nz) ? 0 : slope(nx, y, nz, 1, d ^ 1);
+        if (dist < min) { min = dist; dirs.length = 0; }
+        if (dist <= min) dirs.push(d);
+      }
+      for (const d of dirs) q.push([x + D4[d][0], y, z + D4[d][1], l + 1]);
+    }
+    return { low, wet: best.size };
+  };
+  const cand = [];
+  for (let z = 0; z < N; z++) for (let x = 0; x < N; x++) {
+    const h = ground[z * N + x];
+    if (h < 0 || top[z * N + x] !== h || h + 1 >= HY) continue;    // open sky above the ground, and room for the water
+    let peak = true;
+    for (let dz = -4; dz <= 4 && peak; dz++) for (let dx = -4; dx <= 4; dx++) {
+      const nx = x + dx, nz = z + dz;
+      if (nx >= 0 && nz >= 0 && nx < N && nz < N && ground[nz * N + nx] > h) { peak = false; break; }
+    }
+    if (peak) cand.push([h, x, z]);
+  }
+  cand.sort((a, b) => b[0] - a[0] || a[2] - b[2] || a[1] - b[1]);
+  const out = [];
+  for (const [h, x, z] of cand) {
+    if (out.length >= max) break;
+    if (out.some(([ox, , oz]) => Math.abs(ox - x) < 8 && Math.abs(oz - z) < 8)) continue;
+    const f = flow(x, h + 1, z);
+    if (f && f.low <= h - 3) out.push([x, h + 1, z]);              // keep it if the water stays on the scene and runs a little way down
+  }
+  return out;
+}
 /* the current model as a box of block names. ids[(y*d+z)*w+x] is 0 for air, otherwise an index into names */
 function mcBlocks() {
   const { g, v, scene } = state.grid, names = [''], idx = new Map();
@@ -1290,7 +1367,10 @@ function mcBlocks() {
       if (z === 0) for (let k = 1; k <= y; k++) set(x, k, -1, wall(k));
       if (z === N - 1) for (let k = 1; k <= y; k++) set(x, k, N, wall(k));
     }
-    return { w, h: HY, d: w, ids, names };
+    /* a water source on the top of some mountains, so a stream runs down in the game (not in winter, when the lake is ice) */
+    const springs = $('peakWater').checked && !winter ? peakWater(vol, N, HY) : [];
+    for (const [x, y, z] of springs) set(x, y, z, 'water');
+    return { w, h: HY, d: w, ids, names, springs: springs.length };
   }
   const w = g.w, h = g.h, d = v.hi - v.lo + 1, ids = new Uint16Array(w * h * d);
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
@@ -1573,7 +1653,8 @@ $('saveMc').onclick = () => {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(zipStore(files)); a.download = 'voxel-koubou-datapack.zip';
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 10000);
-  toast(n > 1 ? `保存しました。/function voxel:build1〜${n}（または voxel:build_slow / voxel:break_slow / voxel:break${nc > 1 ? `1〜${nc}` : ''}）が使えます` : `保存しました（/function voxel:build、voxel:build_slow、voxel:break_slow、voxel:break が使えます）`);
+  const springNote = B.springs === undefined || !$('peakWater').checked ? '' : $('season').value === 'winter' ? '。冬の風景なので、山の上の水は置いていません' : B.springs ? `。山の上の${B.springs}か所に水を置きました` : '。外にこぼれずに水を流せる山が見つからなかったので、山の上の水は置いていません';
+  toast((n > 1 ? `保存しました。/function voxel:build1〜${n}（または voxel:build_slow / voxel:break_slow / voxel:break${nc > 1 ? `1〜${nc}` : ''}）が使えます` : `保存しました（/function voxel:build、voxel:build_slow、voxel:break_slow、voxel:break が使えます）`) + springNote);
 };
 
 /* start */
