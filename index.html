@@ -1506,7 +1506,14 @@ $('saveMc').onclick = () => {
   /* voxel:break clears the whole model at once, around the place mark left by voxel:build. It also stops a builder
      or breaker that is still running, so it doubles as the way out when one of them got stuck */
   const noMark = '消す立体の目印が見つかりません。目印がなくなった立体は、置いたときと同じ場所に立って /function voxel:break_here で消せます';
-  const clearLines = mcCommands(B, null, true), nc = Math.ceil(clearLines.length / PER), site = '@e[type=minecraft:marker,tag=voxel_site,limit=1,sort=nearest]';
+  /* water that ran from the mountain tops sits in cells that were air in the model, so the lines below would leave it to drain
+     away over a few seconds (falling onto the ground as it goes). Clear all water in the model's box first, so it goes at once */
+  const drain = [];
+  if (B.names.includes('water')) {
+    const per = Math.max(1, Math.floor(32768 / (B.w * B.d)));        // /fill changes at most 32,768 blocks
+    for (let y = 0; y < B.h; y += per) drain.push(`fill ~2 ~${y} ~0 ~${B.w + 1} ~${Math.min(B.h, y + per) - 1} ~${B.d - 1} minecraft:air replace minecraft:water`);
+  }
+  const clearLines = drain.concat(mcCommands(B, null, true)), nc =Math.ceil(clearLines.length / PER), site = '@e[type=minecraft:marker,tag=voxel_site,limit=1,sort=nearest]';
   for (let i = 0; i < nc; i++) {
     const tag = nc > 1 ? i + 1 : '';
     files.push([`data/voxel/function/clear/c${i}.mcfunction`, clearLines.slice(i * PER, (i + 1) * PER).join('\n') + '\n']);
