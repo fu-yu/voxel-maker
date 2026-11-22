@@ -286,7 +286,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
       <label class="row" id="mcViewRow"><input type="checkbox" id="mcView"> マインクラフトのブロックの色で見る</label>
       <p class="note">「座標データをコピー」は、各ブロックの位置と色をJSONでコピーします。ほかのツールやサービスで使うには、それぞれの形式に直す作業が要ります。</p>
       <p class="note">「マインクラフト用に保存」は、Java版1.21以降のマインクラフトに置くためのファイル（zip）を保存します。ワールドへの入れ方と置き方は、「<a href="minecraft.html" target="_blank" rel="noopener">マインクラフトに置く</a>」のページにあります。</p>
-      <p class="note" id="peakWaterNote" hidden>「山の上から水を流す」をオンにすると、マインクラフト用に保存したとき、高い山のいくつか（最大3か所）のてっぺんに水を置きます。置くのは、流れた水が風景の外にこぼれない山だけです。流れた先が山の途中のくぼみなら、くぼみを水で満たして池にします。冬の風景では置きません。画面の立体には表示されません。</p>
+      <p class="note" id="peakWaterNote" hidden>「山の上から水を流す」をオンにすると、マインクラフト用に保存したとき、高い山のいくつか（最大3か所）のてっぺんに水を置きます。置くのは、流れた水が風景の外にこぼれない山だけです。流れた先が山の途中のくぼみなら、くぼみを水で満たして池にします。冬の風景では置きません。画面の立体にも、ゲームの中で流れ終わったあとの水を表示します。</p>
       <p class="note" id="mcViewNote">「マインクラフトのブロックの色で見る」をオンにすると、保存したときに置かれるブロックの色で表示します。色はブロックの絵の平均なので、ゲームの中の模様や光の当たり方までは表しません。</p>
     </section>
 
@@ -966,6 +966,16 @@ function sceneModel(N) {
     if (full(x - 1, y, z) && full(x + 1, y, z) && full(x, y - 1, z) && full(x, y + 1, z) && full(x, y, z - 1) && full(x, y, z + 1)) continue;
     vis.push(x, HY - 1 - y, z, p);
   }
+  /* "山の上から水を流す": show the water as it lies once it has settled in the game (the same cells peakWater() works out
+     for the data pack, checked against the 26.3 server). It is drawn only; vol is left as it is */
+  if ($('peakWater').checked && $('season').value !== 'winter') {
+    const { ponds, flows } = peakWater(vol, N, HY);
+    for (const [x, y, z] of ponds) flows.add((y * N + z) * N + x);
+    for (const k of flows) {
+      const x = k % N, z = Math.floor(k / N) % N, y = Math.floor(k / (N * N));
+      vis.push(x, HY - 1 - y, z, MAT.water * 3 + 1);
+    }
+  }
   return { g: { w: N, h: HY, col }, v: { vis, total, lo: 0, hi: N - 1 }, scene: { vol, N, HY, season: $('season').value } };
 }
 
@@ -1014,7 +1024,7 @@ function setMode(mode) {
 $('tabText').onclick = () => setMode('text');
 $('tabImage').onclick = () => setMode('image');
 $('tabScene').onclick = () => setMode('scene');
-['terrain', 'season', 'treeStyle', 'seed'].forEach(id => $(id).addEventListener('input', schedule));
+['terrain', 'season', 'treeStyle', 'seed', 'peakWater'].forEach(id => $(id).addEventListener('input', schedule));
 ['peak', 'water', 'trees'].forEach(id => $(id).addEventListener('input', () => { syncOutputs(); state.lastSize = null; schedule(); }));
 $('reroll').onclick = () => { let n; do n = 1 + Math.floor(Math.random() * 9999); while (n === +$('seed').value); $('seed').value = n; schedule(); };
 document.querySelectorAll('.shape button').forEach(b => b.onclick = () => {
@@ -1363,14 +1373,15 @@ function peakWater(vol, N, HY, max = 3) {
     if (peak) cand.push([h, x, z]);
   }
   cand.sort((a, b) => b[0] - a[0] || a[2] - b[2] || a[1] - b[1]);
-  const out = [];
+  const out = [], flows = new Set();
   for (const [h, x, z] of cand) {
     if (out.length >= max) break;
     if (out.some(([ox, , oz]) => Math.abs(ox - x) < 8 && Math.abs(oz - z) < 8)) continue;
     const f = flow(x, h + 1, z);
-    if (f && f.low <= h - 3) { out.push([x, h + 1, z]); pond(f.best); }   // keep it if the water stays on the scene and runs a little way down
+    if (f && f.low <= h - 3) { out.push([x, h + 1, z]); pond(f.best); for (const k of f.best.keys()) flows.add(k); }   // keep it if the water stays on the scene and runs a little way down
   }
-  return { springs: out, ponds };
+  /* flows: every cell the water covers once it has settled in the game (as cell numbers (y*N+z)*N+x), for the preview */
+  return { springs: out, ponds, flows };
 }
 /* the current model as a box of block names. ids[(y*d+z)*w+x] is 0 for air, otherwise an index into names */
 function mcBlocks() {
