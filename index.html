@@ -717,7 +717,9 @@ function voxelize(g, shape, T) {
   return { vis, total, zmin, zmax, lo, hi };
 }
 
+let blinkTimer = 0;
 function buildMesh(g, v) {
+  clearInterval(blinkTimer);
   if (mesh) { scene.remove(mesh); mesh.geometry.dispose(); mesh.dispose?.(); mesh = null; }
   const count = v.vis.length / 4;
   $('empty').hidden = count > 0;
@@ -738,6 +740,23 @@ function buildMesh(g, v) {
     mesh.setColorAt(k, c);
   }
   mesh.instanceMatrix.needsUpdate = true;
+  /* Christmas lights blink on screen as in the game: every half second one group is lit and the other shows as leaves */
+  const groups = [[], []];
+  if (state.mode === 'scene' && !matchMedia('(prefers-reduced-motion: reduce)').matches) for (let k = 0; k < count; k++) {
+    const mat = Math.floor((v.vis[k * 4 + 3] - 1) / 3);
+    if (mat >= MAT.lightA && mat < MAT.lightA + 6) groups[mat < MAT.lightB ? 0 : 1].push([k, v.vis[k * 4 + 3]]);
+  }
+  if (groups[0].length + groups[1].length) {
+    const leaf = 1 + MAT.pine * 3 + 1, paint = (k, i) => { c.setRGB(g.col[i * 3] / 255, g.col[i * 3 + 1] / 255, g.col[i * 3 + 2] / 255); mesh.setColorAt(k, c); };
+    let phase = 0;
+    blinkTimer = setInterval(() => {
+      if (!mesh) return;
+      phase ^= 1;
+      for (const [k, i] of groups[phase]) paint(k, i);
+      for (const [k] of groups[phase ^ 1]) paint(k, leaf);
+      mesh.instanceColor.needsUpdate = true;
+    }, 500);
+  }
   scene.add(mesh);
   const depth = v.hi - v.lo + 1;
   $('stat').textContent = `${g.w}×${g.h}×${depth} ・ ${v.total.toLocaleString()}ブロック` + (mcView ? ' ・ マインクラフトの色' : '');
@@ -754,16 +773,17 @@ const SEASONS = {
   summer: { grass: '#6f9a4e', dirt: '#8a6a48', stone: '#8d8b86', sand: '#d9c690', water: '#4f86a8', snow: '#eef0ee', trunk: '#6b4a32', pine: '#33603f', leaf: ['#4c7a3c', '#5d8a44', '#447038'] },
   autumn: { poplar: true, grass: '#a39a52', dirt: '#8a6a48', stone: '#8d8b86', sand: '#d9c690', water: '#4a7d9c', snow: '#eef0ee', trunk: '#6b4a32', pine: '#3a5f3c', leaf: ['#c9692c', '#b8433a', '#d6a53a'] },
   winter: { grass: '#e4e8ea', dirt: '#857060', stone: '#8d8b86', sand: '#cdc7b4', water: '#a9c6d6', snow: '#f4f6f6', trunk: '#5e4534', pine: '#35584a', leaf: ['#5d7a55', '#536f4f', '#66805a'], cap: true },
-  /* Christmas: the winter scene, with every conifer decorated (a star on top, lights, snow on its leaves, presents under it) */
+  /* Christmas: the winter scene, with one big decorated Christmas tree near the middle */
   xmas: { xmas: true, grass: '#e4e8ea', dirt: '#857060', stone: '#8d8b86', sand: '#cdc7b4', water: '#a9c6d6', snow: '#f4f6f6', trunk: '#5e4534', pine: '#35584a', leaf: ['#5d7a55', '#536f4f', '#66805a'], cap: true },
 };
-const MAT = { grass: 0, dirt: 1, stone: 2, sand: 3, water: 4, snow: 5, trunk: 6, pine: 7, leaf: 8, birchLog: 11, spruceLog: 12, poplarLog: 13, cherryLog: 14, cherryLogX: 15, cherryLogZ: 16, star: 17, light: 18, present: 22 };   // light takes 18–21, present 22–24   // 15, 16: cherry limbs lying along x / z   // leaf takes 8, 9, 10; trunk is the oak log
+const MAT = { grass: 0, dirt: 1, stone: 2, sand: 3, water: 4, snow: 5, trunk: 6, pine: 7, leaf: 8, birchLog: 11, spruceLog: 12, poplarLog: 13, cherryLog: 14, cherryLogX: 15, cherryLogZ: 16, star: 17, lightA: 18, lightB: 21, present: 24, snowLeaf: 27 };   // lights 18–20 and 21–23 blink in turn, presents 24–26
 /* the other logs keep their colour in every season: the average colour of each log's side in the game (26.3) */
 const LOGS = ['#d9d7d2', '#3b2611', '#4f3d2b', '#37212c', '#37212c', '#37212c'];
-/* Christmas decorations. A star of glowstone, lights of glowing blocks (froglights and shroomlight) and presents of wool.
-   The presents use each wool's average colour in the game; the glowing blocks are drawn a little brighter than their average,
-   so they read as lit */
-const DECOR = ['#f3cf5a', '#f2d46b', '#9fd89a', '#e8b9e2', '#f19347', '#a12723', '#35399d', '#f9c628'];
+/* Christmas decorations on the big tree. A star of glowstone; lights of shroomlight, glowstone and sea lantern, the
+   blocks that glow with a clear colour (drawn a little brighter than their average, so they read as lit), in two groups
+   that blink in turn; presents of wool (their average colours); leaves with a thin layer of snow on top */
+const LIGHTS = ['#f19347', '#f3cf5a', '#cfe8e2'];
+const DECOR = ['#f3cf5a', ...LIGHTS, ...LIGHTS, '#a12723', '#35399d', '#f9c628', '#c4d3cb'];
 const SHADES = [0.94, 1, 1.06];
 const hashN = (x, y, s) => {
   let h = (Math.imul(x, 374761393) + Math.imul(y, 668265263) + Math.imul(s, 1274126177)) | 0;
@@ -818,7 +838,7 @@ function sceneModel(N) {
     const g = 1 + Math.round(el[i] * (H - 1));
     gh[i] = !wlv ? g : wet[i] ? Math.min(g, wlv) : Math.max(g, wlv + 1);
   }
-  const HY0 = H + 16, vol = new Uint8Array(N * N * HY0);
+  const HY0 = H + 34, vol = new Uint8Array(N * N * HY0);
   const put = (x, y, z, m) => { vol[(y * N + z) * N + x] = 1 + m * 3 + Math.floor(hashN(x * 7 + y, z * 13 + y, seed) * 3); };
   const at = (x, z) => gh[Math.max(0, Math.min(N - 1, z)) * N + Math.max(0, Math.min(N - 1, x))];
   const top = new Int8Array(N * N);              // material on the surface of each cell
@@ -836,24 +856,39 @@ function sceneModel(N) {
 
   /* trees: only on grass. They are planted in a fixed order (groves first) until their crowns
      cover the chosen share of the grass, so a higher setting keeps the earlier trees and adds more */
-  let rec = null;                               // while a conifer is being decorated, the leaves it puts down
-  const leafAt = (x, y, z, m) => { if (x < 0 || z < 0 || x >= N || z >= N || y >= HY0) return; if (!vol[(y * N + z) * N + x]) { put(x, y, z, m); if (rec) rec.push([x, y, z]); } };
+  const leafAt = (x, y, z, m) => { if (x < 0 || z < 0 || x >= N || z >= N || y >= HY0) return; if (!vol[(y * N + z) * N + x]) put(x, y, z, m); };
   const empty = (x, y, z) => x >= 0 && z >= 0 && x < N && z < N && y >= 0 && y < HY0 && !vol[(y * N + z) * N + x];
-  /* Christmas: decorate one conifer from the leaves it put down */
-  const decorate = (x, z, y0, leaves) => {
-    let top = -1;
-    for (const [lx, ly, lz] of leaves) if (lx === x && lz === z && ly > top) top = ly;
+  /* Christmas: one big spruce, shaped like the game's giant spruce (read from 26.3 with place feature minecraft:mega_spruce):
+     a 2×2 trunk, and a crown of 13–17 layers over its top, each a disc around the trunk whose radius grows from 0 at the
+     top to 3 at the bottom (radius = floor(depth / crown × 3.5), one wider on every other layer where it would not grow).
+     Then the decorations: a star on top, lights on the outside of the crown in two groups, a thin layer of snow on some
+     leaves, and presents round the foot of the trunk */
+  const bigTree = (x, z, y0) => {
+    const th = 18 + Math.floor(hashN(x, z, seed + 940) * 7), crownH = 13 + Math.floor(hashN(x, z, seed + 941) * 5), top = y0 + th;
+    for (let y = y0; y < top; y++) for (const [a, b] of [[0, 0], [1, 0], [0, 1], [1, 1]]) put(x + a, y, z + b, MAT.spruceLog);
+    const leaves = [];
+    for (let y = top - crownH, j = 0; y <= top; y++) {
+      const l = top - y, mm = Math.floor(l / crownH * 3.5), rad = l > 0 && mm === j && (y & 1) === 0 ? mm + 1 : mm;
+      j = mm;
+      for (let dz = -rad; dz <= rad + 1; dz++) for (let dx = -rad; dx <= rad + 1; dx++) {
+        const ax = dx > 0 ? dx - 1 : dx, az = dz > 0 ? dz - 1 : dz;      // distance from the 2×2 trunk
+        if (Math.abs(ax) + Math.abs(az) >= 7 || ax * ax + az * az > rad * rad) continue;
+        const px = x + dx, pz = z + dz;
+        if (empty(px, y, pz)) { put(px, y, pz, MAT.pine); leaves.push([px, y, pz]); }
+      }
+    }
     for (const [lx, ly, lz] of leaves) {
       const h = hashN(lx * 5 + ly, lz * 11 + ly, seed + 930);
       const side = empty(lx + 1, ly, lz) || empty(lx - 1, ly, lz) || empty(lx, ly, lz + 1) || empty(lx, ly, lz - 1);
-      if (side && h < 0.14) put(lx, ly, lz, MAT.light + Math.floor(hashN(lx, lz * 3 + ly, seed + 931) * 4));   // a light on the outside
-      else if (empty(lx, ly + 1, lz) && h > 0.6) put(lx, ly, lz, MAT.snow);                                // snow on an upward face
+      if (side && h < 0.18) put(lx, ly, lz, (hashN(lx, lz * 3 + ly, seed + 935) < 0.5 ? MAT.lightA : MAT.lightB) + Math.floor(hashN(lx, lz * 3 + ly, seed + 931) * 3));
+      else if (empty(lx, ly + 1, lz) && h > 0.65) put(lx, ly, lz, MAT.snowLeaf);
     }
-    if (top >= 0 && empty(x, top + 1, z)) put(x, top + 1, z, MAT.star);
-    /* one or two presents on the ground beside the trunk, where the ground is level */
-    const sides = [[1, 0], [-1, 0], [0, 1], [0, -1]], k0 = Math.floor(hashN(x, z, seed + 932) * 4), n = 1 + (hashN(x, z, seed + 933) < 0.5);
-    for (let k = 0; k < n; k++) {
-      const [dx, dz] = sides[(k0 + k) % 4], px = x + dx, pz = z + dz;
+    for (const [a, b] of [[0, 0], [1, 0], [0, 1], [1, 1]]) if (empty(x + a, top + 1, z + b)) put(x + a, top + 1, z + b, MAT.star);
+    if (empty(x, top + 2, z)) put(x, top + 2, z, MAT.star);
+    const ring = [[-1, 0], [-1, 1], [2, 0], [2, 1], [0, -1], [1, -1], [0, 2], [1, 2]];
+    for (let k = 0; k < ring.length; k++) {
+      if (hashN(x + k, z, seed + 933) < 0.45) continue;
+      const px = x + ring[k][0], pz = z + ring[k][1];
       if (px < 0 || pz < 0 || px >= N || pz >= N || gh[pz * N + px] !== y0 || !empty(px, y0, pz)) continue;
       put(px, y0, pz, MAT.present + Math.floor(hashN(px, pz, seed + 934) * 3));
     }
@@ -864,6 +899,22 @@ function sceneModel(N) {
     if (top[i] === MAT.grass) cand.push([hashN(x, z, seed + 900) / (0.25 + 1.5 * vnoise(x / N * 6, z / N * 6, seed + 500)), i]);
   }
   cand.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  if (S.xmas) {
+    /* the big tree stands on the grass nearest the middle where its 2×2 foot is level; other trees keep 5 cells away */
+    let best = -1, bd = Infinity;
+    for (let z = 0; z < N - 1; z++) for (let x = 0; x < N - 1; x++) {
+      const i = z * N + x, g0 = gh[i];
+      if (top[i] !== MAT.grass || top[i + 1] !== MAT.grass || top[i + N] !== MAT.grass || top[i + N + 1] !== MAT.grass) continue;
+      if (gh[i + 1] !== g0 || gh[i + N] !== g0 || gh[i + N + 1] !== g0) continue;
+      const d = (x + 0.5 - N / 2) ** 2 + (z + 0.5 - N / 2) ** 2;
+      if (d < bd) { bd = d; best = i; }
+    }
+    if (best >= 0) {
+      const x = best % N, z = (best / N) | 0;
+      bigTree(x, z, gh[best]);
+      for (let dz = -5; dz <= 6; dz++) for (let dx = -5; dx <= 6; dx++) if (x + dx >= 0 && z + dz >= 0 && x + dx < N && z + dz < N) crown[(z + dz) * N + x + dx] = 1;
+    }
+  }
   const want = Math.round(dens * cand.length); let shaded = 0;
   for (const [, i] of cand) {
     if (shaded >= want) break;
@@ -876,7 +927,6 @@ function sceneModel(N) {
       const nx = x + dx, nz = z + dz; if (nx < 0 || nz < 0 || nx >= N || nz >= N) continue;
       const j = nz * N + nx; if (!crown[j]) { crown[j] = 1; if (top[j] === MAT.grass) shaded++; }
     }
-    rec = S.xmas && pine ? [] : null;
     if (!mcTrees) {
       /* "small green trees": the small trees this tool first had, about half the game's size, all with an oak trunk */
       if (pine) {
@@ -982,7 +1032,6 @@ function sceneModel(N) {
         }
       }
     }
-    if (rec) { decorate(x, z, y0, rec); rec = null; }
   }
 
   /* keep only the blocks that can be seen */
@@ -1420,13 +1469,13 @@ function mcBlocks() {
   if (scene) {
     const { vol, N, HY, season } = scene, w = N + 2, ids = new Uint16Array(w * w * HY);    // one extra cell all round, for the glass that holds the water in
     const winter = season === 'winter' || season === 'xmas', autumn = season === 'autumn', spring = season === 'spring';
-    const real = ['grass_block', 'dirt', 'stone', 'sand', 'water', 'snow_block', 'oak_log', 'spruce_leaves[persistent=true]', 'oak_leaves[persistent=true]', 'birch_leaves[persistent=true]', 'oak_leaves[persistent=true]', 'birch_log', 'spruce_log', 'poplar_log', 'cherry_log', 'cherry_log[axis=x]', 'cherry_log[axis=z]', 'glowstone', 'ochre_froglight', 'verdant_froglight', 'pearlescent_froglight', 'shroomlight', 'red_wool', 'blue_wool', 'yellow_wool'];
+    const real = ['grass_block', 'dirt', 'stone', 'sand', 'water', 'snow_block', 'oak_log', 'spruce_leaves[persistent=true]', 'oak_leaves[persistent=true]', 'birch_leaves[persistent=true]', 'oak_leaves[persistent=true]', 'birch_log', 'spruce_log', 'poplar_log', 'cherry_log', 'cherry_log[axis=x]', 'cherry_log[axis=z]', 'glowstone', 'shroomlight', 'glowstone', 'sea_lantern', 'shroomlight', 'glowstone', 'sea_lantern', 'red_wool', 'blue_wool', 'yellow_wool', 'spruce_leaves[persistent=true]'];
     if (winter) { real[0] = 'snow_block'; real[4] = 'ice'; }
     /* autumn crowns use the poplar leaves added in 26.3, which keep their colour in every biome (orange, red, yellow as in SEASONS.autumn.leaf) */
     if (spring) real[10] = 'cherry_leaves[persistent=true]';   // the third leaf colour is the cherry in spring
     if (autumn) real.splice(8, 3, 'orange_poplar_leaves[persistent=true]', 'red_poplar_leaves[persistent=true]', 'yellow_poplar_leaves[persistent=true]');
     const set = (x, y, z, n) => { ids[(y * w + z + 1) * w + x + 1] = id(n); };
-    const nameOf = p => real[Math.floor((p - 1) / 3)];
+    const nameOf = p => real[Math.floor((p - 1) / 3)], blinkA = [], blinkB = [];
     for (let y = 0; y < HY; y++) for (let z = 0; z < N; z++) for (let x = 0; x < N; x++) {
       const p = vol[(y * N + z) * N + x]; if (!p) continue;
       const m = Math.floor((p - 1) / 3);
@@ -1436,6 +1485,9 @@ function mcBlocks() {
       /* sand on the bottom layer has nothing under it when placed in the air, so use stone instead so it never falls */
       if (y === 0 && n === 'sand') n = 'stone';
       set(x, y, z, n);
+      /* Christmas: a thin layer of snow on a snowy leaf, and the place of each light (in this box's cells) for blinking */
+      if (m === MAT.snowLeaf && y + 1 < HY && !vol[((y + 1) * N + z) * N + x]) set(x, y + 1, z, 'snow[layers=1]');
+      if (m >= MAT.lightA && m < MAT.lightA + 6) (m < MAT.lightB ? blinkA : blinkB).push([x + 1, y, z + 1, n]);
       if (real[m] !== 'water') continue;
       const wall = k => k === 1 ? 'stone' : 'glass';
       if (x === 0) for (let k = 1; k <= y; k++) set(-1, k, z, wall(k));
@@ -1446,7 +1498,7 @@ function mcBlocks() {
     /* a water source on the top of some mountains, so a stream runs down in the game (not in winter, when the lake is ice) */
     const { springs, ponds } = $('peakWater').checked && !winter ? peakWater(vol, N, HY) : { springs: [], ponds: [] };
     for (const [x, y, z] of springs.concat(ponds)) set(x, y, z, 'water');
-    return { w, h: HY, d: w, ids, names, springs: springs.length };
+    return { w, h: HY, d: w, ids, names, springs: springs.length, blink: blinkA.length + blinkB.length ? [blinkA, blinkB] : null };
   }
   const w = g.w, h = g.h, d = v.hi - v.lo + 1, ids = new Uint16Array(w * h * d);
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
@@ -1587,13 +1639,33 @@ $('saveMc').onclick = () => {
     ]) + '\n'],
   );
   /* step-by-step builder (voxel:build_slow) with an Allay helper, and breaker (voxel:break_slow) with a Vex helper */
+  /* Christmas lights blink: every 10 ticks (half a second) one group of lights turns on and the other turns back into
+     leaves, around the place mark. Only while nobody is building or breaking (#on is 0), so a half-built tree is left alone */
+  if (B.blink) {
+    const at = ([x, y, z]) => `~${x + 2} ~${y} ~${z}`, leaf = 'minecraft:spruce_leaves[persistent=true]';
+    const phase = (on, off) => on.map(c => `setblock ${at(c)} minecraft:${c[3]}`).concat(off.map(c => `setblock ${at(c)} ${leaf}`)).join('\n') + '\n';
+    files.push(
+      ['data/voxel/function/xmas/tick.mcfunction', [
+        'execute unless score #on voxel matches 0 run return 0',
+        'scoreboard players add #blink voxel 1',
+        'execute if score #blink voxel matches ..9 run return 0',
+        'scoreboard players set #blink voxel 0',
+        'scoreboard players add #phase voxel 1',
+        'execute if score #phase voxel matches 2.. run scoreboard players set #phase voxel 0',
+        'execute if score #phase voxel matches 0 as @e[type=minecraft:marker,tag=voxel_site,limit=1] at @s run function voxel:xmas/a',
+        'execute if score #phase voxel matches 1 as @e[type=minecraft:marker,tag=voxel_site,limit=1] at @s run function voxel:xmas/b',
+      ].join('\n') + '\n'],
+      ['data/voxel/function/xmas/a.mcfunction', phase(B.blink[0], B.blink[1])],
+      ['data/voxel/function/xmas/b.mcfunction', phase(B.blink[1], B.blink[0])],
+    );
+  }
   const S = mcSteps(B), stepCmds = mcCommands(B, S.stepOf), breakCmds = mcCommands(B, S.stepOf, true), packId = 1 + Math.floor(Math.random() * 0x7fffffff), OX = 2;
   const gridPts = len => { const a = []; for (let v = 0; v < len; v += 16) a.push(v); if (a[a.length - 1] !== len - 1) a.push(len - 1); return a; };
   const readyLines = [];
   for (const z of gridPts(B.d)) for (const x of gridPts(B.w)) readyLines.push(`execute unless loaded ~${x + OX} ~ ~${z} run return 0`);
   readyLines.push('return 1');
   files.push(
-    ['data/minecraft/tags/function/tick.json', '{"values":["voxel:slow/tick"]}\n'],
+    ['data/minecraft/tags/function/tick.json', B.blink ? '{"values":["voxel:slow/tick","voxel:xmas/tick"]}\n' : '{"values":["voxel:slow/tick"]}\n'],
     ['data/minecraft/tags/function/load.json', '{"values":["voxel:slow/load"]}\n'],
     ['data/voxel/function/slow/load.mcfunction', [
       'scoreboard objectives add voxel dummy',
