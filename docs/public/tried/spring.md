@@ -41,3 +41,4 @@
 
 - 前: [5. 秋の風景を置いてみた](https://fu-yu.github.io/voxel-maker/tried/autumn.html)
 - [試してみた一覧へ戻る](https://fu-yu.github.io/voxel-maker/tried/)
+- 次: [7. ゲームと同じ形の木を置いてみた](https://fu-yu.github.io/voxel-maker/tried/trees.html)

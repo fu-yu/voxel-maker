@@ -1,0 +1,98 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>7. ゲームと同じ形の木を置いてみた — マインクラフトで試してみた</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
+<style>
+/* このページだけの決まり。共通の決まりはindex.htmlのものをtools/build_guide.pyが前に足す */
+code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.88em; background:var(--surface); border:1px solid var(--line); padding:1px 6px; overflow-wrap:anywhere; }
+figure img { border-radius:0; border:1px solid var(--line); }
+.pager { display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; padding-top:8px; border-top:1px solid var(--line); font-size:15px; }
+.pager a { font-weight:700; text-decoration:none; background:var(--surface); border:1px solid var(--line); padding:8px 14px; }
+.pager a:hover { border-color:var(--accent); }
+.tablewrap { overflow-x:auto; }
+table { border-collapse:collapse; width:100%; font-size:15px; line-height:1.6; }
+th,td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid var(--line); }
+thead th { font-size:13px; color:var(--muted); font-weight:700; }
+</style>
+<div class="page">
+<header>
+  <p><a href="https://fu-yu.github.io/voxel-maker/tried/">← マインクラフトで試してみた</a> (7 / 7)</p>
+  <h1>7. ゲームと同じ形の木を置いてみた</h1>
+  <p class="lede">2026-11-15〜17に、風景の木を、マインクラフトの木と同じ形と大きさにして置きました。本体の「木の形」の欄で「マインクラフトの木」を選んだときの木です (はじめに選ばれているのは「小さな緑の木」です)。</p>
+</header>
+
+<section>
+  <h2>形の合わせ方</h2>
+  <p>マインクラフトのサーバー版で本物の木を生やし、原木と葉がどこにあるかを1マスずつ読みとりました。それと同じ並べ方で、ボクセル工房の木を作っています。</p>
+</section>
+
+<section>
+  <h2>丸い木 (オーク・シラカバ)</h2>
+  <figure><img src="../images/mc-trees-oak.jpg" width="1100" height="618" alt="雨の中で下から見上げた秋の木。高い幹の上に、オレンジや赤の葉が段になって広がっている"></figure>
+  <p>丸い木は、幹を4〜6段 (シラカバは5〜7段) にし、その上に葉を4段のせました。下の2段が5×5、その上が3×3、いちばん上が十字です。</p>
+  <p>雨の中で下から見上げると、高い幹と段になった葉で、ゲームのオークに近い形に見えました。この写真は2026-11-15の秋の風景で、このときは秋の木もオークの形でした。</p>
+</section>
+
+<section>
+  <h2>とがった木 (トウヒ・マツ)</h2>
+  <figure><img src="../images/mc-trees-spruce.jpg" width="1100" height="618" alt="上から見た夏の風景。湖のまわりに、段の重なった円すいの形の濃い緑の木と、丸い木が並んでいる。下に「できあがりました」の文が出ている" loading="lazy"></figure>
+  <p>とがった木は、トウヒとマツの形にしました。トウヒは、広い段とせまい段がたがいちがいに重なる円すいです。</p>
+  <p>前は、とがった木が丸い木より小さく見えていました。直したあとに「建てる係」で置くと、丸い木との高さのつり合いもとれて見えました。マツは数が少なく、見え方はまだよく見ていません。</p>
+</section>
+
+<section>
+  <h2>秋のポプラ</h2>
+  <figure><img src="../images/mc-trees-poplar.jpg" width="1100" height="618" alt="湖のほとりから見た秋の木。高い幹の上に、オレンジや赤の丸い葉のかたまりがのっている" loading="lazy"></figure>
+  <p>秋の丸い木は、ポプラの形にしました。幹は7〜11段で、その上半分を、下から広がって上で細くなる丸い葉のかたまりがつつみます。</p>
+  <p>湖のほとりから見ると、高い幹の上に丸い葉がのり、赤・オレンジ・黄色の葉が落ちる様子も写りました。この写真のときの幹は、まだオークの原木でした。</p>
+</section>
+
+<section>
+  <h2>幹の種類</h2>
+  <figure><img src="../images/mc-trees-birch.jpg" width="1100" height="618" alt="森の中から見た夏の木。白い模様のシラカバの幹と、茶色いオークの幹が並び、奥に濃い緑のトウヒの葉が見える" loading="lazy"></figure>
+  <p>最後に、幹を木の種類ごとに分けました。シラカバはシラカバの原木、トウヒとマツはトウヒの原木、ポプラはポプラの原木です。オークはオークの原木のままです。</p>
+  <p>森の中から見ると、シラカバの白い幹とオークの幹が並んで見えました。</p>
+</section>
+
+<section>
+  <h2>木の大きさ</h2>
+  <p>本体の「風景を作る」で、「季節」の下にある「木の形」の欄から選びます。下の2枚は、ほかの設定 (山と湖・夏・風景の番号12・横48マス・木の量40%) を同じにして、木の形だけを切りかえた画面です。</p>
+  <figure><img src="../images/ui-trees-small.jpg" width="1100" height="421" alt="ボクセル工房の画面。左の設定の「木の形」で「小さな緑の木」を選んでいて、右の風景には小さな丸い木と小さな円すいの木がが並んでいる" loading="lazy"></figure>
+  <figure><img src="../images/ui-trees-mc.jpg" width="1100" height="421" alt="ボクセル工房の画面。左の設定の「木の形」で「マインクラフトの木」を選んでいて、右の風景には背の高い丸い木と、段の重なったトウヒ、白い幹のシラカバが並んでいる" loading="lazy"></figure>
+  <p>作るときに「本物と同じ大きさ」を選んだので、木はゲームの木と同じ高さと広さになりました。「小さな緑の木」とくらべると、次のようになります (1マスはブロック1つ分です)。</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>木</th><th>小さな緑の木</th><th>マインクラフトの木</th></tr></thead>
+    <tbody>
+      <tr><td>丸い木 (オーク)</td><td>幹2〜3段、葉は3×3の玉</td><td>幹4〜6段、葉は5×5まで広がる4段</td></tr>
+      <tr><td>シラカバ</td><td>(丸い木と同じ)</td><td>幹5〜7段</td></tr>
+      <tr><td>とがった木</td><td>幹3〜4段、小さな円すい</td><td>トウヒは幹6〜8段、マツは幹6〜10段</td></tr>
+      <tr><td>秋の丸い木</td><td>(丸い木と同じ)</td><td>ポプラの形で、幹7〜11段</td></tr>
+      <tr><td>1本が使う広さ</td><td>3×3マス</td><td>5×5マス (ポプラとサクラは7×7マス)</td></tr>
+    </tbody>
+  </table></div>
+  <p>「小さな緑の木」は、「マインクラフトの木」の半分くらいの大きさです。マインクラフトの木は、ゲームが自然に生やす木と同じ高さと広さなので、ワールドにもともとある木と並べても、大きさがそろいます。</p>
+</section>
+
+<section>
+  <h2>木の形を2つにした理由</h2>
+  <p>木をマインクラフトの木に近づけていくうちに、ボクセル工房の画面で見たときの木が、前の小さな緑の木の感じから変わってしまったことに気づきました。</p>
+  <p>前の木は前の木で好きだったので、どちらも残すことにしました。本体の「木の形」の欄で、「小さな緑の木」と「マインクラフトの木」を選べます。</p>
+</section>
+
+<section>
+  <h2>気をつけること</h2>
+  <ul>
+    <li>「マインクラフトの木」は、「小さな緑の木」より大きいので、同じマス数だと風景がせまく感じることがあります。せまく感じたら、横のマス数を自分で大きくしてください。</li>
+    <li>「木の形」を切りかえても、マス数や山の高さは変わりません (使う人が決めた数を、ほかの項目で勝手に変えないようにしています)。</li>
+  </ul>
+</section>
+
+<nav class="pager" aria-label="試した記録の移動">
+  <a href="https://fu-yu.github.io/voxel-maker/tried/spring.html">← 前: 6. 春のサクラを置いてみた</a>
+  <a href="https://fu-yu.github.io/voxel-maker/tried/">試してみた一覧 →</a>
+</nav>
+
+<footer>
+  <span>このページの写真は、マインクラフトの画面と、ボクセル工房の画面を撮ったものです。</span>
+  <span>ボクセル工房は、Minecraftの公式の製品ではありません。MojangやMicrosoftとは関係ありません。</span>
+</footer>
+</div>
