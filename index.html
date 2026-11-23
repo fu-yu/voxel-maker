@@ -243,6 +243,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
           <option value="summer" selected>夏</option>
           <option value="autumn">秋</option>
           <option value="winter">冬</option>
+          <option value="xmas">クリスマス</option>
         </select>
       </div>
       <div class="field">
@@ -753,10 +754,16 @@ const SEASONS = {
   summer: { grass: '#6f9a4e', dirt: '#8a6a48', stone: '#8d8b86', sand: '#d9c690', water: '#4f86a8', snow: '#eef0ee', trunk: '#6b4a32', pine: '#33603f', leaf: ['#4c7a3c', '#5d8a44', '#447038'] },
   autumn: { poplar: true, grass: '#a39a52', dirt: '#8a6a48', stone: '#8d8b86', sand: '#d9c690', water: '#4a7d9c', snow: '#eef0ee', trunk: '#6b4a32', pine: '#3a5f3c', leaf: ['#c9692c', '#b8433a', '#d6a53a'] },
   winter: { grass: '#e4e8ea', dirt: '#857060', stone: '#8d8b86', sand: '#cdc7b4', water: '#a9c6d6', snow: '#f4f6f6', trunk: '#5e4534', pine: '#35584a', leaf: ['#5d7a55', '#536f4f', '#66805a'], cap: true },
+  /* Christmas: the winter scene, with every conifer decorated (a star on top, lights, snow on its leaves, presents under it) */
+  xmas: { xmas: true, grass: '#e4e8ea', dirt: '#857060', stone: '#8d8b86', sand: '#cdc7b4', water: '#a9c6d6', snow: '#f4f6f6', trunk: '#5e4534', pine: '#35584a', leaf: ['#5d7a55', '#536f4f', '#66805a'], cap: true },
 };
-const MAT = { grass: 0, dirt: 1, stone: 2, sand: 3, water: 4, snow: 5, trunk: 6, pine: 7, leaf: 8, birchLog: 11, spruceLog: 12, poplarLog: 13, cherryLog: 14, cherryLogX: 15, cherryLogZ: 16 };   // 15, 16: cherry limbs lying along x / z   // leaf takes 8, 9, 10; trunk is the oak log
+const MAT = { grass: 0, dirt: 1, stone: 2, sand: 3, water: 4, snow: 5, trunk: 6, pine: 7, leaf: 8, birchLog: 11, spruceLog: 12, poplarLog: 13, cherryLog: 14, cherryLogX: 15, cherryLogZ: 16, star: 17, light: 18, present: 22 };   // light takes 18–21, present 22–24   // 15, 16: cherry limbs lying along x / z   // leaf takes 8, 9, 10; trunk is the oak log
 /* the other logs keep their colour in every season: the average colour of each log's side in the game (26.3) */
 const LOGS = ['#d9d7d2', '#3b2611', '#4f3d2b', '#37212c', '#37212c', '#37212c'];
+/* Christmas decorations. A star of glowstone, lights of glowing blocks (froglights and shroomlight) and presents of wool.
+   The presents use each wool's average colour in the game; the glowing blocks are drawn a little brighter than their average,
+   so they read as lit */
+const DECOR = ['#f3cf5a', '#f2d46b', '#9fd89a', '#e8b9e2', '#f19347', '#a12723', '#35399d', '#f9c628'];
 const SHADES = [0.94, 1, 1.06];
 const hashN = (x, y, s) => {
   let h = (Math.imul(x, 374761393) + Math.imul(y, 668265263) + Math.imul(s, 1274126177)) | 0;
@@ -782,7 +789,7 @@ function sceneModel(N) {
   const H = +$('peak').value, wl = +$('water').value / 100, dens = +$('trees').value / 100, mcTrees = $('treeStyle').value === 'mc';
 
   /* palette: slot 0 is "empty"; every material comes in three slightly different shades */
-  const mats = [S.grass, S.dirt, S.stone, S.sand, S.water, S.snow, S.trunk, S.pine, ...S.leaf, ...LOGS].map(hexRGB);
+  const mats = [S.grass, S.dirt, S.stone, S.sand, S.water, S.snow, S.trunk, S.pine, ...S.leaf, ...LOGS, ...DECOR].map(hexRGB);
   const col = new Uint8Array((1 + mats.length * 3) * 3);
   mats.forEach((rgb, m) => SHADES.forEach((f, k) => col.set(rgb.map(v => Math.min(255, Math.round(v * (m === MAT.water ? 1 : f)))), (1 + m * 3 + k) * 3)));
 
@@ -829,7 +836,28 @@ function sceneModel(N) {
 
   /* trees: only on grass. They are planted in a fixed order (groves first) until their crowns
      cover the chosen share of the grass, so a higher setting keeps the earlier trees and adds more */
-  const leafAt = (x, y, z, m) => { if (x < 0 || z < 0 || x >= N || z >= N || y >= HY0) return; if (!vol[(y * N + z) * N + x]) put(x, y, z, m); };
+  let rec = null;                               // while a conifer is being decorated, the leaves it puts down
+  const leafAt = (x, y, z, m) => { if (x < 0 || z < 0 || x >= N || z >= N || y >= HY0) return; if (!vol[(y * N + z) * N + x]) { put(x, y, z, m); if (rec) rec.push([x, y, z]); } };
+  const empty = (x, y, z) => x >= 0 && z >= 0 && x < N && z < N && y >= 0 && y < HY0 && !vol[(y * N + z) * N + x];
+  /* Christmas: decorate one conifer from the leaves it put down */
+  const decorate = (x, z, y0, leaves) => {
+    let top = -1;
+    for (const [lx, ly, lz] of leaves) if (lx === x && lz === z && ly > top) top = ly;
+    for (const [lx, ly, lz] of leaves) {
+      const h = hashN(lx * 5 + ly, lz * 11 + ly, seed + 930);
+      const side = empty(lx + 1, ly, lz) || empty(lx - 1, ly, lz) || empty(lx, ly, lz + 1) || empty(lx, ly, lz - 1);
+      if (side && h < 0.14) put(lx, ly, lz, MAT.light + Math.floor(hashN(lx, lz * 3 + ly, seed + 931) * 4));   // a light on the outside
+      else if (empty(lx, ly + 1, lz) && h > 0.6) put(lx, ly, lz, MAT.snow);                                // snow on an upward face
+    }
+    if (top >= 0 && empty(x, top + 1, z)) put(x, top + 1, z, MAT.star);
+    /* one or two presents on the ground beside the trunk, where the ground is level */
+    const sides = [[1, 0], [-1, 0], [0, 1], [0, -1]], k0 = Math.floor(hashN(x, z, seed + 932) * 4), n = 1 + (hashN(x, z, seed + 933) < 0.5);
+    for (let k = 0; k < n; k++) {
+      const [dx, dz] = sides[(k0 + k) % 4], px = x + dx, pz = z + dz;
+      if (px < 0 || pz < 0 || px >= N || pz >= N || gh[pz * N + px] !== y0 || !empty(px, y0, pz)) continue;
+      put(px, y0, pz, MAT.present + Math.floor(hashN(px, pz, seed + 934) * 3));
+    }
+  };
   const cand = [], crown = new Uint8Array(N * N);
   for (let z = 0; z < N; z++) for (let x = 0; x < N; x++) {
     const i = z * N + x;
@@ -848,6 +876,7 @@ function sceneModel(N) {
       const nx = x + dx, nz = z + dz; if (nx < 0 || nz < 0 || nx >= N || nz >= N) continue;
       const j = nz * N + nx; if (!crown[j]) { crown[j] = 1; if (top[j] === MAT.grass) shaded++; }
     }
+    rec = S.xmas && pine ? [] : null;
     if (!mcTrees) {
       /* "small green trees": the small trees this tool first had, about half the game's size, all with an oak trunk */
       if (pine) {
@@ -953,6 +982,7 @@ function sceneModel(N) {
         }
       }
     }
+    if (rec) { decorate(x, z, y0, rec); rec = null; }
   }
 
   /* keep only the blocks that can be seen */
@@ -1389,8 +1419,8 @@ function mcBlocks() {
   const id = n => { let i = idx.get(n); if (!i) { i = names.length; names.push(n); idx.set(n, i); } return i; };
   if (scene) {
     const { vol, N, HY, season } = scene, w = N + 2, ids = new Uint16Array(w * w * HY);    // one extra cell all round, for the glass that holds the water in
-    const winter = season === 'winter', autumn = season === 'autumn', spring = season === 'spring';
-    const real = ['grass_block', 'dirt', 'stone', 'sand', 'water', 'snow_block', 'oak_log', 'spruce_leaves[persistent=true]', 'oak_leaves[persistent=true]', 'birch_leaves[persistent=true]', 'oak_leaves[persistent=true]', 'birch_log', 'spruce_log', 'poplar_log', 'cherry_log', 'cherry_log[axis=x]', 'cherry_log[axis=z]'];
+    const winter = season === 'winter' || season === 'xmas', autumn = season === 'autumn', spring = season === 'spring';
+    const real = ['grass_block', 'dirt', 'stone', 'sand', 'water', 'snow_block', 'oak_log', 'spruce_leaves[persistent=true]', 'oak_leaves[persistent=true]', 'birch_leaves[persistent=true]', 'oak_leaves[persistent=true]', 'birch_log', 'spruce_log', 'poplar_log', 'cherry_log', 'cherry_log[axis=x]', 'cherry_log[axis=z]', 'glowstone', 'ochre_froglight', 'verdant_froglight', 'pearlescent_froglight', 'shroomlight', 'red_wool', 'blue_wool', 'yellow_wool'];
     if (winter) { real[0] = 'snow_block'; real[4] = 'ice'; }
     /* autumn crowns use the poplar leaves added in 26.3, which keep their colour in every biome (orange, red, yellow as in SEASONS.autumn.leaf) */
     if (spring) real[10] = 'cherry_leaves[persistent=true]';   // the third leaf colour is the cherry in spring
