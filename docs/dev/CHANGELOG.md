@@ -1,7 +1,7 @@
 # CHANGELOG
 
 ## 2026-11-24
-- 風景の季節に「クリスマス」を足した。冬の風景のまん中近くに、ゲームのトウヒの巨木の形の大きなツリーが 1 本立ち、星 (glowstone)・2 組で交互に点滅する電飾 (shroomlight / glowstone / sea_lantern)・薄い雪・プレゼント (羊毛) が付く。確認用のサーバーを `voxel-maker-devenv/` に置き、道具を `tools/mc/` に入れた。`work/christmas`、ゲームの画面では未確認 (詳細: sessions/2026-11-24-christmas.md)
+- 風景の季節に「クリスマス」を足した。冬の風景のまん中近くのひらけた所に、すそ広がりの段の大きなツリーが 1 本立つ。段のふちに原木にのったランタン、内側に 2 組で交互に点滅するレッドストーンランプ (setblock の strict で点け消し)、星 (glowstone)、薄い雪、プレゼント (羊毛)。確認用のサーバーを `voxel-maker-devenv/` に置き、道具を `tools/mc/` に入れた。`work/christmas`、ゲームの画面では未確認 (詳細: sessions/2026-11-24-christmas.md)
 
 ## 2026-11-22
 - 「山の上から水を流す」がオンのとき、流れ終わったあとの水 (滝・池) をプレビューにも表示する (`work/water-preview`、同じ日に公開)。サーバー26.3の結果とマスが一致 (詳細: sessions/2026-11-22-water-preview.md)

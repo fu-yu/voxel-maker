@@ -776,7 +776,7 @@ const SEASONS = {
   /* Christmas: the winter scene, with one big decorated Christmas tree near the middle */
   xmas: { xmas: true, grass: '#e4e8ea', dirt: '#857060', stone: '#8d8b86', sand: '#cdc7b4', water: '#a9c6d6', snow: '#f4f6f6', trunk: '#5e4534', pine: '#35584a', leaf: ['#5d7a55', '#536f4f', '#66805a'], cap: true },
 };
-const MAT = { grass: 0, dirt: 1, stone: 2, sand: 3, water: 4, snow: 5, trunk: 6, pine: 7, leaf: 8, birchLog: 11, spruceLog: 12, poplarLog: 13, cherryLog: 14, cherryLogX: 15, cherryLogZ: 16, star: 17, lightA: 18, lightB: 21, present: 24, snowLeaf: 27, lampOff: 28 };   // lights 18–20 and 21–23 blink in turn, presents 24–26
+const MAT = { grass: 0, dirt: 1, stone: 2, sand: 3, water: 4, snow: 5, trunk: 6, pine: 7, leaf: 8, birchLog: 11, spruceLog: 12, poplarLog: 13, cherryLog: 14, cherryLogX: 15, cherryLogZ: 16, star: 17, lightA: 18, lightB: 21, present: 24, snowLeaf: 27, lampOff: 28, lantern: 29 };   // lights 18–20 and 21–23 blink in turn, presents 24–26
 /* the other logs keep their colour in every season: the average colour of each log's side in the game (26.3) */
 const LOGS = ['#d9d7d2', '#3b2611', '#4f3d2b', '#37212c', '#37212c', '#37212c'];
 /* Christmas decorations on the big tree. A star of glowstone; lights of redstone lamps in two groups that blink in turn
@@ -784,7 +784,7 @@ const LOGS = ['#d9d7d2', '#3b2611', '#4f3d2b', '#37212c', '#37212c', '#37212c'];
    read as lit, and in the unlit lamp's average colour when off; presents of wool (their average colours); leaves with a
    thin layer of snow on top */
 const LIGHTS = ['#f2c26b', '#f2c26b', '#f2c26b'];
-const DECOR = ['#f3cf5a', ...LIGHTS, ...LIGHTS, '#a12723', '#35399d', '#f9c628', '#c4d3cb', '#5f371e'];
+const DECOR = ['#f3cf5a', ...LIGHTS, ...LIGHTS, '#a12723', '#35399d', '#f9c628', '#c4d3cb', '#5f371e', '#ffcf66'];   // last: a lantern, drawn as lit
 const SHADES = [0.94, 1, 1.06];
 const hashN = (x, y, s) => {
   let h = (Math.imul(x, 374761393) + Math.imul(y, 668265263) + Math.imul(s, 1274126177)) | 0;
@@ -859,30 +859,41 @@ function sceneModel(N) {
      cover the chosen share of the grass, so a higher setting keeps the earlier trees and adds more */
   const leafAt = (x, y, z, m) => { if (x < 0 || z < 0 || x >= N || z >= N || y >= HY0) return; if (!vol[(y * N + z) * N + x]) put(x, y, z, m); };
   const empty = (x, y, z) => x >= 0 && z >= 0 && x < N && z < N && y >= 0 && y < HY0 && !vol[(y * N + z) * N + x];
-  /* Christmas: one big spruce, shaped like the game's giant spruce (read from 26.3 with place feature minecraft:mega_spruce):
-     a 2×2 trunk, and a crown of 13–17 layers over its top, each a disc around the trunk whose radius grows from 0 at the
-     top to 3 at the bottom (radius = floor(depth / crown × 3.5), one wider on every other layer where it would not grow).
-     Then the decorations: a star on top, lights on the outside of the crown in two groups, a thin layer of snow on some
-     leaves, and presents round the foot of the trunk */
+  /* Christmas: one big Christmas tree, after a tree the user liked (a blog photo: flat tiers of leaves, wide at the
+     bottom, lit by many small warm lights on the tier edges, standing alone on an open snowfield). A 2×2 trunk; a crown
+     of 15–18 layers over it, in tiers of three: a wide flat brim, then two layers stepping in. Each tier is narrower than
+     the one below, from 6–7 cells out at the bottom to 1 at the top. Then the decorations: lanterns standing on the brims,
+     some redstone lamps inside that blink in two groups, a thin layer of snow on brims, a star on top, presents round
+     the foot */
   const bigTree = (x, z, y0) => {
-    const th = 18 + Math.floor(hashN(x, z, seed + 940) * 7), crownH = 13 + Math.floor(hashN(x, z, seed + 941) * 5), top = y0 + th;
+    const layers = 15 + Math.floor(hashN(x, z, seed + 941) * 4), rmax = 6 + (hashN(x, z, seed + 942) < 0.5), base = y0 + 3, top = base + layers - 1, tiers = Math.ceil(layers / 3);
     for (let y = y0; y < top; y++) for (const [a, b] of [[0, 0], [1, 0], [0, 1], [1, 1]]) put(x + a, y, z + b, MAT.spruceLog);
-    const leaves = [];
-    for (let y = top - crownH, j = 0; y <= top; y++) {
-      const l = top - y, mm = Math.floor(l / crownH * 3.5), rad = l > 0 && mm === j && (y & 1) === 0 ? mm + 1 : mm;
-      j = mm;
-      for (let dz = -rad; dz <= rad + 1; dz++) for (let dx = -rad; dx <= rad + 1; dx++) {
+    const brim = [], inner = [];
+    for (let k = 0; k < layers; k++) {
+      const y = base + k, t = Math.floor(k / 3), step = k % 3, R = Math.max(1, Math.round(rmax * (1 - t / tiers)));
+      const rad = y === top ? 0.6 : Math.max(0.6, R - [0, 1.5, 2.5][step]);
+      for (let dz = -8; dz <= 9; dz++) for (let dx = -8; dx <= 9; dx++) {
         const ax = dx > 0 ? dx - 1 : dx, az = dz > 0 ? dz - 1 : dz;      // distance from the 2×2 trunk
-        if (Math.abs(ax) + Math.abs(az) >= 7 || ax * ax + az * az > rad * rad) continue;
+        const d = ax * ax + az * az;
+        if (d > rad * rad + 0.5) continue;
         const px = x + dx, pz = z + dz;
-        if (empty(px, y, pz)) { put(px, y, pz, MAT.pine); leaves.push([px, y, pz]); }
+        if (!empty(px, y, pz)) continue;
+        put(px, y, pz, MAT.pine);
+        if (d > (rad - 1) * (rad - 1)) (step === 0 ? brim : inner).push([px, y, pz]);   // on the edge of the layer
       }
     }
-    for (const [lx, ly, lz] of leaves) {
+    const open = (px, y, pz) => empty(px + 1, y, pz) || empty(px - 1, y, pz) || empty(px, y, pz + 1) || empty(px, y, pz - 1);
+    for (const [lx, ly, lz] of brim) {
+      if (!empty(lx, ly + 1, lz)) continue;
       const h = hashN(lx * 5 + ly, lz * 11 + ly, seed + 930);
-      const side = empty(lx + 1, ly, lz) || empty(lx - 1, ly, lz) || empty(lx, ly, lz + 1) || empty(lx, ly, lz - 1);
-      if (side && h < 0.18) put(lx, ly, lz, (hashN(lx, lz * 3 + ly, seed + 935) < 0.5 ? MAT.lightA : MAT.lightB) + Math.floor(hashN(lx, lz * 3 + ly, seed + 931) * 3));
-      else if (empty(lx, ly + 1, lz) && h > 0.65) put(lx, ly, lz, MAT.snowLeaf);
+      /* a lantern standing on the tip of a branch. Not on a leaf: in the game a lantern cannot stand on leaves, and it
+         drops off as soon as the leaf under it is updated (checked on the 26.3 server), so the leaf becomes a log */
+      if (h < 0.32) { put(lx, ly, lz, MAT.spruceLog); put(lx, ly + 1, lz, MAT.lantern); }
+      else if (h > 0.7) put(lx, ly, lz, MAT.snowLeaf);                    // snow on the brim
+    }
+    for (const [lx, ly, lz] of inner) {
+      if (!open(lx, ly, lz) || hashN(lx * 7 + ly, lz * 3 + ly, seed + 936) >= 0.14) continue;
+      put(lx, ly, lz, (hashN(lx, lz * 3 + ly, seed + 935) < 0.5 ? MAT.lightA : MAT.lightB) + Math.floor(hashN(lx, lz * 3 + ly, seed + 931) * 3));
     }
     for (const [a, b] of [[0, 0], [1, 0], [0, 1], [1, 1]]) if (empty(x + a, top + 1, z + b)) put(x + a, top + 1, z + b, MAT.star);
     if (empty(x, top + 2, z)) put(x, top + 2, z, MAT.star);
@@ -901,7 +912,8 @@ function sceneModel(N) {
   }
   cand.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
   if (S.xmas) {
-    /* the big tree stands on the grass nearest the middle where its 2×2 foot is level; other trees keep 5 cells away */
+    /* the big tree stands on the grass nearest the middle where its 2×2 foot is level; other trees keep 10 cells away,
+       so it stands alone in open snow */
     let best = -1, bd = Infinity;
     for (let z = 0; z < N - 1; z++) for (let x = 0; x < N - 1; x++) {
       const i = z * N + x, g0 = gh[i];
@@ -913,7 +925,7 @@ function sceneModel(N) {
     if (best >= 0) {
       const x = best % N, z = (best / N) | 0;
       bigTree(x, z, gh[best]);
-      for (let dz = -5; dz <= 6; dz++) for (let dx = -5; dx <= 6; dx++) if (x + dx >= 0 && z + dz >= 0 && x + dx < N && z + dz < N) crown[(z + dz) * N + x + dx] = 1;
+      for (let dz = -10; dz <= 11; dz++) for (let dx = -10; dx <= 11; dx++) if (x + dx >= 0 && z + dz >= 0 && x + dx < N && z + dz < N) crown[(z + dz) * N + x + dx] = 1;
     }
   }
   const want = Math.round(dens * cand.length); let shaded = 0;
@@ -1470,7 +1482,7 @@ function mcBlocks() {
   if (scene) {
     const { vol, N, HY, season } = scene, w = N + 2, ids = new Uint16Array(w * w * HY);    // one extra cell all round, for the glass that holds the water in
     const winter = season === 'winter' || season === 'xmas', autumn = season === 'autumn', spring = season === 'spring';
-    const real = ['grass_block', 'dirt', 'stone', 'sand', 'water', 'snow_block', 'oak_log', 'spruce_leaves[persistent=true]', 'oak_leaves[persistent=true]', 'birch_leaves[persistent=true]', 'oak_leaves[persistent=true]', 'birch_log', 'spruce_log', 'poplar_log', 'cherry_log', 'cherry_log[axis=x]', 'cherry_log[axis=z]', 'glowstone', ...Array(6).fill('redstone_lamp[lit=true]'), 'red_wool', 'blue_wool', 'yellow_wool', 'spruce_leaves[persistent=true]', 'redstone_lamp[lit=false]'];
+    const real = ['grass_block', 'dirt', 'stone', 'sand', 'water', 'snow_block', 'oak_log', 'spruce_leaves[persistent=true]', 'oak_leaves[persistent=true]', 'birch_leaves[persistent=true]', 'oak_leaves[persistent=true]', 'birch_log', 'spruce_log', 'poplar_log', 'cherry_log', 'cherry_log[axis=x]', 'cherry_log[axis=z]', 'glowstone', ...Array(6).fill('redstone_lamp[lit=true]'), 'red_wool', 'blue_wool', 'yellow_wool', 'spruce_leaves[persistent=true]', 'redstone_lamp[lit=false]', 'lantern'];
     if (winter) { real[0] = 'snow_block'; real[4] = 'ice'; }
     /* autumn crowns use the poplar leaves added in 26.3, which keep their colour in every biome (orange, red, yellow as in SEASONS.autumn.leaf) */
     if (spring) real[10] = 'cherry_leaves[persistent=true]';   // the third leaf colour is the cherry in spring
@@ -1539,7 +1551,7 @@ function mcSteps({ w, h, d, ids, names }) {
   return { stepOf, N: mid.length, order, mid, extraAir };
 }
 /* join neighbouring blocks of the same kind into boxes, so one /fill does the work of many /setblock */
-function mcCommands({ w, h, d, ids, names }, stepOf, asAir) {
+function mcCommands({ w, h, d, ids, names }, stepOf, asAir, mode = '') {
   const done = new Uint8Array(ids.length), OX = 2, MAXVOL = 32768;
   let maxS = -1;
   if (stepOf) for (let i = 0; i < stepOf.length; i++) if (stepOf[i] > maxS) maxS = stepOf[i];
@@ -1555,7 +1567,7 @@ function mcCommands({ w, h, d, ids, names }, stepOf, asAir) {
     const area = (x2 - x + 1) * (z2 - z + 1);
     rise: while (y2 + 1 < h && area * (y2 - y + 2) <= MAXVOL) { for (let c = z; c <= z2; c++) for (let a = x; a <= x2; a++) if (!free(a, y2 + 1, c)) break rise; y2++; }
     for (let b = y; b <= y2; b++) for (let c = z; c <= z2; c++) for (let a = x; a <= x2; a++) done[at(a, b, c)] = 1;
-    const p = (a, b, c) => `~${a + OX} ~${b} ~${c}`, name = 'minecraft:' + (asAir ? 'air' : names[k]);
+    const p = (a, b, c) => `~${a + OX} ~${b} ~${c}`, name = 'minecraft:' + (asAir ? 'air' : names[k]) + (mode ? ' ' + mode : '');
     const cmd = x === x2 && y === y2 && z === z2 ? `setblock ${p(x, y, z)} ${name}` : `fill ${p(x, y, z)} ${p(x2, y2, z2)} ${name}`;
     if (stepOf) out[s0].push(cmd); else out.push(cmd);
   }
@@ -1607,7 +1619,10 @@ $('saveMc').onclick = () => {
     const per = Math.max(1, Math.floor(32768 / (B.w * B.d)));        // /fill changes at most 32,768 blocks
     for (let y = 0; y < B.h; y += per) drain.push(`fill ~2 ~${y} ~0 ~${B.w + 1} ~${Math.min(B.h, y + per) - 1} ~${B.d - 1} minecraft:air replace minecraft:water`);
   }
-  const clearLines = drain.concat(mcCommands(B, null, true)), nc =Math.ceil(clearLines.length / PER), site = '@e[type=minecraft:marker,tag=voxel_site,limit=1,sort=nearest]';
+  /* a lantern drops as an item when the leaf under it is cleared first, so packs with lanterns clear without telling the
+     neighbours ("strict", checked on the 26.3 server) */
+  const clearMode = B.names.includes('lantern') ? 'strict' : '';
+  const clearLines = drain.concat(mcCommands(B, null, true, clearMode)), nc =Math.ceil(clearLines.length / PER), site = '@e[type=minecraft:marker,tag=voxel_site,limit=1,sort=nearest]';
   for (let i = 0; i < nc; i++) {
     const tag = nc > 1 ? i + 1 : '';
     files.push([`data/voxel/function/clear/c${i}.mcfunction`, clearLines.slice(i * PER, (i + 1) * PER).join('\n') + '\n']);
@@ -1662,7 +1677,7 @@ $('saveMc').onclick = () => {
       ['data/voxel/function/xmas/b.mcfunction', phase(B.blink[1], B.blink[0])],
     );
   }
-  const S = mcSteps(B), stepCmds = mcCommands(B, S.stepOf), breakCmds = mcCommands(B, S.stepOf, true), packId = 1 + Math.floor(Math.random() * 0x7fffffff), OX = 2;
+  const S = mcSteps(B), stepCmds = mcCommands(B, S.stepOf), breakCmds = mcCommands(B, S.stepOf, true, B.names.includes('lantern') ? 'strict' : ''), packId = 1 + Math.floor(Math.random() * 0x7fffffff), OX = 2;
   const gridPts = len => { const a = []; for (let v = 0; v < len; v += 16) a.push(v); if (a[a.length - 1] !== len - 1) a.push(len - 1); return a; };
   const readyLines = [];
   for (const z of gridPts(B.d)) for (const x of gridPts(B.w)) readyLines.push(`execute unless loaded ~${x + OX} ~ ~${z} run return 0`);
