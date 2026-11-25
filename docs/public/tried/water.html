@@ -1,0 +1,76 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>8. 山の上から水を流してみた — マインクラフトで試してみた</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
+<style>
+/* このページだけの決まり。共通の決まりはindex.htmlのものをtools/build_guide.pyが前に足す */
+code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.88em; background:var(--surface); border:1px solid var(--line); padding:1px 6px; overflow-wrap:anywhere; }
+figure img { border-radius:0; border:1px solid var(--line); }
+.pager { display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; padding-top:8px; border-top:1px solid var(--line); font-size:15px; }
+.pager a { font-weight:700; text-decoration:none; background:var(--surface); border:1px solid var(--line); padding:8px 14px; }
+.pager a:hover { border-color:var(--accent); }
+</style>
+<div class="page">
+<header>
+  <p><a href="https://fu-yu.github.io/voxel-maker/tried/">← マインクラフトで試してみた</a> (8 / 8)</p>
+  <h1>8. 山の上から水を流してみた</h1>
+  <p class="lede">2026-11-20〜21に、風景を保存するときの設定「山の上から水を流す」を試しました。高い山のてっぺんに水を置き、ゲームの中で流れていく様子を見ました。</p>
+</header>
+
+<section>
+  <h2>水を置く場所の決め方</h2>
+  <p>ボクセル工房の本体で「山の上から水を流す」をオンにして保存すると、高い山のいくつか (最大3か所) のてっぺんに水が置かれます。</p>
+  <p>水を置く前に、マインクラフトと同じ決まりで、水がどこまで流れるかを計算しています。流れた水が風景の外にこぼれる山には、水を置きません。冬の風景には置きません (湖が氷になっているため)。</p>
+</section>
+
+<section>
+  <h2>滝になって湖へ</h2>
+  <figure><img src="../images/mc-water-falls.jpg" width="1100" height="618" alt="上から見た湖。右の山の白い雪の下から、青い水が段になって斜面を流れ落ち、湖に入っている。奥の山からも細い水の流れが湖へ下りている"></figure>
+  <p>「山と湖・夏」の風景 (番号12) を、水を3か所にして置きました。2か所の水は、斜面を段になって流れ落ちる滝になり、湖まで届きました。</p>
+  <p>風景の外に、水はこぼれませんでした。</p>
+</section>
+
+<section>
+  <h2>湖に届かなかった1本</h2>
+  <figure><img src="../images/mc-water-stop.jpg" width="1100" height="618" alt="山の上の木の葉のそばを、青い水が流れ下りている。奥に雪ののった白いブロックが見える" loading="lazy"></figure>
+  <p>3か所のうち北の尾根の1か所は、斜面の途中のくぼみで止まり、湖まで届きませんでした。計算でも同じ所で止まっていました。</p>
+  <p>「もっと湖のようにたまるとよい」と考えて、流れた先がくぼみのときは、ふちの高さまで水を満たして、小さな池にするように直しました。</p>
+</section>
+
+<section>
+  <h2>くぼみが池になった</h2>
+  <figure><img src="../images/mc-water-north.jpg" width="1100" height="618" alt="雪ののった岩山から、青い水が岩の斜面を段になって下りている。まわりには濃い緑の木がある" loading="lazy"></figure>
+  <p>直したあとに置き直すと、北の尾根の水は、雪の下から岩の斜面を下り、ふもとで止まりました。まわりの草地には、こぼれていません。</p>
+  <figure><img src="../images/mc-water-pond.jpg" width="1100" height="618" alt="近くから見た岩のくぼみ。段になって下りてきた水が、灰色の石のくぼみにたまり、平らな水面になっている" loading="lazy"></figure>
+  <p>ふもとの石のくぼみには、平らな水面の池ができました。池の水は、ふちからあふれていません。</p>
+</section>
+
+<section>
+  <h2>消したときの水</h2>
+  <figure><img src="../images/mc-water-column.jpg" width="1100" height="618" alt="風景を消したあとの平らな地面に、青い水の柱が1本だけ立っている。下に「立っている場所を基準に消しました」の文が出ている" loading="lazy"></figure>
+  <p>はじめは、「できあがりました」の [消す] で風景を消すと、流れた水が空中に柱のように残り、地面に落ちてから、数秒かけてゆっくり消えました。消すときに、置いたブロックだけを消していて、あとから流れた水は消す対象に入っていなかったためです。</p>
+  <p>そこで、一気に消す <code>/function voxel:break</code> と [消す] では、先に風景の範囲の水をすべて消すように直しました。直したあとは、流れた水もいっしょにすぐ消えることを、ゲームの画面でも確かめました。</p>
+</section>
+
+<section>
+  <h2>画面でも見られるように</h2>
+  <p>このあと、ボクセル工房の画面の立体にも、流れ終わったあとの水 (滝や池) を表示するようにしました。水が流れていく途中の動きは出ません。</p>
+</section>
+
+<section>
+  <h2>気をつけること</h2>
+  <ul>
+    <li>水が流れた所の下の草は、時間がたつと土に変わります。マインクラフトのしくみです。</li>
+    <li>峰がすべて風景の端の近くにあると、水が1か所も置かれないことがあります。そのときは、保存したときのお知らせに出ます。</li>
+  </ul>
+</section>
+
+<nav class="pager" aria-label="試した記録の移動">
+  <a href="https://fu-yu.github.io/voxel-maker/tried/trees.html">← 前: 7. ゲームと同じ形の木を置いてみた</a>
+  <a href="https://fu-yu.github.io/voxel-maker/tried/">試してみた一覧 →</a>
+</nav>
+
+<footer>
+  <span>このページの写真は、マインクラフトの画面を撮ったものです。</span>
+  <span>ボクセル工房は、Minecraft の公式の製品ではありません。Mojang や Microsoft とは関係ありません。</span>
+</footer>
+</div>

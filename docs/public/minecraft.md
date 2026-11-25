@@ -131,6 +131,8 @@
 
 (この設定は、画面のないサーバー用のマインクラフト26.3で、4つの風景 (山と湖・島・なだらかな丘・いちばん高い山の秋の風景) を置き、水が風景の外に出ないこと、まわりの地面が変わらないこと、`voxel:build_slow` で置いても同じことを確かめました (2026-11-20)。池にした水も、流れ出さずにそのまま残りました。ゲームの画面でも、山と湖の風景で、水が外にこぼれないことと、3か所のうち2か所が湖まで流れることを確かめました (池にする前の版で)。)
 
+ゲームの画面で流した様子は、「[8. 山の上から水を流してみた](https://fu-yu.github.io/voxel-maker/tried/water.html)」に写真つきで書いています。
+
 ## うまくいかないとき
 
 (図: datapacksフォルダの中に新しいzipを1つだけ入れ、古いzipは外に出す図)
@@ -162,6 +164,7 @@
 - [5. 秋の風景を置いてみた](https://fu-yu.github.io/voxel-maker/tried/autumn.html)
 - [6. 春のサクラを置いてみた](https://fu-yu.github.io/voxel-maker/tried/spring.html)
 - [7. ゲームと同じ形の木を置いてみた](https://fu-yu.github.io/voxel-maker/tried/trees.html)
+- [8. 山の上から水を流してみた](https://fu-yu.github.io/voxel-maker/tried/water.html)
 
 ## ことばの説明
 
