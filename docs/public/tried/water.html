@@ -1,0 +1,101 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>8. 山の上から水を流してみた — マインクラフトで試してみた</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
+<style>
+/* このページだけの決まり。共通の決まりはindex.htmlのものをtools/build_guide.pyが前に足す */
+code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.88em; background:var(--surface); border:1px solid var(--line); padding:1px 6px; overflow-wrap:anywhere; }
+figure img { border-radius:0; border:1px solid var(--line); }
+.pager { display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; padding-top:8px; border-top:1px solid var(--line); font-size:15px; }
+.pager a { font-weight:700; text-decoration:none; background:var(--surface); border:1px solid var(--line); padding:8px 14px; }
+.pager a:hover { border-color:var(--accent); }
+.map svg { display:block; width:100%; height:auto; background:var(--surface); border:1px solid var(--line); }
+</style>
+<div class="page">
+<header>
+  <p><a href="https://fu-yu.github.io/voxel-maker/tried/">← マインクラフトで試してみた</a> (8 / 8)</p>
+  <h1>8. 山の上から水を流してみた</h1>
+  <p class="lede">2026-11-20〜21に、風景を保存するときの設定「山の上から水を流す」を試しました。高い山のてっぺんに水を置き、ゲームの中で流れていく様子を見ました。</p>
+</header>
+
+<section>
+  <h2>水を置く場所の決め方</h2>
+  <p>ボクセル工房の本体で「山の上から水を流す」をオンにして保存すると、高い山のいくつか (最大3か所) のてっぺんに水が置かれます。</p>
+  <figure><img src="../images/ui-water.jpg" width="1100" height="417" alt="ボクセル工房の画面。左の「書き出し」の欄で「山の上から水を流す（マインクラフト用）」にチェックが入っていて、その下に説明が出ている。右の風景の立体には、山から湖へ流れる水が青く表示されている"><figcaption>ボクセル工房の「風景を作る」で、「書き出し」の欄にあるチェックです。オンにすると、右の立体にも流れ終わったあとの水が出ます (山と湖・夏・番号12・横48マス)。</figcaption></figure>
+  <p>水を置く前に、マインクラフトと同じ決まりで、水がどこまで流れるかを計算しています。流れた水が風景の外にこぼれる山には、水を置きません。冬の風景には置きません (湖が氷になっているため)。</p>
+  <p>設定の使い方は、「<a href="https://fu-yu.github.io/voxel-maker/minecraft.html#peak-water">マインクラフトに置く</a>」の「山の上から水を流す」にあります。</p>
+  <h3>水の流れ方の決まり</h3>
+  <p>マインクラフトJava版26.3の水と同じ決まりで、1マスずつ流れる先を決めます。</p>
+  <ul>
+    <li>下が空いていれば、まっすぐ下に落ちます。落ちた先では、勢いがもとに戻ります。</li>
+    <li>平らな所では、4マス以内でいちばん近い「落ちる所」(段差や崖) のほうへだけ広がります。近くに落ちる所がなければ、前後左右の4方向に広がります。</li>
+    <li>1マス進むごとに勢いが1つ弱くなり、7マス進むと止まります。</li>
+    <li>湖の水に入ったら、そこで止まります。</li>
+  </ul>
+  <figure class="map"><svg viewBox="0 0 360 172" role="img" aria-label="横から見た図。高い台の上に置いた水は、右の崖のほうへだけ広がりながら勢いが7から1つずつ弱くなり、崖から落ちると勢いが7に戻って、低い地面を進んで湖に入る"><rect x="20" y="70" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="20" y="90" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="20" y="110" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="20" y="130" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="40" y="70" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="40" y="90" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="40" y="110" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="40" y="130" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="60" y="70" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="60" y="90" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="60" y="110" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="60" y="130" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="80" y="70" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="80" y="90" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="80" y="110" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="80" y="130" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="100" y="70" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="100" y="90" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="100" y="110" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="100" y="130" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="120" y="70" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="120" y="90" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="120" y="110" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="120" y="130" width="20" height="20" fill="#9a9892" stroke="var(--fg)" stroke-width="1"/><rect x="140" y="130" width="20" height="20" fill="#b0845a" stroke="var(--fg)" stroke-width="1"/><rect x="160" y="130" width="20" height="20" fill="#b0845a" stroke="var(--fg)" stroke-width="1"/><rect x="180" y="130" width="20" height="20" fill="#b0845a" stroke="var(--fg)" stroke-width="1"/><rect x="200" y="130" width="20" height="20" fill="#b0845a" stroke="var(--fg)" stroke-width="1"/><rect x="220" y="130" width="20" height="20" fill="#b0845a" stroke="var(--fg)" stroke-width="1"/><rect x="240" y="130" width="20" height="20" fill="#b0845a" stroke="var(--fg)" stroke-width="1"/><rect x="260" y="130" width="80" height="20" fill="var(--blue)" opacity=".9" stroke="var(--fg)" stroke-width="1"/><text x="300" y="164" text-anchor="middle" font-size="10" font-weight="700" fill="var(--fg)">湖</text><line x1="10" y1="150" x2="350" y2="150" stroke="var(--grid)" stroke-width="2"/><rect x="40" y="50" width="20" height="20" fill="var(--blue)" stroke="var(--fg)" stroke-width="1.2"/><text x="50" y="64" text-anchor="middle" font-size="10" font-weight="700" fill="#fffaf0">7</text><text x="50" y="42" text-anchor="middle" font-size="10" font-weight="700" fill="var(--fg)">水を置く所</text><rect x="60" y="60" width="20" height="10" fill="var(--blue)" opacity=".85" stroke="var(--fg)" stroke-width=".8"/><text x="70" y="57" text-anchor="middle" font-size="9" fill="var(--fg)">6</text><rect x="80" y="60" width="20" height="10" fill="var(--blue)" opacity=".85" stroke="var(--fg)" stroke-width=".8"/><text x="90" y="57" text-anchor="middle" font-size="9" fill="var(--fg)">5</text><rect x="100" y="60" width="20" height="10" fill="var(--blue)" opacity=".85" stroke="var(--fg)" stroke-width=".8"/><text x="110" y="57" text-anchor="middle" font-size="9" fill="var(--fg)">4</text><rect x="120" y="60" width="20" height="10" fill="var(--blue)" opacity=".85" stroke="var(--fg)" stroke-width=".8"/><text x="130" y="57" text-anchor="middle" font-size="9" fill="var(--fg)">3</text><rect x="140" y="60" width="20" height="70" fill="var(--blue)" opacity=".85" stroke="var(--fg)" stroke-width="1"/><path d="M150 84 v20 m-5 -6 l5 6 l5 -6" stroke="#fffaf0" stroke-width="1.6" fill="none"/><text x="150" y="126" text-anchor="middle" font-size="9" font-weight="700" fill="#fffaf0">7</text><rect x="160" y="120" width="20" height="10" fill="var(--blue)" opacity=".85" stroke="var(--fg)" stroke-width=".8"/><text x="170" y="116" text-anchor="middle" font-size="9" fill="var(--fg)">6</text><rect x="180" y="120" width="20" height="10" fill="var(--blue)" opacity=".85" stroke="var(--fg)" stroke-width=".8"/><text x="190" y="116" text-anchor="middle" font-size="9" fill="var(--fg)">5</text><rect x="200" y="120" width="20" height="10" fill="var(--blue)" opacity=".85" stroke="var(--fg)" stroke-width=".8"/><text x="210" y="116" text-anchor="middle" font-size="9" fill="var(--fg)">4</text><rect x="220" y="120" width="20" height="10" fill="var(--blue)" opacity=".85" stroke="var(--fg)" stroke-width=".8"/><text x="230" y="116" text-anchor="middle" font-size="9" fill="var(--fg)">3</text><rect x="240" y="120" width="20" height="10" fill="var(--blue)" opacity=".85" stroke="var(--fg)" stroke-width=".8"/><text x="250" y="116" text-anchor="middle" font-size="9" fill="var(--fg)">2</text><text x="170" y="28" font-size="10" fill="var(--fg)">落ちたら、勢いが7に戻る</text><line x1="168" y1="32" x2="156" y2="78" stroke="var(--fg)" stroke-width="1"/><text x="166" y="96" font-size="10" fill="var(--fg)">1マスごとに1つ弱くなる</text><text x="300" y="112" text-anchor="middle" font-size="10" fill="var(--fg)">湖に入ったら</text><text x="300" y="124" text-anchor="middle" font-size="10" fill="var(--fg)">止まる</text><text x="22" y="16" font-size="10" fill="var(--fg)">近くの「落ちる所」(崖) のほうへだけ広がる →</text></svg><figcaption>横から見た図です。数字は水の勢いです。この図では、勢いがなくなる前に湖に入るので、そこで止まります。</figcaption></figure>
+  <h3>水を置く山の選び方</h3>
+  <ul>
+    <li>半径4マスの中でいちばん高い地面で、上が空いている所を、山のてっぺんの候補にします。</li>
+    <li>高い山から順に、上の決まりで水を流してみます。流れた水が風景の外に出る山と、3マス以上下らない山は、やめます。</li>
+    <li>選んだ山どうしは8マス以上はなし、最大3か所までにします。</li>
+  </ul>
+  <h3>計算が合っているかの確かめ方</h3>
+  <p>画面のないサーバー用のマインクラフト26.3で、山の上に水を置いて流し、どのマスに水があるかを1マスずつ調べました。湖に入った2本の流れ (71マスと56マス) は、計算と1マスずつすべて同じでした。風景の外にこぼれた3本は、計算でも「こぼれる」になりました。</p>
+  <p>最初は、平らな所では4方向すべてに広がる、多めの計算にしていました。すると、本当は湖に入る流れまで「こぼれる」になってしまいました。ゲームと同じ「近い落ちる所のほうへだけ」の決まりにしたら、マスまで合いました。</p>
+</section>
+
+<section>
+  <h2>滝になって湖へ</h2>
+  <figure><img src="../images/mc-water-falls.jpg" width="1100" height="618" alt="上から見た湖。右の山の白い雪の下から、青い水が段になって斜面を流れ落ち、湖に入っている。奥の山からも細い水の流れが湖へ下りている"></figure>
+  <p>「山と湖・夏」の風景 (番号12) を、水を3か所にして置きました。2か所の水は、斜面を段になって流れ落ちる滝になり、湖まで届きました。</p>
+  <p>風景の外に、水はこぼれませんでした。</p>
+  <p>水を流す前の「山と湖・夏」の風景の見え方は、「<a href="https://fu-yu.github.io/voxel-maker/tried/scene.html">1. 風景を置いてみた</a>」にあります。建てる係で少しずつ置く <code>/function voxel:build_slow</code> でも、水が外に出ないことを、画面のないサーバー用のマインクラフトで確かめました (建てる係については「<a href="https://fu-yu.github.io/voxel-maker/tried/slow.html">3. 少しずつ置いてみた</a>」)。</p>
+</section>
+
+<section>
+  <h2>湖に届かなかった1本</h2>
+  <figure><img src="../images/mc-water-stop.jpg" width="1100" height="618" alt="山の上の木の葉のそばを、青い水が流れ下りている。奥に雪ののった白いブロックが見える" loading="lazy"></figure>
+  <p>3か所のうち北の尾根の1か所は、斜面の途中のくぼみで止まり、湖まで届きませんでした。計算でも同じ所で止まっていました。</p>
+  <p>「もっと湖のようにたまるとよい」と考えて、流れた先がくぼみのときは、ふちの高さまで水を満たして、小さな池にするように直しました。</p>
+  <p>池にするときは、風景の端と湖を出口として、それぞれの場所で水がこぼれずにたまる高さ (ふちの高さ) を先に求めておきます。流れた水がくぼみに入ったら、つながったくぼみを、その高さまで水で満たします。木の幹や葉がある所は、そのままにします。</p>
+</section>
+
+<section>
+  <h2>くぼみが池になった</h2>
+  <figure><img src="../images/mc-water-north.jpg" width="1100" height="618" alt="雪ののった岩山から、青い水が岩の斜面を段になって下りている。まわりには濃い緑の木がある" loading="lazy"></figure>
+  <p>直したあとに置き直すと、北の尾根の水は、雪の下から岩の斜面を下り、ふもとで止まりました。まわりの草地には、こぼれていません。</p>
+  <figure><img src="../images/mc-water-pond.jpg" width="1100" height="618" alt="近くから見た岩のくぼみ。段になって下りてきた水が、灰色の石のくぼみにたまり、平らな水面になっている" loading="lazy"></figure>
+  <p>ふもとの石のくぼみには、平らな水面の池ができました。池の水は、ふちからあふれていません。</p>
+</section>
+
+<section>
+  <h2>消したときの水</h2>
+  <figure><img src="../images/mc-water-column.jpg" width="1100" height="618" alt="風景を消したあとの平らな地面に、青い水の柱が1本だけ立っている。下に「立っている場所を基準に消しました」の文が出ている" loading="lazy"></figure>
+  <p>はじめは、「できあがりました」の [消す] で風景を消すと、流れた水が空中に柱のように残り、地面に落ちてから、数秒かけてゆっくり消えました。消すときに、置いたブロックだけを消していて、あとから流れた水は消す対象に入っていなかったためです。</p>
+  <p>そこで、一気に消す <code>/function voxel:break</code> と [消す] では、先に風景の範囲の水をすべて消すように直しました。直したあとは、流れた水もいっしょにすぐ消えることを、ゲームの画面でも確かめました。</p>
+  <p>消し方のくわしい説明は、「<a href="https://fu-yu.github.io/voxel-maker/minecraft.html#break">マインクラフトに置く</a>」の「一気に消す」と、「<a href="https://fu-yu.github.io/voxel-maker/minecraft.html#steps">手順</a>」の [消す] にあります。少しずつ壊す <code>/function voxel:break_slow</code> は、この直しでは変えていません (壊す係については「<a href="https://fu-yu.github.io/voxel-maker/tried/break.html">4. 少しずつ壊してみた</a>」)。</p>
+</section>
+
+<section>
+  <h2>画面でも見られるように</h2>
+  <p>このあと、ボクセル工房の画面の立体にも、流れ終わったあとの水 (滝や池) を表示するようにしました。水が流れていく途中の動きは出ません。</p>
+  <p>ボクセル工房の使い方は、「<a href="https://fu-yu.github.io/voxel-maker/guide.html">てびき</a>」にあります。</p>
+</section>
+
+<section>
+  <h2>気をつけること</h2>
+  <ul>
+    <li>水が流れた所の下の草は、時間がたつと土に変わります。マインクラフトのしくみです。</li>
+    <li>峰がすべて風景の端の近くにあると、水が1か所も置かれないことがあります。そのときは、保存したときのお知らせに出ます。</li>
+  </ul>
+</section>
+
+<nav class="pager" aria-label="試した記録の移動">
+  <a href="https://fu-yu.github.io/voxel-maker/tried/trees.html">← 前: 7. ゲームと同じ形の木を置いてみた</a>
+  <a href="https://fu-yu.github.io/voxel-maker/tried/">試してみた一覧 →</a>
+</nav>
+
+<footer>
+  <span>このページの写真は、マインクラフトの画面と、ボクセル工房の画面を撮ったものです。</span>
+  <span>ボクセル工房は、Minecraft の公式の製品ではありません。Mojang や Microsoft とは関係ありません。</span>
+</footer>
+</div>

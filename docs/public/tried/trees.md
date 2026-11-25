@@ -69,3 +69,4 @@
 
 - 前: [6. 春のサクラを置いてみた](https://fu-yu.github.io/voxel-maker/tried/spring.html)
 - [試してみた一覧へ戻る](https://fu-yu.github.io/voxel-maker/tried/)
+- 次: [8. 山の上から水を流してみた](https://fu-yu.github.io/voxel-maker/tried/water.html)
