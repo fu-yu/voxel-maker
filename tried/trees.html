@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="ボクセル工房で作った風景の木を、オーク・シラカバ・トウヒ・ポプラなど、マインクラフトの木と同じ形と大きさにして置いた記録です。">
+<link rel="canonical" href="https://fu-yu.github.io/voxel-maker/tried/trees.html">
+<link rel="icon" href="../docs/public/images/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../docs/public/images/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ボクセル工房">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:title" content="7. ゲームと同じ形の木を置いてみた — ボクセル工房">
+<meta property="og:description" content="ボクセル工房で作った風景の木を、オーク・シラカバ・トウヒ・ポプラなど、マインクラフトの木と同じ形と大きさにして置いた記録です。">
+<meta property="og:url" content="https://fu-yu.github.io/voxel-maker/tried/trees.html">
+<meta property="og:image" content="https://fu-yu.github.io/voxel-maker/docs/public/images/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ブロックを積んで作った、山と湖と木のある小さな風景。左に「ボクセル工房」の文字">
+<meta name="twitter:card" content="summary_large_image">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-95MYCKFBXJ"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-95MYCKFBXJ');
+</script>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>7. ゲームと同じ形の木を置いてみた — マインクラフトで試してみた</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
+<style>
+/* layout: 1 本の読みもの。挿絵が先、文章があと。図はブロック (正方形) の単位でそろえる */
+:root {
+  --bg:#fbf4e0; --surface:#fffaf0; --fg:#3d2f24; --muted:#7a6857; --line:#e6d9bd;
+  --orange:#f08a3c; --blue:#7fa9dc; --green:#8fbf5a; --stem:#f3e6c4; --cream-block:#fff6dc;
+  --block-edge:#c96a22; --grid:#d9caa8; --accent:#c25a12; --frame:#fbf4e0;
+  --display:"Dela Gothic One","Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif;
+  --body:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
+  --unit:18px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg:#2a211b; --surface:#35291f; --fg:#f5ead6; --muted:#c2b09a; --line:#4c3c2e;
+  --stem:#e9dab3; --cream-block:#fff6dc; --block-edge:#8a4513; --grid:#5e4c3a; --accent:#ffa862; --frame:#fbf4e0; color-scheme:dark } }
+:root[data-theme="dark"] {
+  --bg:#2a211b; --surface:#35291f; --fg:#f5ead6; --muted:#c2b09a; --line:#4c3c2e;
+  --stem:#e9dab3; --cream-block:#fff6dc; --block-edge:#8a4513; --grid:#5e4c3a; --accent:#ffa862; --frame:#fbf4e0; color-scheme:dark }
+body { background:var(--bg); color:var(--fg); font-family:var(--body); font-size:17px; line-height:1.85;
+  padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); padding-block:28px 56px; }
+.page { max-width:680px; margin:0 auto; display:flex; flex-direction:column; gap:44px; }
+header { display:flex; flex-direction:column; gap:14px; }
+h1 { font-family:var(--display); font-weight:400; font-size:clamp(34px,9vw,54px); line-height:1.15; margin:0; letter-spacing:.02em; text-wrap:balance; }
+.lede { font-size:19px; margin:0; font-weight:500; }
+figure { margin:0; }
+figure img { display:block; width:100%; height:auto; border-radius:calc(var(--unit)*1); background:var(--frame); }
+figcaption { font-size:13px; color:var(--muted); margin-top:6px; }
+section { display:flex; flex-direction:column; gap:14px; }
+h2 { font-size:22px; font-weight:700; margin:0; line-height:1.4; display:flex; align-items:center; gap:10px; text-wrap:balance; }
+h2::before { content:""; width:var(--unit); height:var(--unit); background:var(--orange); flex:none; }
+h3 { font-size:15px; font-weight:700; color:var(--accent); margin:6px 0 0; letter-spacing:.06em; }
+p { margin:0; }
+ul,ol { margin:0; padding-left:1.3em; display:flex; flex-direction:column; gap:6px; }
+.scenes { list-style:none; padding:0; gap:10px; }
+.scenes li { background:var(--surface); border:1px solid var(--line); padding:12px 16px; }
+.flow { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.flow div, .shapes div { display:flex; flex-direction:column; gap:6px; min-width:0; }
+.flow svg { width:100%; height:auto; background:var(--surface); border:1px solid var(--line); }
+.flow b, .shapes b { font-size:15px; }
+.flow span, .shapes span { font-size:14px; line-height:1.6; color:var(--muted); }
+.shapes { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.shapes svg { width:100%; height:auto; background:var(--surface); border:1px solid var(--line); padding:10px; box-sizing:border-box; }
+@media (max-width:520px) { .flow, .shapes { grid-template-columns:1fr; } .flow div, .shapes div { display:grid; grid-template-columns:120px 1fr; column-gap:14px; align-items:center; } .flow svg, .shapes svg { grid-row:span 2; } }
+ol.steps { list-style:none; padding:0; counter-reset:s; gap:10px; }
+ol.steps li { counter-increment:s; display:grid; grid-template-columns:32px 1fr; gap:12px; align-items:start; }
+ol.steps li::before { content:counter(s); font-family:var(--display); width:32px; height:32px; display:grid; place-items:center; background:var(--fg); color:var(--bg); font-size:15px; margin-top:1px; }
+.btn { font-weight:700; border:1px solid var(--line); background:var(--surface); padding:1px 8px; white-space:nowrap; }
+.caution li::marker { color:var(--accent); }
+a { color:var(--accent); overflow-wrap:anywhere; }
+dl { margin:0; display:flex; flex-direction:column; gap:10px; }
+dt { font-weight:700; } dd { margin:0; color:var(--muted); }
+footer { border-top:1px solid var(--line); padding-top:16px; font-size:13px; color:var(--muted); display:flex; flex-direction:column; gap:4px; }
+
+/* このページだけの決まり。共通の決まりはindex.htmlのものをtools/build_guide.pyが前に足す */
+code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.88em; background:var(--surface); border:1px solid var(--line); padding:1px 6px; overflow-wrap:anywhere; }
+figure img { border-radius:0; border:1px solid var(--line); }
+.pager { display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; padding-top:8px; border-top:1px solid var(--line); font-size:15px; }
+.pager a { font-weight:700; text-decoration:none; background:var(--surface); border:1px solid var(--line); padding:8px 14px; }
+.pager a:hover { border-color:var(--accent); }
+.tablewrap { overflow-x:auto; }
+table { border-collapse:collapse; width:100%; font-size:15px; line-height:1.6; }
+th,td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid var(--line); }
+thead th { font-size:13px; color:var(--muted); font-weight:700; }
+.sitenav{display:flex;flex-wrap:wrap;gap:8px;font-size:14px;margin:0}.sitenav a{padding:3px 10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);text-decoration:none;font-weight:700}.sitenav a[aria-current]{background:var(--fg);border-color:var(--fg);color:var(--bg)}.sitenav a:focus-visible,.siteindex a:focus-visible{outline:3px solid var(--orange);outline-offset:2px}.siteindex ul{list-style:none;padding:0;gap:10px}.siteindex li{background:var(--surface);border:1px solid var(--line);padding:12px 16px;display:flex;flex-direction:column;gap:2px}.siteindex li a{font-weight:700}.siteindex li span{font-size:14px;color:var(--muted)}.siteindex .note{font-size:14px;color:var(--muted);margin:10px 0 0}
+</style>
+</head>
+<body>
+
+<div class="page">
+<nav class="sitenav" aria-label="ページの一覧"><a href="../">ボクセル工房</a><a href="../guide.html">てびき</a><a href="../minecraft.html">マインクラフトに置く</a><a href="../tried/" aria-current="page">マインクラフトで試してみた</a></nav>
+<header>
+  <p><a href="./">← マインクラフトで試してみた</a> (7 / 8)</p>
+  <h1>7. ゲームと同じ形の木を置いてみた</h1>
+  <p class="lede">2026-11-15〜17に、風景の木を、マインクラフトの木と同じ形と大きさにして置きました。本体の「木の形」の欄で「マインクラフトの木」を選んだときの木です (はじめに選ばれているのは「小さな緑の木」です)。</p>
+</header>
+
+<section>
+  <h2>形の合わせ方</h2>
+  <p>マインクラフトのサーバー版で本物の木を生やし、原木と葉がどこにあるかを1マスずつ読みとりました。それと同じ並べ方で、ボクセル工房の木を作っています。</p>
+</section>
+
+<section>
+  <h2>丸い木 (オーク・シラカバ)</h2>
+  <figure><img src="../docs/public/images/mc-trees-oak.jpg" width="1100" height="618" alt="雨の中で下から見上げた秋の木。高い幹の上に、オレンジや赤の葉が段になって広がっている"></figure>
+  <p>丸い木は、幹を4〜6段 (シラカバは5〜7段) にし、その上に葉を4段のせました。下の2段が5×5、その上が3×3、いちばん上が十字です。</p>
+  <p>雨の中で下から見上げると、高い幹と段になった葉で、ゲームのオークに近い形に見えました。この写真は2026-11-15の秋の風景で、このときは秋の木もオークの形でした。</p>
+</section>
+
+<section>
+  <h2>とがった木 (トウヒ・マツ)</h2>
+  <figure><img src="../docs/public/images/mc-trees-spruce.jpg" width="1100" height="618" alt="上から見た夏の風景。湖のまわりに、段の重なった円すいの形の濃い緑の木と、丸い木が並んでいる。下に「できあがりました」の文が出ている" loading="lazy"></figure>
+  <p>とがった木は、トウヒとマツの形にしました。トウヒは、広い段とせまい段がたがいちがいに重なる円すいです。</p>
+  <p>前は、とがった木が丸い木より小さく見えていました。直したあとに「建てる係」で置くと、丸い木との高さのつり合いもとれて見えました。マツは数が少なく、見え方はまだよく見ていません。</p>
+</section>
+
+<section>
+  <h2>秋のポプラ</h2>
+  <figure><img src="../docs/public/images/mc-trees-poplar.jpg" width="1100" height="618" alt="湖のほとりから見た秋の木。高い幹の上に、オレンジや赤の丸い葉のかたまりがのっている" loading="lazy"></figure>
+  <p>秋の丸い木は、ポプラの形にしました。幹は7〜11段で、その上半分を、下から広がって上で細くなる丸い葉のかたまりがつつみます。</p>
+  <p>湖のほとりから見ると、高い幹の上に丸い葉がのり、赤・オレンジ・黄色の葉が落ちる様子も写りました。この写真のときの幹は、まだオークの原木でした。</p>
+</section>
+
+<section>
+  <h2>幹の種類</h2>
+  <figure><img src="../docs/public/images/mc-trees-birch.jpg" width="1100" height="618" alt="森の中から見た夏の木。白い模様のシラカバの幹と、茶色いオークの幹が並び、奥に濃い緑のトウヒの葉が見える" loading="lazy"></figure>
+  <p>最後に、幹を木の種類ごとに分けました。シラカバはシラカバの原木、トウヒとマツはトウヒの原木、ポプラはポプラの原木です。オークはオークの原木のままです。</p>
+  <p>森の中から見ると、シラカバの白い幹とオークの幹が並んで見えました。</p>
+</section>
+
+<section>
+  <h2>木の大きさ</h2>
+  <p>本体の「風景を作る」で、「季節」の下にある「木の形」の欄から選びます。下の2枚は、ほかの設定 (山と湖・夏・風景の番号12・横48マス・木の量40%) を同じにして、木の形だけを切りかえた画面です。</p>
+  <figure><img src="../docs/public/images/ui-trees-small.jpg" width="1100" height="421" alt="ボクセル工房の画面。左の設定の「木の形」で「小さな緑の木」を選んでいて、右の風景には小さな丸い木と小さな円すいの木がが並んでいる" loading="lazy"></figure>
+  <figure><img src="../docs/public/images/ui-trees-mc.jpg" width="1100" height="421" alt="ボクセル工房の画面。左の設定の「木の形」で「マインクラフトの木」を選んでいて、右の風景には背の高い丸い木と、段の重なったトウヒ、白い幹のシラカバが並んでいる" loading="lazy"></figure>
+  <p>作るときに「本物と同じ大きさ」を選んだので、木はゲームの木と同じ高さと広さになりました。「小さな緑の木」とくらべると、次のようになります (1マスはブロック1つ分です)。</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>木</th><th>小さな緑の木</th><th>マインクラフトの木</th></tr></thead>
+    <tbody>
+      <tr><td>丸い木 (オーク)</td><td>幹2〜3段、葉は3×3の玉</td><td>幹4〜6段、葉は5×5まで広がる4段</td></tr>
+      <tr><td>シラカバ</td><td>(丸い木と同じ)</td><td>幹5〜7段</td></tr>
+      <tr><td>とがった木</td><td>幹3〜4段、小さな円すい</td><td>トウヒは幹6〜8段、マツは幹6〜10段</td></tr>
+      <tr><td>秋の丸い木</td><td>(丸い木と同じ)</td><td>ポプラの形で、幹7〜11段</td></tr>
+      <tr><td>1本が使う広さ</td><td>3×3マス</td><td>5×5マス (ポプラとサクラは7×7マス)</td></tr>
+    </tbody>
+  </table></div>
+  <p>「小さな緑の木」は、「マインクラフトの木」の半分くらいの大きさです。マインクラフトの木は、ゲームが自然に生やす木と同じ高さと広さなので、ワールドにもともとある木と並べても、大きさがそろいます。</p>
+</section>
+
+<section>
+  <h2>木の形を2つにした理由</h2>
+  <p>木をマインクラフトの木に近づけていくうちに、ボクセル工房の画面で見たときの木が、前の小さな緑の木の感じから変わってしまったことに気づきました。</p>
+  <p>前の木は前の木で好きだったので、どちらも残すことにしました。本体の「木の形」の欄で、「小さな緑の木」と「マインクラフトの木」を選べます。</p>
+</section>
+
+<section>
+  <h2>気をつけること</h2>
+  <ul>
+    <li>「マインクラフトの木」は、「小さな緑の木」より大きいので、同じマス数だと風景がせまく感じることがあります。せまく感じたら、横のマス数を自分で大きくしてください。</li>
+    <li>「木の形」を切りかえても、マス数や山の高さは変わりません (使う人が決めた数を、ほかの項目で勝手に変えないようにしています)。</li>
+  </ul>
+</section>
+
+<nav class="pager" aria-label="試した記録の移動">
+  <a href="../tried/spring.html">← 前: 6. 春のサクラを置いてみた</a>
+  <a href="./">試してみた一覧</a>
+  <a href="../tried/water.html">次: 8. 山の上から水を流してみた →</a>
+</nav>
+
+<section class="siteindex">
+  <h2>ページの一覧</h2>
+  <ul>
+    <li><a href="../">ボクセル工房</a><span>文字・画像・風景を、ブロックの立体にする道具です。</span></li>
+    <li><a href="../guide.html">てびき</a><span>使い方と、できること・できないことの説明です。</span></li>
+    <li><a href="../minecraft.html">マインクラフトに置く</a><span>作った立体を、マインクラフトのワールドに置く手順です。</span></li>
+    <li><a href="../tried/">マインクラフトで試してみた</a><span>本物のマインクラフトに置いて確かめた、写真つきの記録です。</span></li>
+  </ul>
+  <p class="note">このサイトではアクセス解析にGoogleアナリティクスとクッキーを使っています (<a href="../guide.html#analytics">くわしく</a>)。</p>
+</section>
+
+<footer>
+  <span>このページの写真は、マインクラフトの画面と、ボクセル工房の画面を撮ったものです。</span>
+  <span>ボクセル工房は、Minecraftの公式の製品ではありません。MojangやMicrosoftとは関係ありません。</span>
+</footer>
+</div>
+</body>
+</html>
