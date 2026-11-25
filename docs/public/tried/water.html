@@ -21,6 +21,7 @@ figure img { border-radius:0; border:1px solid var(--line); }
   <h2>水を置く場所の決め方</h2>
   <p>ボクセル工房の本体で「山の上から水を流す」をオンにして保存すると、高い山のいくつか (最大3か所) のてっぺんに水が置かれます。</p>
   <p>水を置く前に、マインクラフトと同じ決まりで、水がどこまで流れるかを計算しています。流れた水が風景の外にこぼれる山には、水を置きません。冬の風景には置きません (湖が氷になっているため)。</p>
+  <p>設定の使い方は、「<a href="https://fu-yu.github.io/voxel-maker/minecraft.html#peak-water">マインクラフトに置く</a>」の「山の上から水を流す」にあります。</p>
   <h3>水の流れ方の決まり</h3>
   <p>マインクラフトJava版26.3の水と同じ決まりで、1マスずつ流れる先を決めます。</p>
   <ul>
@@ -46,6 +47,7 @@ figure img { border-radius:0; border:1px solid var(--line); }
   <figure><img src="../images/mc-water-falls.jpg" width="1100" height="618" alt="上から見た湖。右の山の白い雪の下から、青い水が段になって斜面を流れ落ち、湖に入っている。奥の山からも細い水の流れが湖へ下りている"></figure>
   <p>「山と湖・夏」の風景 (番号12) を、水を3か所にして置きました。2か所の水は、斜面を段になって流れ落ちる滝になり、湖まで届きました。</p>
   <p>風景の外に、水はこぼれませんでした。</p>
+  <p>水を流す前の「山と湖・夏」の風景の見え方は、「<a href="https://fu-yu.github.io/voxel-maker/tried/scene.html">1. 風景を置いてみた</a>」にあります。建てる係で少しずつ置く <code>/function voxel:build_slow</code> でも、水が外に出ないことを、画面のないサーバー用のマインクラフトで確かめました (建てる係については「<a href="https://fu-yu.github.io/voxel-maker/tried/slow.html">3. 少しずつ置いてみた</a>」)。</p>
 </section>
 
 <section>
@@ -69,11 +71,13 @@ figure img { border-radius:0; border:1px solid var(--line); }
   <figure><img src="../images/mc-water-column.jpg" width="1100" height="618" alt="風景を消したあとの平らな地面に、青い水の柱が1本だけ立っている。下に「立っている場所を基準に消しました」の文が出ている" loading="lazy"></figure>
   <p>はじめは、「できあがりました」の [消す] で風景を消すと、流れた水が空中に柱のように残り、地面に落ちてから、数秒かけてゆっくり消えました。消すときに、置いたブロックだけを消していて、あとから流れた水は消す対象に入っていなかったためです。</p>
   <p>そこで、一気に消す <code>/function voxel:break</code> と [消す] では、先に風景の範囲の水をすべて消すように直しました。直したあとは、流れた水もいっしょにすぐ消えることを、ゲームの画面でも確かめました。</p>
+  <p>消し方のくわしい説明は、「<a href="https://fu-yu.github.io/voxel-maker/minecraft.html#break">マインクラフトに置く</a>」の「一気に消す」と、「<a href="https://fu-yu.github.io/voxel-maker/minecraft.html#steps">手順</a>」の [消す] にあります。少しずつ壊す <code>/function voxel:break_slow</code> は、この直しでは変えていません (壊す係については「<a href="https://fu-yu.github.io/voxel-maker/tried/break.html">4. 少しずつ壊してみた</a>」)。</p>
 </section>
 
 <section>
   <h2>画面でも見られるように</h2>
   <p>このあと、ボクセル工房の画面の立体にも、流れ終わったあとの水 (滝や池) を表示するようにしました。水が流れていく途中の動きは出ません。</p>
+  <p>ボクセル工房の使い方は、「<a href="https://fu-yu.github.io/voxel-maker/guide.html">てびき</a>」にあります。</p>
 </section>
 
 <section>
